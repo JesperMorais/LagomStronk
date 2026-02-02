@@ -1,0 +1,21 @@
+{
+  "appId": "se.lagomstronk.app",
+  "appName": "LagomStronk",
+  "webDir": ".",
+  "server": {
+    "androidScheme": "https"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 2000,
+      "backgroundColor": "#4f46e5",
+      "showSpinner": false
+    }
+  },
+  "android": {
+    "buildOptions": {
+      "keystorePath": null,
+      "keystoreAlias": null
+    }
+  }
+}
