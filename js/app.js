@@ -21,7 +21,9 @@ import {
     getFrequencyStats,
     getWeeklySummary,
     getEstimated1RMs,
-    getMuscleGroupStats
+    getMuscleGroupStats,
+    getExerciseHistory,
+    getMostRecentExerciseFirstSet
 } from './data.js';
 
 import {
@@ -134,7 +136,7 @@ function setupEventListeners() {
     document.getElementById('close-exercise-modal').addEventListener('click', closeExerciseModal);
     document.getElementById('cancel-exercise').addEventListener('click', closeExerciseModal);
     document.getElementById('save-exercise').addEventListener('click', saveExercise);
-    document.getElementById('add-set-btn').addEventListener('click', addSetRow);
+    document.getElementById('add-set-btn').addEventListener('click', handleAddSet);
 
     // Custom exercise modal
     document.getElementById('add-custom-exercise-btn').addEventListener('click', openCustomExerciseModal);
@@ -521,6 +523,25 @@ function renderLibraryView() {
     `).join('');
 }
 
+// Handle exercise selection (between-sessions auto-fill)
+function handleExerciseSelection(event) {
+    const exerciseName = event.target.value;
+    const setsList = document.getElementById('sets-list');
+
+    // Only update first set if exactly one set exists
+    if (setsList.children.length !== 1) return;
+
+    // Get most recent session data
+    const recentData = getMostRecentExerciseFirstSet(appData, exerciseName);
+
+    if (recentData) {
+        // Update the existing first set's values
+        const firstSet = setsList.children[0];
+        firstSet.querySelector('.set-reps').value = recentData.reps;
+        firstSet.querySelector('.set-weight').value = recentData.weight;
+    }
+}
+
 // Open exercise modal
 function openExerciseModal() {
     // Populate exercise dropdown
@@ -536,6 +557,15 @@ function openExerciseModal() {
     // Add initial set row
     addSetRow();
 
+    // Add event listener for exercise selection (auto-fill from history)
+    // Clone and replace to prevent duplicate listeners
+    const newSelect = exerciseNameSelect.cloneNode(true);
+    exerciseNameSelect.parentNode.replaceChild(newSelect, exerciseNameSelect);
+    newSelect.addEventListener('change', handleExerciseSelection);
+
+    // Trigger auto-fill for the default selected exercise
+    handleExerciseSelection({ target: newSelect });
+
     exerciseModal.classList.add('active');
 }
 
@@ -546,7 +576,7 @@ function closeExerciseModal() {
 }
 
 // Add set row to modal
-function addSetRow() {
+function addSetRow(reps = 10, weight = 20) {
     const setsList = document.getElementById('sets-list');
     const setNumber = setsList.children.length + 1;
 
@@ -555,13 +585,32 @@ function addSetRow() {
     setRow.innerHTML = `
         <span>Set ${setNumber}</span>
         <label>Reps</label>
-        <input type="number" class="number-input set-reps" value="10" min="1" max="100">
+        <input type="number" class="number-input set-reps" value="${reps}" min="1" max="100">
         <label>kg</label>
-        <input type="number" class="number-input set-weight" value="20" min="0" max="1000" step="0.5">
+        <input type="number" class="number-input set-weight" value="${weight}" min="0" max="1000" step="0.5">
         <button class="btn-icon remove-set-btn" onclick="removeSetRow(this)" title="Remove">✕</button>
     `;
 
     setsList.appendChild(setRow);
+}
+
+// Handle adding a new set (within-session auto-fill)
+function handleAddSet() {
+    const setsList = document.getElementById('sets-list');
+    const existingSets = setsList.children;
+
+    if (existingSets.length === 0) {
+        addSetRow();
+        return;
+    }
+
+    // Get values from the last set
+    const lastSet = existingSets[existingSets.length - 1];
+    const lastReps = parseInt(lastSet.querySelector('.set-reps').value) || 10;
+    const lastWeight = parseFloat(lastSet.querySelector('.set-weight').value) || 20;
+
+    // Add new set with previous set's values
+    addSetRow(lastReps, lastWeight);
 }
 
 // Remove set row
