@@ -73,6 +73,24 @@
                     <!-- Exercise library items -->
                 </div>
             </section>
+
+            <!-- Workouts View -->
+            <section id="workouts-view" class="view">
+                <div class="view-header">
+                    <h2>Workout Templates</h2>
+                </div>
+                <div class="workouts-actions">
+                    <button class="btn btn-primary" id="create-workout-btn">
+                        + Create Workout
+                    </button>
+                    <button class="btn btn-secondary" id="save-today-as-template-btn">
+                        Save Today as Template
+                    </button>
+                </div>
+                <div id="workout-templates-list" class="templates-list">
+                    <!-- Workout templates will be listed here -->
+                </div>
+            </section>
         </main>
 
         <!-- Bottom Navigation -->
@@ -80,6 +98,10 @@
             <button class="nav-btn active" data-view="today">
                 <span class="nav-icon">🏋️</span>
                 <span class="nav-label">Today</span>
+            </button>
+            <button class="nav-btn" data-view="workouts">
+                <span class="nav-icon">📋</span>
+                <span class="nav-label">Workouts</span>
             </button>
             <button class="nav-btn" data-view="history">
                 <span class="nav-icon">📅</span>
@@ -156,6 +178,70 @@
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" id="close-workout-btn">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Create Workout Template Modal -->
+        <div class="modal" id="create-template-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="create-template-title">Create Workout</h3>
+                    <button class="modal-close" id="close-create-template-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="template-name">Workout Name</label>
+                        <input type="text" id="template-name" class="text-input" placeholder="e.g., My Push Day">
+                    </div>
+                    <div class="form-group">
+                        <label>Exercises</label>
+                        <div id="template-exercises-list" class="template-exercises-list">
+                            <!-- Template exercises will be added here -->
+                        </div>
+                        <button class="btn btn-secondary btn-small" id="add-template-exercise-btn">+ Add Exercise</button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" id="cancel-template">Cancel</button>
+                    <button class="btn btn-primary" id="save-template">Save Workout</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- View Template Modal -->
+        <div class="modal" id="view-template-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="view-template-title">Workout Details</h3>
+                    <button class="modal-close" id="close-view-template-modal">&times;</button>
+                </div>
+                <div class="modal-body" id="view-template-body">
+                    <!-- Template details will be displayed here -->
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" id="close-template-btn">Close</button>
+                    <button class="btn btn-primary" id="start-template-btn">Start Workout</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Save As Template Modal -->
+        <div class="modal" id="save-template-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Save as Template</h3>
+                    <button class="modal-close" id="close-save-template-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="save-template-name">Template Name</label>
+                        <input type="text" id="save-template-name" class="text-input" placeholder="e.g., My Custom Workout">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" id="cancel-save-template">Cancel</button>
+                    <button class="btn btn-primary" id="confirm-save-template">Save</button>
                 </div>
             </div>
         </div>
