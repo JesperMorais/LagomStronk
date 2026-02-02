@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LagomStronk - Gym Tracker</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="app">
+        <!-- Header -->
+        <header class="header">
+            <h1>LagomStronk</h1>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Today View -->
+            <section id="today-view" class="view active">
+                <div class="view-header">
+                    <h2>Today's Workout</h2>
+                    <span class="date-display" id="today-date"></span>
+                </div>
+                <div id="today-exercises" class="exercise-list">
+                    <!-- Exercises will be added here -->
+                </div>
+                <button class="btn btn-primary btn-add-exercise" id="add-exercise-btn">
+                    + Add Exercise
+                </button>
+            </section>
+
+            <!-- History View -->
+            <section id="history-view" class="view">
+                <div class="view-header">
+                    <h2>Workout History</h2>
+                </div>
+                <div id="history-list" class="history-list">
+                    <!-- Past workouts will be listed here -->
+                </div>
+            </section>
+
+            <!-- Progress View -->
+            <section id="progress-view" class="view">
+                <div class="view-header">
+                    <h2>Progress</h2>
+                </div>
+                <div class="chart-controls">
+                    <select id="exercise-select" class="select-input">
+                        <option value="">Select Exercise</option>
+                    </select>
+                </div>
+                <div class="chart-container">
+                    <canvas id="progress-chart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3>Total Volume Over Time</h3>
+                    <canvas id="volume-chart"></canvas>
+                </div>
+            </section>
+
+            <!-- Library View -->
+            <section id="library-view" class="view">
+                <div class="view-header">
+                    <h2>Exercise Library</h2>
+                </div>
+                <div class="library-actions">
+                    <button class="btn btn-secondary" id="add-custom-exercise-btn">
+                        + Add Custom Exercise
+                    </button>
+                </div>
+                <div id="exercise-library-list" class="library-list">
+                    <!-- Exercise library items -->
+                </div>
+            </section>
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <button class="nav-btn active" data-view="today">
+                <span class="nav-icon">🏋️</span>
+                <span class="nav-label">Today</span>
+            </button>
+            <button class="nav-btn" data-view="history">
+                <span class="nav-icon">📅</span>
+                <span class="nav-label">History</span>
+            </button>
+            <button class="nav-btn" data-view="progress">
+                <span class="nav-icon">📈</span>
+                <span class="nav-label">Progress</span>
+            </button>
+            <button class="nav-btn" data-view="library">
+                <span class="nav-icon">📚</span>
+                <span class="nav-label">Library</span>
+            </button>
+        </nav>
+
+        <!-- Add Exercise Modal -->
+        <div class="modal" id="exercise-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Add Exercise</h3>
+                    <button class="modal-close" id="close-exercise-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="exercise-name">Exercise</label>
+                        <select id="exercise-name" class="select-input">
+                            <!-- Populated from library -->
+                        </select>
+                    </div>
+                    <div id="sets-container" class="sets-container">
+                        <h4>Sets</h4>
+                        <div class="sets-list" id="sets-list">
+                            <!-- Sets will be added here -->
+                        </div>
+                        <button class="btn btn-secondary btn-small" id="add-set-btn">+ Add Set</button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" id="cancel-exercise">Cancel</button>
+                    <button class="btn btn-primary" id="save-exercise">Save Exercise</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Custom Exercise Modal -->
+        <div class="modal" id="custom-exercise-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Add Custom Exercise</h3>
+                    <button class="modal-close" id="close-custom-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="custom-exercise-name">Exercise Name</label>
+                        <input type="text" id="custom-exercise-name" class="text-input" placeholder="e.g., Cable Flyes">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" id="cancel-custom">Cancel</button>
+                    <button class="btn btn-primary" id="save-custom">Add to Library</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- View Workout Modal -->
+        <div class="modal" id="workout-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="workout-modal-title">Workout Details</h3>
+                    <button class="modal-close" id="close-workout-modal">&times;</button>
+                </div>
+                <div class="modal-body" id="workout-modal-body">
+                    <!-- Workout details will be displayed here -->
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" id="close-workout-btn">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>
