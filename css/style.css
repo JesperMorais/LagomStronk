@@ -67,6 +67,28 @@ body {
     font-weight: 600;
 }
 
+.header-btn {
+    position: absolute;
+    right: var(--spacing-md);
+    background-color: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius);
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.header-btn:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.header-btn.hidden {
+    display: none;
+}
+
 /* Main Content */
 .main-content {
     padding: var(--spacing-md);
@@ -964,4 +986,62 @@ body.offline::before {
 
 body.offline .main-content {
     padding-top: calc(var(--spacing-md) + 24px);
+}
+
+/* Install Instructions */
+.install-instructions {
+    text-align: left;
+}
+
+.install-intro {
+    text-align: center;
+    margin-bottom: var(--spacing-lg);
+    color: var(--text-secondary);
+}
+
+.install-section {
+    margin-bottom: var(--spacing-lg);
+    padding: var(--spacing-md);
+    background-color: var(--background-color);
+    border-radius: var(--radius);
+}
+
+.install-section h4 {
+    margin-bottom: var(--spacing-sm);
+    color: var(--primary-color);
+    font-size: 1rem;
+}
+
+.install-section ol {
+    margin: 0;
+    padding-left: var(--spacing-lg);
+}
+
+.install-section li {
+    margin-bottom: var(--spacing-xs);
+    line-height: 1.6;
+}
+
+.install-section li strong {
+    color: var(--text-primary);
+}
+
+.install-benefit {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) 0;
+    color: var(--text-secondary);
+}
+
+.benefit-icon {
+    color: var(--success-color);
+    font-weight: bold;
+}
+
+/* Hide install button when app is installed */
+@media (display-mode: standalone) {
+    .header-btn#install-btn {
+        display: none;
+    }
 }

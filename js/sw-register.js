@@ -62,3 +62,88 @@ window.addEventListener('offline', () => {
 if (isOffline()) {
   document.body.classList.add('offline');
 }
+
+// ========== Install App Functionality ==========
+
+// Store the install prompt event
+let deferredPrompt = null;
+
+// Listen for the beforeinstallprompt event
+window.addEventListener('beforeinstallprompt', (e) => {
+  console.log('[App] beforeinstallprompt fired');
+  e.preventDefault();
+  deferredPrompt = e;
+
+  // Show the install button
+  const installBtn = document.getElementById('install-btn');
+  if (installBtn) {
+    installBtn.classList.remove('hidden');
+  }
+});
+
+// Listen for app installed event
+window.addEventListener('appinstalled', () => {
+  console.log('[App] App was installed');
+  deferredPrompt = null;
+
+  // Hide the install button
+  const installBtn = document.getElementById('install-btn');
+  if (installBtn) {
+    installBtn.classList.add('hidden');
+  }
+});
+
+// Install button click handler
+document.addEventListener('DOMContentLoaded', () => {
+  const installBtn = document.getElementById('install-btn');
+  const installModal = document.getElementById('install-modal');
+  const closeInstallModal = document.getElementById('close-install-modal');
+  const closeInstallBtn = document.getElementById('close-install-btn');
+
+  if (installBtn) {
+    installBtn.addEventListener('click', () => {
+      // If we have the native prompt, use it
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          console.log('[App] User choice:', choiceResult.outcome);
+          deferredPrompt = null;
+        });
+      } else {
+        // Show manual installation instructions
+        if (installModal) {
+          installModal.classList.add('active');
+        }
+      }
+    });
+  }
+
+  // Close modal handlers
+  if (closeInstallModal) {
+    closeInstallModal.addEventListener('click', () => {
+      installModal.classList.remove('active');
+    });
+  }
+
+  if (closeInstallBtn) {
+    closeInstallBtn.addEventListener('click', () => {
+      installModal.classList.remove('active');
+    });
+  }
+
+  if (installModal) {
+    installModal.addEventListener('click', (e) => {
+      if (e.target === installModal) {
+        installModal.classList.remove('active');
+      }
+    });
+  }
+
+  // Check if already installed (standalone mode)
+  if (window.matchMedia('(display-mode: standalone)').matches) {
+    console.log('[App] Running in standalone mode');
+    if (installBtn) {
+      installBtn.classList.add('hidden');
+    }
+  }
+});
