@@ -45,17 +45,71 @@
                 <div class="view-header">
                     <h2>Progress</h2>
                 </div>
-                <div class="chart-controls">
-                    <select id="exercise-select" class="select-input">
-                        <option value="">Select Exercise</option>
-                    </select>
+
+                <!-- Overall Stats Cards -->
+                <div class="stats-grid" id="overall-stats">
+                    <!-- Stats cards will be rendered here -->
                 </div>
-                <div class="chart-container">
-                    <canvas id="progress-chart"></canvas>
+
+                <!-- Frequency Stats -->
+                <div class="stats-section">
+                    <h3 class="stats-section-title">Training Frequency</h3>
+                    <div class="stats-grid" id="frequency-stats">
+                        <!-- Frequency stats will be rendered here -->
+                    </div>
                 </div>
-                <div class="chart-container">
-                    <h3>Total Volume Over Time</h3>
-                    <canvas id="volume-chart"></canvas>
+
+                <!-- Weekly Summary -->
+                <div class="stats-section">
+                    <h3 class="stats-section-title">Weekly Summary</h3>
+                    <div id="weekly-summary" class="weekly-summary">
+                        <!-- Weekly bars will be rendered here -->
+                    </div>
+                </div>
+
+                <!-- Muscle Group Distribution -->
+                <div class="stats-section">
+                    <h3 class="stats-section-title">Muscle Groups</h3>
+                    <div id="muscle-group-stats" class="muscle-group-stats">
+                        <!-- Muscle group bars will be rendered here -->
+                    </div>
+                </div>
+
+                <!-- Exercise Progress Chart -->
+                <div class="stats-section">
+                    <h3 class="stats-section-title">Exercise Progress</h3>
+                    <div class="chart-controls">
+                        <select id="exercise-select" class="select-input">
+                            <option value="">Select Exercise</option>
+                        </select>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="progress-chart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Volume Chart -->
+                <div class="stats-section">
+                    <h3 class="stats-section-title">Total Volume Over Time</h3>
+                    <div class="chart-container">
+                        <canvas id="volume-chart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Personal Records -->
+                <div class="stats-section">
+                    <h3 class="stats-section-title">Personal Records</h3>
+                    <div id="personal-records" class="pr-list">
+                        <!-- PRs will be rendered here -->
+                    </div>
+                </div>
+
+                <!-- Estimated 1RMs -->
+                <div class="stats-section">
+                    <h3 class="stats-section-title">Estimated 1RM</h3>
+                    <div id="estimated-1rms" class="e1rm-list">
+                        <!-- E1RMs will be rendered here -->
+                    </div>
                 </div>
             </section>
 
