@@ -24,9 +24,9 @@ export function updateProgressChart(data, exerciseName) {
                 datasets: [{
                     label: 'Max Weight (kg)',
                     data: [],
-                    borderColor: '#818cf8',
-                    backgroundColor: 'rgba(129, 140, 248, 0.2)',
-                    tension: 0.3,
+                    borderColor: '#2dd4bf',
+                    backgroundColor: 'rgba(45, 212, 191, 0.15)',
+                    tension: 0.4,
                     fill: true
                 }]
             },
@@ -45,13 +45,15 @@ export function updateProgressChart(data, exerciseName) {
             datasets: [{
                 label: 'Max Weight (kg)',
                 data: weights,
-                borderColor: '#818cf8',
-                backgroundColor: 'rgba(129, 140, 248, 0.2)',
-                tension: 0.3,
+                borderColor: '#2dd4bf',
+                backgroundColor: 'rgba(45, 212, 191, 0.15)',
+                tension: 0.4,
                 fill: true,
-                pointBackgroundColor: '#818cf8',
-                pointRadius: 4,
-                pointHoverRadius: 6
+                pointBackgroundColor: '#2dd4bf',
+                pointBorderColor: '#0a0a0a',
+                pointBorderWidth: 2,
+                pointRadius: 5,
+                pointHoverRadius: 7
             }]
         },
         options: getChartOptions(exerciseName + ' - Weight Progression')
@@ -78,9 +80,10 @@ export function updateVolumeChart(data) {
                 datasets: [{
                     label: 'Total Volume (kg)',
                     data: [],
-                    backgroundColor: 'rgba(52, 211, 153, 0.7)',
-                    borderColor: '#34d399',
-                    borderWidth: 1
+                    backgroundColor: 'rgba(45, 212, 191, 0.6)',
+                    borderColor: '#2dd4bf',
+                    borderWidth: 0,
+                    borderRadius: 6
                 }]
             },
             options: getChartOptions('No workout data yet')
@@ -98,16 +101,18 @@ export function updateVolumeChart(data) {
             datasets: [{
                 label: 'Total Volume (kg)',
                 data: volumes,
-                backgroundColor: 'rgba(16, 185, 129, 0.7)',
-                borderColor: '#10b981',
-                borderWidth: 1
+                backgroundColor: 'rgba(45, 212, 191, 0.6)',
+                borderColor: '#2dd4bf',
+                borderWidth: 0,
+                borderRadius: 6,
+                hoverBackgroundColor: '#2dd4bf'
             }]
         },
         options: getChartOptions('Total Volume Per Workout')
     });
 }
 
-// Common chart options - Dark mode
+// Common chart options - Mint dark mode
 function getChartOptions(title) {
     return {
         responsive: true,
@@ -121,9 +126,10 @@ function getChartOptions(title) {
                 text: title,
                 font: {
                     size: 14,
-                    weight: '500'
+                    weight: '600'
                 },
-                color: '#9ca3af'
+                color: '#2dd4bf',
+                padding: { bottom: 16 }
             }
         },
         scales: {
@@ -137,16 +143,22 @@ function getChartOptions(title) {
                     font: {
                         size: 10
                     },
-                    color: '#9ca3af'
+                    color: '#a1a1aa'
+                },
+                border: {
+                    display: false
                 }
             },
             y: {
                 beginAtZero: true,
                 grid: {
-                    color: 'rgba(255, 255, 255, 0.1)'
+                    color: 'rgba(255, 255, 255, 0.05)'
                 },
                 ticks: {
-                    color: '#9ca3af'
+                    color: '#a1a1aa'
+                },
+                border: {
+                    display: false
                 }
             }
         }
