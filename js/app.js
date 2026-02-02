@@ -262,6 +262,23 @@ function renderHistoryView() {
 // Render progress view
 function renderProgressView() {
     const usedExercises = getUsedExercises(appData);
+    const hasData = appData.workouts.length > 0;
+
+    // Show empty state if no workouts
+    if (!hasData) {
+        renderEmptyProgressView();
+        return;
+    }
+
+    // Show all stats sections
+    document.getElementById('overall-stats').parentElement.style.display = '';
+    document.getElementById('frequency-stats').parentElement.style.display = '';
+    document.getElementById('weekly-summary').parentElement.style.display = '';
+    document.getElementById('muscle-group-stats').parentElement.style.display = '';
+    document.getElementById('exercise-select').parentElement.parentElement.style.display = '';
+    document.getElementById('volume-chart').parentElement.parentElement.style.display = '';
+    document.getElementById('personal-records').parentElement.style.display = '';
+    document.getElementById('estimated-1rms').parentElement.style.display = '';
 
     // Render overall stats
     renderOverallStats();
@@ -293,6 +310,29 @@ function renderProgressView() {
 
     // Render estimated 1RMs
     renderEstimated1RMs();
+}
+
+// Render empty progress view
+function renderEmptyProgressView() {
+    // Hide all stats sections except overall stats
+    document.getElementById('frequency-stats').parentElement.style.display = 'none';
+    document.getElementById('weekly-summary').parentElement.style.display = 'none';
+    document.getElementById('muscle-group-stats').parentElement.style.display = 'none';
+    document.getElementById('exercise-select').parentElement.parentElement.style.display = 'none';
+    document.getElementById('volume-chart').parentElement.parentElement.style.display = 'none';
+    document.getElementById('personal-records').parentElement.style.display = 'none';
+    document.getElementById('estimated-1rms').parentElement.style.display = 'none';
+
+    // Show welcome message in overall stats
+    const container = document.getElementById('overall-stats');
+    container.innerHTML = `
+        <div class="empty-progress-state">
+            <div class="empty-state-icon">📊</div>
+            <h3>No Stats Yet</h3>
+            <p>Start logging workouts to see your progress here!</p>
+            <p class="empty-state-hint">Go to Today and add your first exercise.</p>
+        </div>
+    `;
 }
 
 // Render overall stats
