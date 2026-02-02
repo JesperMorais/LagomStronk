@@ -15,7 +15,13 @@ import {
     addWorkoutTemplate,
     deleteWorkoutTemplate,
     applyWorkoutTemplate,
-    saveWorkoutAsTemplate
+    saveWorkoutAsTemplate,
+    getPersonalRecords,
+    getOverallStats,
+    getFrequencyStats,
+    getWeeklySummary,
+    getEstimated1RMs,
+    getMuscleGroupStats
 } from './data.js';
 
 import {
@@ -257,6 +263,18 @@ function renderHistoryView() {
 function renderProgressView() {
     const usedExercises = getUsedExercises(appData);
 
+    // Render overall stats
+    renderOverallStats();
+
+    // Render frequency stats
+    renderFrequencyStats();
+
+    // Render weekly summary
+    renderWeeklySummary();
+
+    // Render muscle group stats
+    renderMuscleGroupStats();
+
     // Populate exercise select
     exerciseSelectEl.innerHTML = '<option value="">Select Exercise</option>' +
         usedExercises.map(ex => `<option value="${ex}">${ex}</option>`).join('');
@@ -269,6 +287,187 @@ function renderProgressView() {
         exerciseSelectEl.value = usedExercises[0];
         updateProgressChart(appData, usedExercises[0]);
     }
+
+    // Render personal records
+    renderPersonalRecords();
+
+    // Render estimated 1RMs
+    renderEstimated1RMs();
+}
+
+// Render overall stats
+function renderOverallStats() {
+    const stats = getOverallStats(appData);
+    const container = document.getElementById('overall-stats');
+
+    container.innerHTML = `
+        <div class="stat-card highlight">
+            <div class="stat-value">${stats.totalWorkouts}</div>
+            <div class="stat-label">Total Workouts</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">${formatVolume(stats.totalVolume)}</div>
+            <div class="stat-label">Total Volume</div>
+            <div class="stat-sublabel">kg lifted</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">${stats.totalSets}</div>
+            <div class="stat-label">Total Sets</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">${stats.avgExercisesPerWorkout}</div>
+            <div class="stat-label">Avg Exercises</div>
+            <div class="stat-sublabel">per workout</div>
+        </div>
+    `;
+}
+
+// Render frequency stats
+function renderFrequencyStats() {
+    const stats = getFrequencyStats(appData);
+    const container = document.getElementById('frequency-stats');
+
+    container.innerHTML = `
+        <div class="stat-card">
+            <div class="stat-value">${stats.thisWeek}</div>
+            <div class="stat-label">This Week</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">${stats.thisMonth}</div>
+            <div class="stat-label">This Month</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">${stats.avgPerWeek}</div>
+            <div class="stat-label">Avg/Week</div>
+        </div>
+        <div class="stat-card ${stats.currentStreak > 0 ? 'highlight' : ''}">
+            <div class="stat-value">${stats.currentStreak}</div>
+            <div class="stat-label">Current Streak</div>
+            <div class="stat-sublabel">days</div>
+        </div>
+    `;
+}
+
+// Render weekly summary
+function renderWeeklySummary() {
+    const weeks = getWeeklySummary(appData);
+    const container = document.getElementById('weekly-summary');
+
+    const maxVolume = Math.max(...weeks.map(w => w.volume), 1);
+
+    container.innerHTML = weeks.map(week => {
+        const percentage = (week.volume / maxVolume) * 100;
+        return `
+            <div class="weekly-bar">
+                <span class="weekly-bar-label">${week.label}</span>
+                <div class="weekly-bar-track">
+                    <div class="weekly-bar-fill" style="width: ${percentage}%"></div>
+                    <span class="weekly-bar-value">${week.workouts} workouts</span>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// Render muscle group stats
+function renderMuscleGroupStats() {
+    const stats = getMuscleGroupStats(appData);
+    const container = document.getElementById('muscle-group-stats');
+
+    const totalSets = Object.values(stats).reduce((sum, s) => sum + s.sets, 0);
+    if (totalSets === 0) {
+        container.innerHTML = '<div class="empty-state"><p>No workout data yet</p></div>';
+        return;
+    }
+
+    const groups = ['Chest', 'Back', 'Shoulders', 'Legs', 'Arms', 'Core'];
+
+    container.innerHTML = groups.map(group => {
+        const data = stats[group];
+        const percentage = (data.sets / totalSets) * 100;
+        return `
+            <div class="muscle-group-bar">
+                <span class="muscle-group-label">${group}</span>
+                <div class="muscle-group-track">
+                    <div class="muscle-group-fill ${group.toLowerCase()}" style="width: ${percentage}%"></div>
+                </div>
+                <span class="muscle-group-value">${data.sets} sets</span>
+            </div>
+        `;
+    }).join('');
+}
+
+// Render personal records
+function renderPersonalRecords() {
+    const prs = getPersonalRecords(appData);
+    const container = document.getElementById('personal-records');
+
+    const exercises = Object.keys(prs).sort();
+
+    if (exercises.length === 0) {
+        container.innerHTML = '<div class="empty-state"><p>No records yet. Start training!</p></div>';
+        return;
+    }
+
+    container.innerHTML = exercises.slice(0, 5).map(exercise => {
+        const pr = prs[exercise];
+        return `
+            <div class="pr-item">
+                <div class="pr-item-header">
+                    <span class="pr-exercise-name">${exercise}</span>
+                    <span class="pr-badge">PR</span>
+                </div>
+                <div class="pr-details">
+                    <div class="pr-detail">
+                        <span class="pr-detail-value">${pr.maxWeight.value} kg</span>
+                        <span>Max Weight</span>
+                    </div>
+                    <div class="pr-detail">
+                        <span class="pr-detail-value">${pr.maxVolume.value} kg</span>
+                        <span>Best Volume</span>
+                    </div>
+                    <div class="pr-detail">
+                        <span class="pr-detail-value">${pr.maxReps.value}</span>
+                        <span>Most Reps</span>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// Render estimated 1RMs
+function renderEstimated1RMs() {
+    const e1rms = getEstimated1RMs(appData);
+    const container = document.getElementById('estimated-1rms');
+
+    const exercises = Object.keys(e1rms).sort();
+
+    if (exercises.length === 0) {
+        container.innerHTML = '<div class="empty-state"><p>No data yet</p></div>';
+        return;
+    }
+
+    container.innerHTML = exercises.slice(0, 6).map(exercise => {
+        const e1rm = e1rms[exercise];
+        return `
+            <div class="e1rm-item">
+                <div class="e1rm-exercise">${exercise}</div>
+                <div class="e1rm-value">${e1rm.value}<span class="e1rm-unit"> kg</span></div>
+                <div class="e1rm-based-on">${e1rm.basedOn.weight}kg x ${e1rm.basedOn.reps}</div>
+            </div>
+        `;
+    }).join('');
+}
+
+// Format large volume numbers
+function formatVolume(volume) {
+    if (volume >= 1000000) {
+        return (volume / 1000000).toFixed(1) + 'M';
+    } else if (volume >= 1000) {
+        return (volume / 1000).toFixed(1) + 'K';
+    }
+    return volume.toString();
 }
 
 // Render library view

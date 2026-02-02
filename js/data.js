@@ -404,3 +404,262 @@ export function saveWorkoutAsTemplate(data, dateStr, templateName) {
     saveData(data);
     return data;
 }
+
+// ========== STATS & ANALYTICS ==========
+
+// Get all personal records (PRs) for each exercise
+export function getPersonalRecords(data) {
+    const prs = {};
+
+    for (const workout of data.workouts) {
+        for (const exercise of workout.exercises) {
+            const maxWeight = Math.max(...exercise.sets.map(s => s.weight));
+            const maxVolume = exercise.sets.reduce((sum, s) => sum + (s.reps * s.weight), 0);
+            const totalReps = exercise.sets.reduce((sum, s) => sum + s.reps, 0);
+
+            if (!prs[exercise.name]) {
+                prs[exercise.name] = {
+                    maxWeight: { value: maxWeight, date: workout.date },
+                    maxVolume: { value: maxVolume, date: workout.date },
+                    maxReps: { value: totalReps, date: workout.date }
+                };
+            } else {
+                if (maxWeight > prs[exercise.name].maxWeight.value) {
+                    prs[exercise.name].maxWeight = { value: maxWeight, date: workout.date };
+                }
+                if (maxVolume > prs[exercise.name].maxVolume.value) {
+                    prs[exercise.name].maxVolume = { value: maxVolume, date: workout.date };
+                }
+                if (totalReps > prs[exercise.name].maxReps.value) {
+                    prs[exercise.name].maxReps = { value: totalReps, date: workout.date };
+                }
+            }
+        }
+    }
+
+    return prs;
+}
+
+// Get overall training stats
+export function getOverallStats(data) {
+    let totalWorkouts = data.workouts.length;
+    let totalSets = 0;
+    let totalReps = 0;
+    let totalVolume = 0;
+    let totalExercises = 0;
+
+    for (const workout of data.workouts) {
+        totalExercises += workout.exercises.length;
+        for (const exercise of workout.exercises) {
+            totalSets += exercise.sets.length;
+            for (const set of exercise.sets) {
+                totalReps += set.reps;
+                totalVolume += set.reps * set.weight;
+            }
+        }
+    }
+
+    return {
+        totalWorkouts,
+        totalSets,
+        totalReps,
+        totalVolume: Math.round(totalVolume),
+        totalExercises,
+        avgSetsPerWorkout: totalWorkouts > 0 ? Math.round(totalSets / totalWorkouts) : 0,
+        avgExercisesPerWorkout: totalWorkouts > 0 ? Math.round(totalExercises / totalWorkouts * 10) / 10 : 0
+    };
+}
+
+// Get workout frequency stats
+export function getFrequencyStats(data) {
+    if (data.workouts.length === 0) {
+        return { thisWeek: 0, thisMonth: 0, avgPerWeek: 0, currentStreak: 0, longestStreak: 0 };
+    }
+
+    const today = new Date();
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - today.getDay());
+    startOfWeek.setHours(0, 0, 0, 0);
+
+    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+
+    let thisWeek = 0;
+    let thisMonth = 0;
+
+    for (const workout of data.workouts) {
+        const workoutDate = new Date(workout.date);
+        if (workoutDate >= startOfWeek) thisWeek++;
+        if (workoutDate >= startOfMonth) thisMonth++;
+    }
+
+    // Calculate average per week
+    const sortedWorkouts = [...data.workouts].sort((a, b) => new Date(a.date) - new Date(b.date));
+    const firstWorkout = new Date(sortedWorkouts[0].date);
+    const daysSinceFirst = Math.max(1, Math.ceil((today - firstWorkout) / (1000 * 60 * 60 * 24)));
+    const weeksSinceFirst = Math.max(1, daysSinceFirst / 7);
+    const avgPerWeek = Math.round(data.workouts.length / weeksSinceFirst * 10) / 10;
+
+    // Calculate streaks
+    const { currentStreak, longestStreak } = calculateStreaks(data.workouts);
+
+    return { thisWeek, thisMonth, avgPerWeek, currentStreak, longestStreak };
+}
+
+// Calculate workout streaks
+function calculateStreaks(workouts) {
+    if (workouts.length === 0) return { currentStreak: 0, longestStreak: 0 };
+
+    const dates = workouts.map(w => w.date).sort();
+    const uniqueDates = [...new Set(dates)];
+
+    let currentStreak = 0;
+    let longestStreak = 0;
+    let tempStreak = 1;
+
+    const today = getTodayStr();
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+    // Check if last workout was today or yesterday for current streak
+    const lastWorkoutDate = uniqueDates[uniqueDates.length - 1];
+    const isActive = lastWorkoutDate === today || lastWorkoutDate === yesterdayStr;
+
+    for (let i = 1; i < uniqueDates.length; i++) {
+        const prevDate = new Date(uniqueDates[i - 1]);
+        const currDate = new Date(uniqueDates[i]);
+        const diffDays = Math.round((currDate - prevDate) / (1000 * 60 * 60 * 24));
+
+        if (diffDays === 1) {
+            tempStreak++;
+        } else {
+            longestStreak = Math.max(longestStreak, tempStreak);
+            tempStreak = 1;
+        }
+    }
+
+    longestStreak = Math.max(longestStreak, tempStreak);
+
+    if (isActive) {
+        // Count back from last workout to find current streak
+        currentStreak = 1;
+        for (let i = uniqueDates.length - 2; i >= 0; i--) {
+            const prevDate = new Date(uniqueDates[i]);
+            const currDate = new Date(uniqueDates[i + 1]);
+            const diffDays = Math.round((currDate - prevDate) / (1000 * 60 * 60 * 24));
+            if (diffDays === 1) {
+                currentStreak++;
+            } else {
+                break;
+            }
+        }
+    }
+
+    return { currentStreak, longestStreak };
+}
+
+// Get weekly summary (last 4 weeks)
+export function getWeeklySummary(data) {
+    const weeks = [];
+    const today = new Date();
+
+    for (let i = 0; i < 4; i++) {
+        const weekEnd = new Date(today);
+        weekEnd.setDate(today.getDate() - (i * 7));
+        const weekStart = new Date(weekEnd);
+        weekStart.setDate(weekEnd.getDate() - 6);
+
+        const weekWorkouts = data.workouts.filter(w => {
+            const d = new Date(w.date);
+            return d >= weekStart && d <= weekEnd;
+        });
+
+        let volume = 0;
+        let sets = 0;
+        for (const workout of weekWorkouts) {
+            for (const exercise of workout.exercises) {
+                sets += exercise.sets.length;
+                for (const set of exercise.sets) {
+                    volume += set.reps * set.weight;
+                }
+            }
+        }
+
+        weeks.push({
+            label: i === 0 ? 'This Week' : i === 1 ? 'Last Week' : `${i} Weeks Ago`,
+            workouts: weekWorkouts.length,
+            volume: Math.round(volume),
+            sets
+        });
+    }
+
+    return weeks;
+}
+
+// Calculate estimated 1RM using Epley formula
+export function calculateEstimated1RM(weight, reps) {
+    if (reps === 1) return weight;
+    if (reps === 0 || weight === 0) return 0;
+    return Math.round(weight * (1 + reps / 30));
+}
+
+// Get estimated 1RMs for all exercises
+export function getEstimated1RMs(data) {
+    const e1rms = {};
+
+    for (const workout of data.workouts) {
+        for (const exercise of workout.exercises) {
+            for (const set of exercise.sets) {
+                const e1rm = calculateEstimated1RM(set.weight, set.reps);
+
+                if (!e1rms[exercise.name] || e1rm > e1rms[exercise.name].value) {
+                    e1rms[exercise.name] = {
+                        value: e1rm,
+                        date: workout.date,
+                        basedOn: { weight: set.weight, reps: set.reps }
+                    };
+                }
+            }
+        }
+    }
+
+    return e1rms;
+}
+
+// Get muscle group distribution
+export function getMuscleGroupStats(data) {
+    const muscleGroups = {
+        'Chest': ['Bench Press', 'Incline Bench Press', 'Dumbbell Bench Press'],
+        'Back': ['Barbell Row', 'Lat Pulldown', 'Seated Cable Row', 'Pull-ups', 'Chin-ups', 'Face Pulls'],
+        'Shoulders': ['Overhead Press', 'Lateral Raises'],
+        'Legs': ['Squat', 'Front Squat', 'Deadlift', 'Romanian Deadlift', 'Leg Press', 'Leg Extension', 'Leg Curl', 'Lunges', 'Bulgarian Split Squat', 'Calf Raises'],
+        'Arms': ['Bicep Curls', 'Hammer Curls', 'Tricep Extensions', 'Tricep Pushdown', 'Skull Crushers'],
+        'Core': ['Plank', 'Ab Wheel Rollout']
+    };
+
+    const stats = {};
+    for (const group of Object.keys(muscleGroups)) {
+        stats[group] = { sets: 0, volume: 0 };
+    }
+    stats['Other'] = { sets: 0, volume: 0 };
+
+    for (const workout of data.workouts) {
+        for (const exercise of workout.exercises) {
+            let found = false;
+            for (const [group, exercises] of Object.entries(muscleGroups)) {
+                if (exercises.includes(exercise.name)) {
+                    stats[group].sets += exercise.sets.length;
+                    stats[group].volume += exercise.sets.reduce((sum, s) => sum + s.reps * s.weight, 0);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                stats['Other'].sets += exercise.sets.length;
+                stats['Other'].volume += exercise.sets.reduce((sum, s) => sum + s.reps * s.weight, 0);
+            }
+        }
+    }
+
+    return stats;
+}
