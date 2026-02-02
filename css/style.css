@@ -201,10 +201,10 @@ body {
     -webkit-backdrop-filter: blur(12px);
     border-top: 1px solid var(--border-color);
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     align-items: center;
     z-index: 100;
-    padding: 0 var(--spacing-sm);
+    padding: 0 var(--spacing-xs);
 }
 
 .nav-btn {
@@ -214,11 +214,12 @@ body {
     justify-content: center;
     background: none;
     border: none;
-    padding: var(--spacing-sm) var(--spacing-md);
+    padding: var(--spacing-xs) var(--spacing-xs);
     cursor: pointer;
     color: var(--text-tertiary);
     transition: all 0.2s ease;
     flex: 1;
+    min-width: 0;
     border-radius: var(--radius);
     position: relative;
 }
@@ -226,19 +227,19 @@ body {
 .nav-btn.active {
     color: var(--mint);
     background: var(--primary-muted);
-    box-shadow: 0 0 10px rgba(209, 255, 198, 0.2);
 }
 
 .nav-icon {
-    font-size: 1.25rem;
-    margin-bottom: 4px;
+    font-size: 1.2rem;
+    margin-bottom: 2px;
 }
 
 .nav-label {
-    font-size: 0.7rem;
+    font-size: 0.6rem;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0;
+    white-space: nowrap;
 }
 
 /* Exercise List */
