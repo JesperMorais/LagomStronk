@@ -592,6 +592,38 @@ body {
     margin-bottom: var(--spacing-md);
 }
 
+/* Empty Progress State */
+.empty-progress-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: var(--spacing-xl);
+    background-color: var(--card-background);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+}
+
+.empty-progress-state .empty-state-icon {
+    font-size: 4rem;
+    margin-bottom: var(--spacing-md);
+}
+
+.empty-progress-state h3 {
+    font-size: 1.25rem;
+    margin-bottom: var(--spacing-sm);
+    color: var(--text-primary);
+}
+
+.empty-progress-state p {
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.empty-progress-state .empty-state-hint {
+    font-size: 0.875rem;
+    color: var(--primary-color);
+    margin-top: var(--spacing-md);
+}
+
 /* Stats & Analytics */
 .stats-section {
     margin-bottom: var(--spacing-lg);
