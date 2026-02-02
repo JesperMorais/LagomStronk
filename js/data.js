@@ -673,3 +673,17 @@ export function getMuscleGroupStats(data) {
 
     return stats;
 }
+
+// Get most recent first set for an exercise (for auto-fill)
+export function getMostRecentExerciseFirstSet(data, exerciseName) {
+    const history = getExerciseHistory(data, exerciseName);
+    if (history.length === 0) return null;
+
+    const mostRecent = history[history.length - 1]; // Last item = most recent
+    if (!mostRecent.sets || mostRecent.sets.length === 0) return null;
+
+    return {
+        reps: mostRecent.sets[0].reps,
+        weight: mostRecent.sets[0].weight
+    };
+}
