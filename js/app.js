@@ -9,7 +9,13 @@ import {
     addCustomExercise,
     removeExerciseFromLibrary,
     getWorkoutsSorted,
-    getUsedExercises
+    getUsedExercises,
+    getWorkoutTemplates,
+    getWorkoutTemplateById,
+    addWorkoutTemplate,
+    deleteWorkoutTemplate,
+    applyWorkoutTemplate,
+    saveWorkoutAsTemplate
 } from './data.js';
 
 import {
@@ -28,7 +34,8 @@ const views = {
     today: document.getElementById('today-view'),
     history: document.getElementById('history-view'),
     progress: document.getElementById('progress-view'),
-    library: document.getElementById('library-view')
+    library: document.getElementById('library-view'),
+    workouts: document.getElementById('workouts-view')
 };
 
 const navButtons = document.querySelectorAll('.nav-btn');
@@ -42,6 +49,13 @@ const exerciseSelectEl = document.getElementById('exercise-select');
 const exerciseModal = document.getElementById('exercise-modal');
 const customExerciseModal = document.getElementById('custom-exercise-modal');
 const workoutModal = document.getElementById('workout-modal');
+const createTemplateModal = document.getElementById('create-template-modal');
+const viewTemplateModal = document.getElementById('view-template-modal');
+const saveTemplateModal = document.getElementById('save-template-modal');
+
+// Workout templates state
+let editingTemplateId = null;
+let viewingTemplateId = null;
 
 // Initialize app
 function init() {
@@ -89,6 +103,9 @@ function switchView(viewName) {
         case 'library':
             renderLibraryView();
             break;
+        case 'workouts':
+            renderWorkoutsView();
+            break;
     }
 }
 
@@ -131,13 +148,31 @@ function setupEventListeners() {
     });
 
     // Close modals on background click
-    [exerciseModal, customExerciseModal, workoutModal].forEach(modal => {
+    [exerciseModal, customExerciseModal, workoutModal, createTemplateModal, viewTemplateModal, saveTemplateModal].forEach(modal => {
         modal.addEventListener('click', (e) => {
             if (e.target === modal) {
                 modal.classList.remove('active');
             }
         });
     });
+
+    // Create template modal
+    document.getElementById('create-workout-btn').addEventListener('click', openCreateTemplateModal);
+    document.getElementById('close-create-template-modal').addEventListener('click', closeCreateTemplateModal);
+    document.getElementById('cancel-template').addEventListener('click', closeCreateTemplateModal);
+    document.getElementById('save-template').addEventListener('click', saveTemplate);
+    document.getElementById('add-template-exercise-btn').addEventListener('click', addTemplateExerciseRow);
+
+    // View template modal
+    document.getElementById('close-view-template-modal').addEventListener('click', closeViewTemplateModal);
+    document.getElementById('close-template-btn').addEventListener('click', closeViewTemplateModal);
+    document.getElementById('start-template-btn').addEventListener('click', startTemplateWorkout);
+
+    // Save as template modal
+    document.getElementById('save-today-as-template-btn').addEventListener('click', openSaveTemplateModal);
+    document.getElementById('close-save-template-modal').addEventListener('click', closeSaveTemplateModal);
+    document.getElementById('cancel-save-template').addEventListener('click', closeSaveTemplateModal);
+    document.getElementById('confirm-save-template').addEventListener('click', confirmSaveAsTemplate);
 }
 
 // Render today's workout
@@ -453,6 +488,220 @@ window.viewWorkout = function(dateStr) {
 // Close workout modal
 function closeWorkoutModal() {
     workoutModal.classList.remove('active');
+}
+
+// ========== WORKOUT TEMPLATES ==========
+
+// Render workouts view
+function renderWorkoutsView() {
+    const templates = getWorkoutTemplates(appData);
+    const templatesListEl = document.getElementById('workout-templates-list');
+
+    if (templates.length === 0) {
+        templatesListEl.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">📋</div>
+                <p>No workout templates yet.</p>
+                <p>Create a new workout or save today's workout as a template!</p>
+            </div>
+        `;
+        return;
+    }
+
+    // Separate default and custom templates
+    const defaultTemplates = templates.filter(t => t.isDefault);
+    const customTemplates = templates.filter(t => !t.isDefault);
+
+    let html = '';
+
+    if (customTemplates.length > 0) {
+        html += '<h3 style="margin-bottom: var(--spacing-sm); color: var(--text-secondary);">My Workouts</h3>';
+        html += customTemplates.map(template => renderTemplateCard(template)).join('');
+        html += '<div style="margin-top: var(--spacing-lg);"></div>';
+    }
+
+    if (defaultTemplates.length > 0) {
+        html += '<h3 style="margin-bottom: var(--spacing-sm); color: var(--text-secondary);">Preset Workouts</h3>';
+        html += defaultTemplates.map(template => renderTemplateCard(template)).join('');
+    }
+
+    templatesListEl.innerHTML = html;
+}
+
+// Render a single template card
+function renderTemplateCard(template) {
+    const exerciseNames = template.exercises.map(e => e.name).join(', ');
+    const totalSets = template.exercises.reduce((sum, e) => sum + e.sets, 0);
+
+    return `
+        <div class="template-card" onclick="viewTemplate('${template.id}')">
+            <div class="template-card-header">
+                <span class="template-card-name">${template.name}</span>
+                <span class="template-card-badge ${template.isDefault ? '' : 'custom'}">${template.isDefault ? 'Preset' : 'Custom'}</span>
+            </div>
+            <div class="template-card-exercises">${exerciseNames}</div>
+            <div class="template-card-summary">${template.exercises.length} exercises • ${totalSets} sets</div>
+        </div>
+    `;
+}
+
+// Open create template modal
+function openCreateTemplateModal() {
+    editingTemplateId = null;
+    document.getElementById('template-name').value = '';
+    document.getElementById('create-template-title').textContent = 'Create Workout';
+    const exercisesList = document.getElementById('template-exercises-list');
+    exercisesList.innerHTML = '';
+
+    // Add initial exercise row
+    addTemplateExerciseRow();
+
+    createTemplateModal.classList.add('active');
+}
+
+// Close create template modal
+function closeCreateTemplateModal() {
+    createTemplateModal.classList.remove('active');
+    editingTemplateId = null;
+}
+
+// Add exercise row to template modal
+function addTemplateExerciseRow() {
+    const exercisesList = document.getElementById('template-exercises-list');
+
+    const row = document.createElement('div');
+    row.className = 'template-exercise-row';
+    row.innerHTML = `
+        <select class="select-input template-ex-name">
+            ${appData.exerciseLibrary.map(ex => `<option value="${ex}">${ex}</option>`).join('')}
+        </select>
+        <label>Sets</label>
+        <input type="number" class="number-input template-ex-sets" value="3" min="1" max="10">
+        <label>Reps</label>
+        <input type="number" class="number-input template-ex-reps" value="10" min="1" max="100">
+        <button class="btn-icon" onclick="removeTemplateExerciseRow(this)" title="Remove">✕</button>
+    `;
+
+    exercisesList.appendChild(row);
+}
+
+// Remove exercise row from template
+window.removeTemplateExerciseRow = function(btn) {
+    btn.closest('.template-exercise-row').remove();
+};
+
+// Save template
+function saveTemplate() {
+    const name = document.getElementById('template-name').value.trim();
+    if (!name) {
+        alert('Please enter a workout name.');
+        return;
+    }
+
+    const exercisesList = document.getElementById('template-exercises-list');
+    const rows = exercisesList.querySelectorAll('.template-exercise-row');
+
+    if (rows.length === 0) {
+        alert('Please add at least one exercise.');
+        return;
+    }
+
+    const exercises = Array.from(rows).map(row => ({
+        name: row.querySelector('.template-ex-name').value,
+        sets: parseInt(row.querySelector('.template-ex-sets').value) || 3,
+        reps: parseInt(row.querySelector('.template-ex-reps').value) || 10
+    }));
+
+    appData = addWorkoutTemplate(appData, { name, exercises });
+    closeCreateTemplateModal();
+    renderWorkoutsView();
+}
+
+// View template
+window.viewTemplate = function(templateId) {
+    const template = getWorkoutTemplateById(appData, templateId);
+    if (!template) return;
+
+    viewingTemplateId = templateId;
+
+    document.getElementById('view-template-title').textContent = template.name;
+
+    const body = document.getElementById('view-template-body');
+    body.innerHTML = template.exercises.map(ex => `
+        <div class="template-detail-exercise">
+            <span class="template-detail-name">${ex.name}</span>
+            <span class="template-detail-info">${ex.sets} sets × ${ex.reps} reps</span>
+        </div>
+    `).join('');
+
+    // Add delete button for custom templates
+    const footer = viewTemplateModal.querySelector('.modal-footer');
+    const existingDeleteBtn = footer.querySelector('.btn-danger');
+    if (existingDeleteBtn) existingDeleteBtn.remove();
+
+    if (!template.isDefault) {
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'btn btn-danger';
+        deleteBtn.textContent = 'Delete';
+        deleteBtn.onclick = () => deleteTemplate(templateId);
+        footer.insertBefore(deleteBtn, footer.firstChild);
+    }
+
+    viewTemplateModal.classList.add('active');
+};
+
+// Close view template modal
+function closeViewTemplateModal() {
+    viewTemplateModal.classList.remove('active');
+    viewingTemplateId = null;
+}
+
+// Start workout from template
+function startTemplateWorkout() {
+    if (!viewingTemplateId) return;
+
+    appData = applyWorkoutTemplate(appData, currentDate, viewingTemplateId);
+    closeViewTemplateModal();
+    switchView('today');
+}
+
+// Delete template
+function deleteTemplate(templateId) {
+    if (confirm('Delete this workout template?')) {
+        appData = deleteWorkoutTemplate(appData, templateId);
+        closeViewTemplateModal();
+        renderWorkoutsView();
+    }
+}
+
+// Open save as template modal
+function openSaveTemplateModal() {
+    const workout = getWorkoutByDate(appData, currentDate);
+    if (!workout || workout.exercises.length === 0) {
+        alert('No exercises to save. Add some exercises first!');
+        return;
+    }
+
+    document.getElementById('save-template-name').value = '';
+    saveTemplateModal.classList.add('active');
+}
+
+// Close save as template modal
+function closeSaveTemplateModal() {
+    saveTemplateModal.classList.remove('active');
+}
+
+// Confirm save as template
+function confirmSaveAsTemplate() {
+    const name = document.getElementById('save-template-name').value.trim();
+    if (!name) {
+        alert('Please enter a template name.');
+        return;
+    }
+
+    appData = saveWorkoutAsTemplate(appData, currentDate, name);
+    closeSaveTemplateModal();
+    alert('Workout saved as template!');
 }
 
 // Initialize the app

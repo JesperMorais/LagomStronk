@@ -508,6 +508,129 @@ body {
     margin-bottom: var(--spacing-md);
 }
 
+/* Workouts View */
+.workouts-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+}
+
+.workouts-actions .btn {
+    flex: 1;
+}
+
+.templates-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.template-card {
+    background-color: var(--card-background);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-md);
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: box-shadow 0.2s, transform 0.1s;
+}
+
+.template-card:hover {
+    box-shadow: var(--shadow-lg);
+}
+
+.template-card:active {
+    transform: scale(0.99);
+}
+
+.template-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-sm);
+}
+
+.template-card-name {
+    font-weight: 600;
+    font-size: 1.125rem;
+}
+
+.template-card-badge {
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    border-radius: var(--radius);
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.template-card-badge.custom {
+    background-color: var(--success-color);
+}
+
+.template-card-exercises {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.template-card-summary {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin-top: var(--spacing-xs);
+}
+
+/* Template exercises list in modal */
+.template-exercises-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-sm);
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.template-exercise-row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm);
+    background-color: var(--background-color);
+    border-radius: var(--radius);
+}
+
+.template-exercise-row select {
+    flex: 2;
+}
+
+.template-exercise-row .number-input {
+    width: 60px;
+}
+
+.template-exercise-row label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+/* View template modal */
+.template-detail-exercise {
+    padding: var(--spacing-sm) 0;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.template-detail-exercise:last-child {
+    border-bottom: none;
+}
+
+.template-detail-name {
+    font-weight: 500;
+}
+
+.template-detail-info {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
 /* Responsive adjustments for larger screens */
 @media (min-width: 481px) {
     .modal-content {

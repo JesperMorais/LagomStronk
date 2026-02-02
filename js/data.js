@@ -30,13 +30,79 @@ const DEFAULT_EXERCISES = [
     'Ab Wheel Rollout'
 ];
 
+// Default workout templates
+const DEFAULT_WORKOUT_TEMPLATES = [
+    {
+        id: 'push-day',
+        name: 'Push Day',
+        isDefault: true,
+        exercises: [
+            { name: 'Bench Press', sets: 4, reps: 8 },
+            { name: 'Overhead Press', sets: 3, reps: 10 },
+            { name: 'Incline Bench Press', sets: 3, reps: 10 },
+            { name: 'Lateral Raises', sets: 3, reps: 15 },
+            { name: 'Tricep Pushdown', sets: 3, reps: 12 }
+        ]
+    },
+    {
+        id: 'pull-day',
+        name: 'Pull Day',
+        isDefault: true,
+        exercises: [
+            { name: 'Deadlift', sets: 4, reps: 5 },
+            { name: 'Barbell Row', sets: 4, reps: 8 },
+            { name: 'Lat Pulldown', sets: 3, reps: 10 },
+            { name: 'Face Pulls', sets: 3, reps: 15 },
+            { name: 'Bicep Curls', sets: 3, reps: 12 }
+        ]
+    },
+    {
+        id: 'leg-day',
+        name: 'Leg Day',
+        isDefault: true,
+        exercises: [
+            { name: 'Squat', sets: 4, reps: 6 },
+            { name: 'Romanian Deadlift', sets: 3, reps: 10 },
+            { name: 'Leg Press', sets: 3, reps: 12 },
+            { name: 'Leg Curl', sets: 3, reps: 12 },
+            { name: 'Calf Raises', sets: 4, reps: 15 }
+        ]
+    },
+    {
+        id: 'upper-body',
+        name: 'Upper Body',
+        isDefault: true,
+        exercises: [
+            { name: 'Bench Press', sets: 4, reps: 8 },
+            { name: 'Barbell Row', sets: 4, reps: 8 },
+            { name: 'Overhead Press', sets: 3, reps: 10 },
+            { name: 'Lat Pulldown', sets: 3, reps: 10 },
+            { name: 'Bicep Curls', sets: 2, reps: 12 },
+            { name: 'Tricep Extensions', sets: 2, reps: 12 }
+        ]
+    },
+    {
+        id: 'full-body',
+        name: 'Full Body',
+        isDefault: true,
+        exercises: [
+            { name: 'Squat', sets: 3, reps: 8 },
+            { name: 'Bench Press', sets: 3, reps: 8 },
+            { name: 'Barbell Row', sets: 3, reps: 8 },
+            { name: 'Overhead Press', sets: 3, reps: 10 },
+            { name: 'Romanian Deadlift', sets: 3, reps: 10 }
+        ]
+    }
+];
+
 const STORAGE_KEY = 'lagomstronk_data';
 
 // Initialize data structure
 function getDefaultData() {
     return {
         workouts: [],
-        exerciseLibrary: [...DEFAULT_EXERCISES]
+        exerciseLibrary: [...DEFAULT_EXERCISES],
+        workoutTemplates: [...DEFAULT_WORKOUT_TEMPLATES]
     };
 }
 
@@ -53,6 +119,10 @@ export function loadData() {
             // Ensure workouts array exists
             if (!data.workouts) {
                 data.workouts = [];
+            }
+            // Ensure workoutTemplates exists
+            if (!data.workoutTemplates) {
+                data.workoutTemplates = [...DEFAULT_WORKOUT_TEMPLATES];
             }
             return data;
         }
@@ -241,4 +311,96 @@ export function formatDate(dateStr) {
 export function getTodayStr() {
     const today = new Date();
     return today.toISOString().split('T')[0];
+}
+
+// Get all workout templates
+export function getWorkoutTemplates(data) {
+    return data.workoutTemplates || [];
+}
+
+// Get workout template by ID
+export function getWorkoutTemplateById(data, templateId) {
+    return data.workoutTemplates.find(t => t.id === templateId);
+}
+
+// Add a custom workout template
+export function addWorkoutTemplate(data, template) {
+    const newTemplate = {
+        id: generateId(),
+        name: template.name.trim(),
+        isDefault: false,
+        exercises: template.exercises
+    };
+    data.workoutTemplates.push(newTemplate);
+    saveData(data);
+    return data;
+}
+
+// Update a workout template
+export function updateWorkoutTemplate(data, templateId, updates) {
+    const index = data.workoutTemplates.findIndex(t => t.id === templateId);
+    if (index >= 0) {
+        data.workoutTemplates[index] = {
+            ...data.workoutTemplates[index],
+            ...updates
+        };
+        saveData(data);
+    }
+    return data;
+}
+
+// Delete a workout template
+export function deleteWorkoutTemplate(data, templateId) {
+    const index = data.workoutTemplates.findIndex(t => t.id === templateId);
+    if (index >= 0) {
+        data.workoutTemplates.splice(index, 1);
+        saveData(data);
+    }
+    return data;
+}
+
+// Apply workout template to today's workout
+export function applyWorkoutTemplate(data, dateStr, templateId, defaultWeight = 20) {
+    const template = getWorkoutTemplateById(data, templateId);
+    if (!template) return data;
+
+    // Convert template exercises to workout exercises with actual sets
+    const exercises = template.exercises.map(templateEx => ({
+        name: templateEx.name,
+        sets: Array(templateEx.sets).fill(null).map(() => ({
+            reps: templateEx.reps,
+            weight: defaultWeight
+        }))
+    }));
+
+    // Add each exercise to the workout
+    for (const exercise of exercises) {
+        data = addExerciseToWorkout(data, dateStr, exercise);
+    }
+
+    return data;
+}
+
+// Save current workout as a template
+export function saveWorkoutAsTemplate(data, dateStr, templateName) {
+    const workout = getWorkoutByDate(data, dateStr);
+    if (!workout || workout.exercises.length === 0) return data;
+
+    // Convert workout exercises to template format
+    const templateExercises = workout.exercises.map(ex => ({
+        name: ex.name,
+        sets: ex.sets.length,
+        reps: ex.sets.length > 0 ? ex.sets[0].reps : 10
+    }));
+
+    const newTemplate = {
+        id: generateId(),
+        name: templateName.trim(),
+        isDefault: false,
+        exercises: templateExercises
+    };
+
+    data.workoutTemplates.push(newTemplate);
+    saveData(data);
+    return data;
 }
