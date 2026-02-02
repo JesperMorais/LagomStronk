@@ -24,8 +24,8 @@ export function updateProgressChart(data, exerciseName) {
                 datasets: [{
                     label: 'Max Weight (kg)',
                     data: [],
-                    borderColor: '#4f46e5',
-                    backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                    borderColor: '#818cf8',
+                    backgroundColor: 'rgba(129, 140, 248, 0.2)',
                     tension: 0.3,
                     fill: true
                 }]
@@ -45,11 +45,11 @@ export function updateProgressChart(data, exerciseName) {
             datasets: [{
                 label: 'Max Weight (kg)',
                 data: weights,
-                borderColor: '#4f46e5',
-                backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                borderColor: '#818cf8',
+                backgroundColor: 'rgba(129, 140, 248, 0.2)',
                 tension: 0.3,
                 fill: true,
-                pointBackgroundColor: '#4f46e5',
+                pointBackgroundColor: '#818cf8',
                 pointRadius: 4,
                 pointHoverRadius: 6
             }]
@@ -78,8 +78,8 @@ export function updateVolumeChart(data) {
                 datasets: [{
                     label: 'Total Volume (kg)',
                     data: [],
-                    backgroundColor: 'rgba(16, 185, 129, 0.7)',
-                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(52, 211, 153, 0.7)',
+                    borderColor: '#34d399',
                     borderWidth: 1
                 }]
             },
@@ -107,7 +107,7 @@ export function updateVolumeChart(data) {
     });
 }
 
-// Common chart options
+// Common chart options - Dark mode
 function getChartOptions(title) {
     return {
         responsive: true,
@@ -123,7 +123,7 @@ function getChartOptions(title) {
                     size: 14,
                     weight: '500'
                 },
-                color: '#6b7280'
+                color: '#9ca3af'
             }
         },
         scales: {
@@ -136,13 +136,17 @@ function getChartOptions(title) {
                     minRotation: 45,
                     font: {
                         size: 10
-                    }
+                    },
+                    color: '#9ca3af'
                 }
             },
             y: {
                 beginAtZero: true,
                 grid: {
-                    color: 'rgba(0, 0, 0, 0.05)'
+                    color: 'rgba(255, 255, 255, 0.1)'
+                },
+                ticks: {
+                    color: '#9ca3af'
                 }
             }
         }

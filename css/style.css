@@ -1,17 +1,17 @@
-/* CSS Variables */
+/* CSS Variables - Dark Mode */
 :root {
-    --primary-color: #4f46e5;
-    --primary-hover: #4338ca;
-    --secondary-color: #6b7280;
-    --success-color: #10b981;
-    --danger-color: #ef4444;
-    --background-color: #f3f4f6;
-    --card-background: #ffffff;
-    --text-primary: #1f2937;
-    --text-secondary: #6b7280;
-    --border-color: #e5e7eb;
-    --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --primary-color: #6366f1;
+    --primary-hover: #818cf8;
+    --secondary-color: #9ca3af;
+    --success-color: #34d399;
+    --danger-color: #f87171;
+    --background-color: #111827;
+    --card-background: #1f2937;
+    --text-primary: #f9fafb;
+    --text-secondary: #9ca3af;
+    --border-color: #374151;
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.4);
     --radius: 8px;
     --radius-lg: 12px;
     --spacing-xs: 4px;
@@ -130,7 +130,7 @@ body {
 }
 
 .btn-secondary:hover {
-    background-color: #d1d5db;
+    background-color: #4b5563;
 }
 
 .btn-danger {
@@ -363,7 +363,13 @@ body {
 .select-input:focus {
     outline: none;
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+.text-input,
+.select-input,
+.number-input {
+    color: var(--text-primary);
 }
 
 .number-input {
@@ -373,6 +379,7 @@ body {
     border-radius: var(--radius);
     font-size: 1rem;
     text-align: center;
+    background-color: var(--card-background);
 }
 
 /* Sets Container */
@@ -393,7 +400,7 @@ body {
     align-items: center;
     gap: var(--spacing-sm);
     padding: var(--spacing-sm);
-    background-color: var(--background-color);
+    background-color: #374151;
     border-radius: var(--radius);
 }
 
