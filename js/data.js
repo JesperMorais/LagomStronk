@@ -596,11 +596,14 @@ export function getWeeklySummary(data) {
     return weeks;
 }
 
-// Calculate estimated 1RM using Epley formula
+// Calculate estimated 1RM using Brzycki formula (better for low reps 4-6)
+// Brzycki: weight * (36 / (37 - reps))
+// More accurate than Epley for rep ranges under 10
 export function calculateEstimated1RM(weight, reps) {
     if (reps === 1) return weight;
     if (reps === 0 || weight === 0) return 0;
-    return Math.round(weight * (1 + reps / 30));
+    if (reps >= 37) return weight; // Formula breaks at 37+ reps
+    return Math.round(weight * (36 / (37 - reps)));
 }
 
 // Get estimated 1RMs for all exercises
