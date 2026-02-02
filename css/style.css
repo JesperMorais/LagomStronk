@@ -101,6 +101,28 @@ body {
     background-clip: text;
 }
 
+.header-btn {
+    position: absolute;
+    right: var(--spacing-md);
+    background-color: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius);
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.header-btn:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.header-btn.hidden {
+    display: none;
+}
+
 /* Main Content */
 .main-content {
     padding: var(--spacing-md);
@@ -1008,5 +1030,111 @@ body {
 
     .modal {
         align-items: center;
+    }
+}
+
+/* PWA & Offline Support */
+.update-notification {
+    position: fixed;
+    bottom: calc(var(--nav-height) + var(--spacing-md));
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--primary-color);
+    color: white;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    z-index: 300;
+    animation: slideUp 0.3s ease;
+}
+
+.update-notification button {
+    background-color: white;
+    color: var(--primary-color);
+    border: none;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* Offline indicator */
+body.offline::before {
+    content: 'Offline';
+    position: fixed;
+    top: var(--header-height);
+    left: 0;
+    right: 0;
+    background-color: var(--danger-color);
+    color: white;
+    text-align: center;
+    padding: var(--spacing-xs);
+    font-size: 0.75rem;
+    font-weight: 500;
+    z-index: 150;
+}
+
+body.offline .main-content {
+    padding-top: calc(var(--spacing-md) + 24px);
+}
+
+/* Install Instructions */
+.install-instructions {
+    text-align: left;
+}
+
+.install-intro {
+    text-align: center;
+    margin-bottom: var(--spacing-lg);
+    color: var(--text-secondary);
+}
+
+.install-section {
+    margin-bottom: var(--spacing-lg);
+    padding: var(--spacing-md);
+    background-color: var(--background-color);
+    border-radius: var(--radius);
+}
+
+.install-section h4 {
+    margin-bottom: var(--spacing-sm);
+    color: var(--primary-color);
+    font-size: 1rem;
+}
+
+.install-section ol {
+    margin: 0;
+    padding-left: var(--spacing-lg);
+}
+
+.install-section li {
+    margin-bottom: var(--spacing-xs);
+    line-height: 1.6;
+}
+
+.install-section li strong {
+    color: var(--text-primary);
+}
+
+.install-benefit {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) 0;
+    color: var(--text-secondary);
+}
+
+.benefit-icon {
+    color: var(--success-color);
+    font-weight: bold;
+}
+
+/* Hide install button when app is installed */
+@media (display-mode: standalone) {
+    .header-btn#install-btn {
+        display: none;
     }
 }
