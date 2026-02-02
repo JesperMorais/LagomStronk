@@ -1,19 +1,46 @@
-/* CSS Variables - Mint Dark Mode */
+/* CSS Variables - David Stenman AB Design Tokens */
 :root {
-    --primary-color: #2dd4bf;
-    --primary-hover: #5eead4;
-    --primary-muted: rgba(45, 212, 191, 0.15);
-    --secondary-color: #64748b;
-    --success-color: #2dd4bf;
-    --danger-color: #fb7185;
-    --background-color: #0a0a0a;
-    --card-background: #141414;
-    --text-primary: #fafafa;
-    --text-secondary: #a1a1aa;
-    --border-color: #262626;
+    /* Primary Mint */
+    --mint: #D1FFC6;
+    --mint-dark: #86efac;
+    --primary-color: #D1FFC6;
+    --primary-hover: #86efac;
+    --primary-muted: rgba(209, 255, 198, 0.15);
+
+    /* Backgrounds */
+    --background-color: #0f1419;
+    --bg-indigo: #1a1f35;
+    --bg-slate: #1e2a38;
+    --bg-teal: #182025;
+    --card-background: #232C33;
+    --card-hover: #2a353e;
+
+    /* Accents */
+    --indigo: #818cf8;
+    --violet: #8b5cf6;
+    --amber: #fbbf24;
+    --orange: #f97316;
+    --danger-color: #f87171;
+    --success-color: #D1FFC6;
+
+    /* Text */
+    --text-primary: #ffffff;
+    --text-secondary: #e5e7eb;
+    --text-tertiary: #9ca3af;
+    --text-muted: #6b7280;
+
+    /* Borders */
+    --border-color: rgba(255, 255, 255, 0.1);
+    --border-mint: rgba(209, 255, 198, 0.2);
+    --border-mint-strong: rgba(209, 255, 198, 0.3);
+
+    /* Shadows */
     --shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
     --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
-    --glow: 0 0 20px rgba(45, 212, 191, 0.15);
+    --glow: 0 4px 25px rgba(209, 255, 198, 0.35);
+    --glow-soft: 0 0 30px rgba(209, 255, 198, 0.15);
+
+    /* Spacing & Radius */
     --radius: 12px;
     --radius-lg: 16px;
     --spacing-xs: 4px;
@@ -34,7 +61,8 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-    background-color: var(--background-color);
+    background: linear-gradient(135deg, #0f1419 0%, #1a1f35 25%, #1e2a38 50%, #182025 75%, #0f1419 100%);
+    background-attachment: fixed;
     color: var(--text-primary);
     line-height: 1.5;
     min-height: 100vh;
@@ -45,7 +73,6 @@ body {
     max-width: 480px;
     margin: 0 auto;
     min-height: 100vh;
-    background-color: var(--background-color);
     position: relative;
 }
 
@@ -123,28 +150,30 @@ body {
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, var(--primary-color), #14b8a6);
-    color: #0a0a0a;
+    background: linear-gradient(135deg, var(--mint), var(--mint-dark));
+    color: #0f1419;
     box-shadow: var(--glow);
 }
 
 .btn-primary:hover {
-    background: linear-gradient(135deg, var(--primary-hover), #2dd4bf);
-    box-shadow: 0 0 30px rgba(45, 212, 191, 0.25);
+    background: linear-gradient(135deg, var(--mint-dark), var(--mint));
+    box-shadow: 0 4px 30px rgba(209, 255, 198, 0.45);
 }
 
 .btn-secondary {
-    background-color: var(--border-color);
-    color: var(--text-primary);
+    background-color: var(--card-background);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
 }
 
 .btn-secondary:hover {
-    background-color: #333333;
+    background-color: var(--card-hover);
+    border-color: var(--border-mint);
 }
 
 .btn-danger {
     background-color: var(--danger-color);
-    color: #0a0a0a;
+    color: #0f1419;
 }
 
 .btn-small {
@@ -167,9 +196,9 @@ body {
     width: 100%;
     max-width: 480px;
     height: var(--nav-height);
-    background-color: rgba(20, 20, 20, 0.95);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    background-color: rgba(35, 44, 51, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border-top: 1px solid var(--border-color);
     display: flex;
     justify-content: space-around;
@@ -187,7 +216,7 @@ body {
     border: none;
     padding: var(--spacing-sm) var(--spacing-md);
     cursor: pointer;
-    color: var(--text-secondary);
+    color: var(--text-tertiary);
     transition: all 0.2s ease;
     flex: 1;
     border-radius: var(--radius);
@@ -195,8 +224,9 @@ body {
 }
 
 .nav-btn.active {
-    color: var(--primary-color);
+    color: var(--mint);
     background: var(--primary-muted);
+    box-shadow: 0 0 10px rgba(209, 255, 198, 0.2);
 }
 
 .nav-icon {
@@ -220,15 +250,18 @@ body {
 
 /* Exercise Card */
 .exercise-card {
-    background-color: var(--card-background);
+    background-color: rgba(35, 44, 51, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-lg);
     padding: var(--spacing-md);
-    transition: border-color 0.2s ease;
+    transition: all 0.2s ease;
 }
 
 .exercise-card:hover {
-    border-color: var(--primary-color);
+    border-color: var(--border-mint);
+    box-shadow: var(--glow-soft);
 }
 
 .exercise-card-header {
@@ -241,7 +274,7 @@ body {
 .exercise-card-title {
     font-size: 1.125rem;
     font-weight: 600;
-    color: var(--primary-color);
+    color: var(--mint);
 }
 
 .exercise-card-actions {
@@ -294,7 +327,9 @@ body {
 }
 
 .history-card {
-    background-color: var(--card-background);
+    background-color: rgba(35, 44, 51, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-lg);
     padding: var(--spacing-md);
@@ -303,14 +338,15 @@ body {
 }
 
 .history-card:hover {
-    border-color: var(--primary-color);
-    background-color: var(--primary-muted);
+    border-color: var(--border-mint);
+    background-color: var(--card-hover);
+    box-shadow: var(--glow-soft);
 }
 
 .history-card-date {
     font-weight: 600;
     margin-bottom: var(--spacing-xs);
-    color: var(--primary-color);
+    color: var(--mint);
 }
 
 .history-card-summary {
@@ -330,18 +366,20 @@ body {
 }
 
 .library-item {
-    background-color: var(--card-background);
+    background-color: rgba(35, 44, 51, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border: 1px solid var(--border-color);
     border-radius: var(--radius);
     padding: var(--spacing-md);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    transition: border-color 0.2s ease;
+    transition: all 0.2s ease;
 }
 
 .library-item:hover {
-    border-color: var(--primary-color);
+    border-color: var(--border-mint);
 }
 
 .library-item-name {
@@ -354,7 +392,9 @@ body {
 }
 
 .chart-container {
-    background-color: var(--card-background);
+    background-color: rgba(35, 44, 51, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-lg);
     padding: var(--spacing-md);
@@ -364,7 +404,7 @@ body {
 .chart-container h3 {
     font-size: 1rem;
     margin-bottom: var(--spacing-sm);
-    color: var(--primary-color);
+    color: var(--mint);
 }
 
 /* Form Elements */
@@ -430,7 +470,7 @@ body {
     align-items: center;
     gap: var(--spacing-sm);
     padding: var(--spacing-sm);
-    background-color: #1a1a1a;
+    background-color: var(--background-color);
     border: 1px solid var(--border-color);
     border-radius: var(--radius);
 }
@@ -497,7 +537,7 @@ body {
 .modal-header h3 {
     font-size: 1.125rem;
     font-weight: 600;
-    color: var(--primary-color);
+    color: var(--mint);
 }
 
 .modal-close {
@@ -569,7 +609,9 @@ body {
 }
 
 .template-card {
-    background-color: var(--card-background);
+    background-color: rgba(35, 44, 51, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-lg);
     padding: var(--spacing-md);
@@ -578,8 +620,8 @@ body {
 }
 
 .template-card:hover {
-    border-color: var(--primary-color);
-    background-color: var(--primary-muted);
+    border-color: var(--border-mint);
+    box-shadow: var(--glow-soft);
 }
 
 .template-card:active {
@@ -596,7 +638,7 @@ body {
 .template-card-name {
     font-weight: 600;
     font-size: 1.125rem;
-    color: var(--primary-color);
+    color: var(--mint);
 }
 
 .template-card-badge {
@@ -604,15 +646,15 @@ body {
     font-weight: 600;
     padding: 4px 10px;
     border-radius: 20px;
-    background-color: var(--primary-muted);
-    color: var(--primary-color);
+    background: linear-gradient(180deg, #818cf8, #8b5cf6);
+    color: white;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
 .template-card-badge.custom {
-    background-color: rgba(251, 113, 133, 0.15);
-    color: #fb7185;
+    background: linear-gradient(180deg, #fbbf24, #f97316);
+    color: #0f1419;
 }
 
 .template-card-exercises {
@@ -641,7 +683,7 @@ body {
     align-items: center;
     gap: var(--spacing-sm);
     padding: var(--spacing-sm);
-    background-color: #1a1a1a;
+    background-color: var(--background-color);
     border: 1px solid var(--border-color);
     border-radius: var(--radius);
 }

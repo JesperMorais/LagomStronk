@@ -24,8 +24,8 @@ export function updateProgressChart(data, exerciseName) {
                 datasets: [{
                     label: 'Max Weight (kg)',
                     data: [],
-                    borderColor: '#2dd4bf',
-                    backgroundColor: 'rgba(45, 212, 191, 0.15)',
+                    borderColor: '#D1FFC6',
+                    backgroundColor: 'rgba(209, 255, 198, 0.15)',
                     tension: 0.4,
                     fill: true
                 }]
@@ -45,12 +45,12 @@ export function updateProgressChart(data, exerciseName) {
             datasets: [{
                 label: 'Max Weight (kg)',
                 data: weights,
-                borderColor: '#2dd4bf',
-                backgroundColor: 'rgba(45, 212, 191, 0.15)',
+                borderColor: '#D1FFC6',
+                backgroundColor: 'rgba(209, 255, 198, 0.15)',
                 tension: 0.4,
                 fill: true,
-                pointBackgroundColor: '#2dd4bf',
-                pointBorderColor: '#0a0a0a',
+                pointBackgroundColor: '#D1FFC6',
+                pointBorderColor: '#0f1419',
                 pointBorderWidth: 2,
                 pointRadius: 5,
                 pointHoverRadius: 7
@@ -80,10 +80,10 @@ export function updateVolumeChart(data) {
                 datasets: [{
                     label: 'Total Volume (kg)',
                     data: [],
-                    backgroundColor: 'rgba(45, 212, 191, 0.6)',
-                    borderColor: '#2dd4bf',
+                    backgroundColor: 'rgba(209, 255, 198, 0.5)',
+                    borderColor: '#D1FFC6',
                     borderWidth: 0,
-                    borderRadius: 6
+                    borderRadius: 8
                 }]
             },
             options: getChartOptions('No workout data yet')
@@ -101,18 +101,18 @@ export function updateVolumeChart(data) {
             datasets: [{
                 label: 'Total Volume (kg)',
                 data: volumes,
-                backgroundColor: 'rgba(45, 212, 191, 0.6)',
-                borderColor: '#2dd4bf',
+                backgroundColor: 'rgba(209, 255, 198, 0.5)',
+                borderColor: '#D1FFC6',
                 borderWidth: 0,
-                borderRadius: 6,
-                hoverBackgroundColor: '#2dd4bf'
+                borderRadius: 8,
+                hoverBackgroundColor: '#D1FFC6'
             }]
         },
         options: getChartOptions('Total Volume Per Workout')
     });
 }
 
-// Common chart options - Mint dark mode
+// Common chart options - David Stenman palette
 function getChartOptions(title) {
     return {
         responsive: true,
@@ -128,7 +128,7 @@ function getChartOptions(title) {
                     size: 14,
                     weight: '600'
                 },
-                color: '#2dd4bf',
+                color: '#D1FFC6',
                 padding: { bottom: 16 }
             }
         },
@@ -143,7 +143,7 @@ function getChartOptions(title) {
                     font: {
                         size: 10
                     },
-                    color: '#a1a1aa'
+                    color: '#9ca3af'
                 },
                 border: {
                     display: false
@@ -155,7 +155,7 @@ function getChartOptions(title) {
                     color: 'rgba(255, 255, 255, 0.05)'
                 },
                 ticks: {
-                    color: '#a1a1aa'
+                    color: '#9ca3af'
                 },
                 border: {
                     display: false
