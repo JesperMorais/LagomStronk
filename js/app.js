@@ -255,20 +255,20 @@ function renderHistoryView() {
 
 // Render progress view
 function renderProgressView() {
-    // Show all exercises from library in dropdown
-    const allExercises = appData.exerciseLibrary;
+    // Only show exercises that have workout data
+    const usedExercises = getUsedExercises(appData);
 
     // Populate exercise select
     exerciseSelectEl.innerHTML = '<option value="">Select Exercise</option>' +
-        allExercises.map(ex => `<option value="${ex}">${ex}</option>`).join('');
+        usedExercises.map(ex => `<option value="${ex}">${ex}</option>`).join('');
 
     // Update volume chart
     updateVolumeChart(appData);
 
     // If there are exercises, select the first one
-    if (allExercises.length > 0) {
-        exerciseSelectEl.value = allExercises[0];
-        updateProgressChart(appData, allExercises[0]);
+    if (usedExercises.length > 0) {
+        exerciseSelectEl.value = usedExercises[0];
+        updateProgressChart(appData, usedExercises[0]);
     }
 }
 
