@@ -369,7 +369,8 @@ export function applyWorkoutTemplate(data, dateStr, templateId, defaultWeight = 
         name: templateEx.name,
         sets: Array(templateEx.sets).fill(null).map(() => ({
             reps: templateEx.reps,
-            weight: defaultWeight
+            weight: defaultWeight,
+            completed: false
         }))
     }));
 
@@ -686,4 +687,17 @@ export function getMostRecentExerciseFirstSet(data, exerciseName) {
         reps: mostRecent.sets[0].reps,
         weight: mostRecent.sets[0].weight
     };
+}
+
+// Get all sets from the most recent workout for an exercise (excluding a specific date)
+export function getMostRecentExerciseSets(data, exerciseName, excludeDate) {
+    const workouts = [...data.workouts]
+        .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    for (const workout of workouts) {
+        if (workout.date === excludeDate) continue;
+        const exercise = workout.exercises.find(e => e.name === exerciseName);
+        if (exercise) return exercise.sets;
+    }
+    return [];
 }
