@@ -23,7 +23,7 @@ import {
     getEstimated1RMs,
     getMuscleGroupStats,
     getExerciseHistory,
-    getMostRecentExerciseFirstSet
+    getMostRecentExerciseSets
 } from './data.js';
 
 import {
@@ -35,7 +35,6 @@ import {
 let appData = loadData();
 let currentView = 'today';
 let currentDate = getTodayStr();
-let editingExerciseIndex = null;
 
 // DOM Elements
 const views = {
@@ -127,16 +126,27 @@ function updateTodayDate() {
 // Setup event listeners
 function setupEventListeners() {
     // Add exercise button
-    document.getElementById('add-exercise-btn').addEventListener('click', () => {
-        editingExerciseIndex = null;
-        openExerciseModal();
+    document.getElementById('add-exercise-btn').addEventListener('click', openExerciseModal);
+
+    // Exercise search modal
+    document.getElementById('close-exercise-modal').addEventListener('click', closeExerciseModal);
+    document.getElementById('exercise-search').addEventListener('input', (e) => {
+        renderExerciseSearchResults(e.target.value);
+    });
+    document.getElementById('exercise-search-results').addEventListener('click', (e) => {
+        const item = e.target.closest('.exercise-search-item');
+        if (!item) return;
+        const exerciseName = item.dataset.exercise;
+        if (item.dataset.create === 'true') {
+            appData = addCustomExercise(appData, exerciseName);
+        }
+        addNewExerciseToWorkout(exerciseName);
+        closeExerciseModal();
     });
 
-    // Exercise modal
-    document.getElementById('close-exercise-modal').addEventListener('click', closeExerciseModal);
-    document.getElementById('cancel-exercise').addEventListener('click', closeExerciseModal);
-    document.getElementById('save-exercise').addEventListener('click', saveExercise);
-    document.getElementById('add-set-btn').addEventListener('click', handleAddSet);
+    // Inline today view events (delegation)
+    todayExercisesEl.addEventListener('click', handleTodayClick);
+    todayExercisesEl.addEventListener('change', handleTodayInputChange);
 
     // Custom exercise modal
     document.getElementById('add-custom-exercise-btn').addEventListener('click', openCustomExerciseModal);
@@ -183,7 +193,7 @@ function setupEventListeners() {
     document.getElementById('confirm-save-template').addEventListener('click', confirmSaveAsTemplate);
 }
 
-// Render today's workout
+// Render today's workout with inline editable sets
 function renderTodayView() {
     const workout = getWorkoutByDate(appData, currentDate);
 
@@ -198,35 +208,46 @@ function renderTodayView() {
         return;
     }
 
-    todayExercisesEl.innerHTML = workout.exercises.map((exercise, index) => `
-        <div class="exercise-card">
-            <div class="exercise-card-header">
-                <span class="exercise-card-title">${exercise.name}</span>
-                <div class="exercise-card-actions">
-                    <button class="btn-icon" onclick="editExercise(${index})" title="Edit">✏️</button>
-                    <button class="btn-icon" onclick="deleteExercise(${index})" title="Delete">🗑️</button>
+    todayExercisesEl.innerHTML = workout.exercises.map((exercise, exIdx) => {
+        const prevSets = getMostRecentExerciseSets(appData, exercise.name, currentDate);
+        return `
+            <div class="exercise-card" data-exercise-index="${exIdx}">
+                <div class="exercise-card-header">
+                    <span class="exercise-card-title">${exercise.name}</span>
+                    <div class="exercise-card-actions">
+                        <button class="btn-icon delete-exercise-btn" data-index="${exIdx}" title="Delete">🗑️</button>
+                    </div>
                 </div>
-            </div>
-            <table class="sets-table">
-                <thead>
-                    <tr>
-                        <th>Set</th>
-                        <th>Reps</th>
-                        <th>Weight (kg)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${exercise.sets.map((set, setIndex) => `
+                <table class="inline-sets">
+                    <thead>
                         <tr>
-                            <td>${setIndex + 1}</td>
-                            <td>${set.reps}</td>
-                            <td>${set.weight}</td>
+                            <th>SET</th>
+                            <th>PREVIOUS</th>
+                            <th>KG</th>
+                            <th>REPS</th>
+                            <th></th>
                         </tr>
-                    `).join('')}
-                </tbody>
-            </table>
-        </div>
-    `).join('');
+                    </thead>
+                    <tbody>
+                        ${exercise.sets.map((set, setIdx) => {
+                            const prev = prevSets[setIdx];
+                            const isCompleted = set.completed !== false;
+                            return `
+                                <tr class="inline-set-row ${isCompleted ? 'completed' : ''}" data-exercise="${exIdx}" data-set="${setIdx}">
+                                    <td class="set-num">${setIdx + 1}</td>
+                                    <td class="set-prev">${prev ? `${prev.weight} x ${prev.reps}` : '-'}</td>
+                                    <td><input type="number" class="inline-input set-kg" value="${set.weight}" step="0.5" min="0"></td>
+                                    <td><input type="number" class="inline-input set-reps-input" value="${set.reps}" min="0"></td>
+                                    <td><button class="set-check-btn ${isCompleted ? 'checked' : ''}">✓</button></td>
+                                </tr>
+                            `;
+                        }).join('')}
+                    </tbody>
+                </table>
+                <button class="btn-add-inline-set" data-exercise="${exIdx}">+ Add Set</button>
+            </div>
+        `;
+    }).join('');
 }
 
 // Render history view
@@ -523,188 +544,130 @@ function renderLibraryView() {
     `).join('');
 }
 
-// Handle exercise selection (between-sessions auto-fill)
-function handleExerciseSelection(event) {
-    const exerciseName = event.target.value;
-    const setsList = document.getElementById('sets-list');
+// ========== EXERCISE SEARCH MODAL ==========
 
-    // Only update first set if exactly one set exists
-    if (setsList.children.length !== 1) return;
-
-    // Get most recent session data
-    const recentData = getMostRecentExerciseFirstSet(appData, exerciseName);
-
-    if (recentData) {
-        // Update the existing first set's values
-        const firstSet = setsList.children[0];
-        firstSet.querySelector('.set-reps').value = recentData.reps;
-        firstSet.querySelector('.set-weight').value = recentData.weight;
-    }
-}
-
-// Open exercise modal
+// Open exercise modal with search
 function openExerciseModal() {
-    // Populate exercise dropdown
-    const exerciseNameSelect = document.getElementById('exercise-name');
-    exerciseNameSelect.innerHTML = appData.exerciseLibrary.map(ex =>
-        `<option value="${ex}">${ex}</option>`
-    ).join('');
-
-    // Reset sets
-    const setsList = document.getElementById('sets-list');
-    setsList.innerHTML = '';
-
-    // Add initial set row
-    addSetRow();
-
-    // Add event listener for exercise selection (auto-fill from history)
-    // Clone and replace to prevent duplicate listeners
-    const newSelect = exerciseNameSelect.cloneNode(true);
-    exerciseNameSelect.parentNode.replaceChild(newSelect, exerciseNameSelect);
-    newSelect.addEventListener('change', handleExerciseSelection);
-
-    // Trigger auto-fill for the default selected exercise
-    handleExerciseSelection({ target: newSelect });
-
+    const searchInput = document.getElementById('exercise-search');
+    searchInput.value = '';
+    renderExerciseSearchResults('');
     exerciseModal.classList.add('active');
+    setTimeout(() => searchInput.focus(), 100);
 }
 
 // Close exercise modal
 function closeExerciseModal() {
     exerciseModal.classList.remove('active');
-    editingExerciseIndex = null;
 }
 
-// Add set row to modal
-function addSetRow(reps = 10, weight = 20) {
-    const setsList = document.getElementById('sets-list');
-    const setNumber = setsList.children.length + 1;
+// Render filtered exercise search results
+function renderExerciseSearchResults(query) {
+    const resultsList = document.getElementById('exercise-search-results');
+    const q = query.toLowerCase().trim();
+    const filtered = appData.exerciseLibrary.filter(ex =>
+        ex.toLowerCase().includes(q)
+    );
 
-    const setRow = document.createElement('div');
-    setRow.className = 'set-row';
-    setRow.innerHTML = `
-        <span>Set ${setNumber}</span>
-        <label>Reps</label>
-        <input type="number" class="number-input set-reps" value="${reps}" min="1" max="100">
-        <label>kg</label>
-        <input type="number" class="number-input set-weight" value="${weight}" min="0" max="1000" step="0.5">
-        <button class="btn-icon remove-set-btn" onclick="removeSetRow(this)" title="Remove">✕</button>
-    `;
+    let html = filtered.map(ex =>
+        `<div class="exercise-search-item" data-exercise="${ex}">${ex}</div>`
+    ).join('');
 
-    setsList.appendChild(setRow);
-}
-
-// Handle adding a new set (within-session auto-fill)
-function handleAddSet() {
-    const setsList = document.getElementById('sets-list');
-    const existingSets = setsList.children;
-
-    if (existingSets.length === 0) {
-        addSetRow();
-        return;
+    // Show "Create" option if query doesn't match any exercise exactly
+    if (q && !appData.exerciseLibrary.some(ex => ex.toLowerCase() === q)) {
+        html += `<div class="exercise-search-item exercise-search-create" data-exercise="${query.trim()}" data-create="true">+ Create "${query.trim()}"</div>`;
     }
 
-    // Get values from the last set
-    const lastSet = existingSets[existingSets.length - 1];
-    const lastReps = parseInt(lastSet.querySelector('.set-reps').value) || 10;
-    const lastWeight = parseFloat(lastSet.querySelector('.set-weight').value) || 20;
-
-    // Add new set with previous set's values
-    addSetRow(lastReps, lastWeight);
+    resultsList.innerHTML = html;
 }
 
-// Remove set row
-window.removeSetRow = function(btn) {
-    const setRow = btn.closest('.set-row');
-    setRow.remove();
-
-    // Renumber remaining sets
-    const setsList = document.getElementById('sets-list');
-    Array.from(setsList.children).forEach((row, index) => {
-        row.querySelector('span').textContent = `Set ${index + 1}`;
-    });
-};
-
-// Save exercise from modal
-function saveExercise() {
-    const exerciseName = document.getElementById('exercise-name').value;
-    const setsList = document.getElementById('sets-list');
-    const setRows = setsList.querySelectorAll('.set-row');
-
-    const sets = Array.from(setRows).map(row => ({
-        reps: parseInt(row.querySelector('.set-reps').value) || 0,
-        weight: parseFloat(row.querySelector('.set-weight').value) || 0
-    })).filter(set => set.reps > 0);
-
-    if (sets.length === 0) {
-        alert('Please add at least one set with reps.');
-        return;
-    }
-
+// Add a new exercise to today's workout
+function addNewExerciseToWorkout(exerciseName) {
+    const prevSets = getMostRecentExerciseSets(appData, exerciseName, currentDate);
     const exercise = {
         name: exerciseName,
-        sets
+        sets: prevSets.length > 0
+            ? prevSets.map(s => ({ weight: s.weight, reps: s.reps, completed: false }))
+            : [{ weight: 20, reps: 10, completed: false }]
     };
-
-    if (editingExerciseIndex !== null) {
-        // Update existing exercise
-        const workout = getWorkoutByDate(appData, currentDate);
-        if (workout) {
-            workout.exercises[editingExerciseIndex] = exercise;
-            appData = { ...appData };
-            saveData(appData);
-        }
-    } else {
-        // Add new exercise
-        appData = addExerciseToWorkout(appData, currentDate, exercise);
-    }
-
-    closeExerciseModal();
+    appData = addExerciseToWorkout(appData, currentDate, exercise);
     renderTodayView();
 }
 
-// Edit exercise
-window.editExercise = function(index) {
+// ========== INLINE TODAY VIEW EVENT HANDLERS ==========
+
+// Handle clicks on today's exercise cards (delegation)
+function handleTodayClick(e) {
+    // Check/uncheck set
+    if (e.target.classList.contains('set-check-btn')) {
+        const row = e.target.closest('.inline-set-row');
+        const exIdx = parseInt(row.dataset.exercise);
+        const setIdx = parseInt(row.dataset.set);
+        toggleSetCompletion(exIdx, setIdx);
+        return;
+    }
+
+    // Delete exercise
+    if (e.target.classList.contains('delete-exercise-btn')) {
+        const idx = parseInt(e.target.dataset.index);
+        if (confirm('Delete this exercise?')) {
+            appData = removeExerciseFromWorkout(appData, currentDate, idx);
+            renderTodayView();
+        }
+        return;
+    }
+
+    // Add set
+    if (e.target.classList.contains('btn-add-inline-set')) {
+        const exIdx = parseInt(e.target.dataset.exercise);
+        addInlineSet(exIdx);
+        return;
+    }
+}
+
+// Handle input changes on inline sets (delegation)
+function handleTodayInputChange(e) {
+    if (!e.target.classList.contains('inline-input')) return;
+    const row = e.target.closest('.inline-set-row');
+    const exIdx = parseInt(row.dataset.exercise);
+    const setIdx = parseInt(row.dataset.set);
+    updateInlineSetValue(exIdx, setIdx, row);
+}
+
+// Toggle set completion
+function toggleSetCompletion(exIdx, setIdx) {
     const workout = getWorkoutByDate(appData, currentDate);
     if (!workout) return;
+    const set = workout.exercises[exIdx].sets[setIdx];
+    const isCompleted = set.completed !== false;
+    set.completed = !isCompleted;
+    saveData(appData);
+    renderTodayView();
+}
 
-    const exercise = workout.exercises[index];
-    editingExerciseIndex = index;
+// Update set weight/reps from inline inputs
+function updateInlineSetValue(exIdx, setIdx, row) {
+    const workout = getWorkoutByDate(appData, currentDate);
+    if (!workout) return;
+    const set = workout.exercises[exIdx].sets[setIdx];
+    set.weight = parseFloat(row.querySelector('.set-kg').value) || 0;
+    set.reps = parseInt(row.querySelector('.set-reps-input').value) || 0;
+    saveData(appData);
+}
 
-    // Populate modal with exercise data
-    const exerciseNameSelect = document.getElementById('exercise-name');
-    exerciseNameSelect.innerHTML = appData.exerciseLibrary.map(ex =>
-        `<option value="${ex}" ${ex === exercise.name ? 'selected' : ''}>${ex}</option>`
-    ).join('');
-
-    // Populate sets
-    const setsList = document.getElementById('sets-list');
-    setsList.innerHTML = '';
-
-    exercise.sets.forEach((set, setIndex) => {
-        const setRow = document.createElement('div');
-        setRow.className = 'set-row';
-        setRow.innerHTML = `
-            <span>Set ${setIndex + 1}</span>
-            <label>Reps</label>
-            <input type="number" class="number-input set-reps" value="${set.reps}" min="1" max="100">
-            <label>kg</label>
-            <input type="number" class="number-input set-weight" value="${set.weight}" min="0" max="1000" step="0.5">
-            <button class="btn-icon remove-set-btn" onclick="removeSetRow(this)" title="Remove">✕</button>
-        `;
-        setsList.appendChild(setRow);
+// Add a new set to an exercise inline
+function addInlineSet(exIdx) {
+    const workout = getWorkoutByDate(appData, currentDate);
+    if (!workout) return;
+    const exercise = workout.exercises[exIdx];
+    const lastSet = exercise.sets[exercise.sets.length - 1];
+    exercise.sets.push({
+        weight: lastSet ? lastSet.weight : 20,
+        reps: lastSet ? lastSet.reps : 10,
+        completed: false
     });
-
-    exerciseModal.classList.add('active');
-};
-
-// Delete exercise
-window.deleteExercise = function(index) {
-    if (confirm('Delete this exercise?')) {
-        appData = removeExerciseFromWorkout(appData, currentDate, index);
-        renderTodayView();
-    }
-};
+    saveData(appData);
+    renderTodayView();
+}
 
 // Open custom exercise modal
 function openCustomExerciseModal() {

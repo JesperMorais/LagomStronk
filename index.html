@@ -189,7 +189,7 @@
             </button>
         </nav>
 
-        <!-- Add Exercise Modal -->
+        <!-- Add Exercise Modal (Search-based picker) -->
         <div class="modal" id="exercise-modal">
             <div class="modal-content">
                 <div class="modal-header">
@@ -197,23 +197,10 @@
                     <button class="modal-close" id="close-exercise-modal">&times;</button>
                 </div>
                 <div class="modal-body">
-                    <div class="form-group">
-                        <label for="exercise-name">Exercise</label>
-                        <select id="exercise-name" class="select-input">
-                            <!-- Populated from library -->
-                        </select>
+                    <input type="text" id="exercise-search" class="text-input" placeholder="Search exercises..." autocomplete="off">
+                    <div id="exercise-search-results" class="exercise-search-results">
+                        <!-- Filtered exercise list -->
                     </div>
-                    <div id="sets-container" class="sets-container">
-                        <h4>Sets</h4>
-                        <div class="sets-list" id="sets-list">
-                            <!-- Sets will be added here -->
-                        </div>
-                        <button class="btn btn-secondary btn-small" id="add-set-btn">+ Add Set</button>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" id="cancel-exercise">Cancel</button>
-                    <button class="btn btn-primary" id="save-exercise">Save Exercise</button>
                 </div>
             </div>
         </div>
