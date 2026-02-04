@@ -1,7 +1,7 @@
 {
   "appId": "se.lagomstronk.app",
   "appName": "LagomStronk",
-  "webDir": ".",
+  "webDir": "www",
   "server": {
     "androidScheme": "https"
   },

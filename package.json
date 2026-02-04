@@ -5,11 +5,12 @@
   "main": "index.html",
   "scripts": {
     "start": "npx serve .",
-    "cap:init": "npx cap init LagomStronk se.lagomstronk.app --web-dir .",
+    "build": "mkdir -p www && cp -r index.html manifest.json sw.js css js icons www/",
+    "cap:init": "npx cap init LagomStronk se.lagomstronk.app --web-dir www",
     "cap:add:android": "npx cap add android",
-    "cap:sync": "npx cap sync",
+    "cap:sync": "npm run build && npx cap sync",
     "cap:open:android": "npx cap open android",
-    "build:android": "npx cap sync && npx cap open android"
+    "build:android": "npm run build && npx cap sync && npx cap open android"
   },
   "keywords": [
     "gym",
