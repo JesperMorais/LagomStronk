@@ -52,7 +52,8 @@ export class MiniPlayer {
 
   show(workoutData) {
     this.workout = workoutData;
-    this.startTime = Date.now();
+    // Use provided startTime or current time
+    this.startTime = workoutData.startTime || Date.now();
     this.isResting = false;
     this.restEndTime = null;
 

@@ -258,21 +258,26 @@ function switchView(viewName) {
         views[key].classList.toggle('active', key === viewName);
     });
 
-    // Handle mini-player for active workouts
-    if (viewName === 'today') {
-        // Hide mini-player when viewing today
+    // Handle mini-player for active workouts - ALWAYS show when workout active
+    const workout = getWorkoutByDate(appData, currentDate);
+    const hasActiveWorkout = workout && workout.startTime;
+
+    if (hasActiveWorkout) {
+        // Show mini-player on ALL views when workout is active (Spotify-style)
+        if (!activeWorkout) {
+            activeWorkout = {
+                name: workout.name || "Today's Workout",
+                date: currentDate,
+                startTime: workout.startTime
+            };
+            workoutStartTime = workout.startTime;
+        }
+        showMiniPlayer(activeWorkout);
+    } else {
+        // No active workout, hide mini-player
         hideMiniPlayer();
         activeWorkout = null;
-    } else {
-        // Show mini-player if there are exercises in today's workout
-        const workout = getWorkoutByDate(appData, currentDate);
-        if (workout && workout.exercises.length > 0) {
-            activeWorkout = {
-                name: "Today's Workout",
-                date: currentDate
-            };
-            showMiniPlayer(activeWorkout);
-        }
+        workoutStartTime = null;
     }
 
     // Render view content
