@@ -458,7 +458,14 @@ function renderTodayView() {
                 <div class="active-workout-section">
                     <div class="active-workout-header">
                         <h3 class="active-workout-name">${workout.name || "Today's Workout"}</h3>
-                        <span class="active-workout-timer" id="workout-timer">${formatWorkoutTimer(workout.startTime)}</span>
+                        <div class="active-workout-controls">
+                            <span class="active-workout-timer" id="workout-timer">${formatWorkoutTimer(workout.startTime)}</span>
+                            <button class="btn-finish-workout" onclick="confirmEndWorkout()" title="Finish workout">
+                                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                     <div class="empty-state empty-state-compact">
                         <p>No exercises yet. Add your first exercise!</p>
@@ -489,7 +496,14 @@ function renderTodayView() {
             <div class="active-workout-section">
                 <div class="active-workout-header">
                     <h3 class="active-workout-name">${workout.name || "Today's Workout"}</h3>
-                    <span class="active-workout-timer" id="workout-timer">${formatWorkoutTimer(workout.startTime)}</span>
+                    <div class="active-workout-controls">
+                        <span class="active-workout-timer" id="workout-timer">${formatWorkoutTimer(workout.startTime)}</span>
+                        <button class="btn-finish-workout" onclick="confirmEndWorkout()" title="Finish workout">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
         `;
         startWorkoutTimerUpdate();
@@ -1755,8 +1769,17 @@ async function endWorkout() {
     renderTodayView();
 }
 
+// Confirm end workout with dialog
+function confirmEndWorkout() {
+    const confirmed = confirm('Finish this workout?');
+    if (confirmed) {
+        endWorkout();
+    }
+}
+
 // Make endWorkout globally accessible
 window.endWorkout = endWorkout;
+window.confirmEndWorkout = confirmEndWorkout;
 
 // Initialize the app
 init().catch(err => console.error('Failed to initialize app:', err));

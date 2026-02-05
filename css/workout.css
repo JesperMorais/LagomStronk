@@ -191,6 +191,36 @@ body.mini-player-active .main-content {
   }
 }
 
+/* Active workout controls (timer + finish button) */
+.active-workout-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.btn-finish-workout {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--primary);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--text-primary);
+}
+
+.btn-finish-workout:hover {
+  transform: scale(1.1);
+  box-shadow: var(--shadow-mint);
+}
+
+.btn-finish-workout svg {
+  color: #1a1f35;
+}
+
 /* Dark mode adjustments */
 @media (prefers-color-scheme: dark) {
   .mini-player {
