@@ -347,17 +347,17 @@ export async function updateWorkoutTemplate(data, templateId, updates) {
 }
 
 // Delete a workout template
-export function deleteWorkoutTemplate(data, templateId) {
+export async function deleteWorkoutTemplate(data, templateId) {
     const index = data.workoutTemplates.findIndex(t => t.id === templateId);
     if (index >= 0) {
         data.workoutTemplates.splice(index, 1);
-        saveData(data);
+        await saveData(data);
     }
     return data;
 }
 
 // Apply workout template to today's workout
-export function applyWorkoutTemplate(data, dateStr, templateId, defaultWeight = 20) {
+export async function applyWorkoutTemplate(data, dateStr, templateId, defaultWeight = 20) {
     const template = getWorkoutTemplateById(data, templateId);
     if (!template) return data;
 
@@ -372,14 +372,14 @@ export function applyWorkoutTemplate(data, dateStr, templateId, defaultWeight = 
 
     // Add each exercise to the workout
     for (const exercise of exercises) {
-        data = addExerciseToWorkout(data, dateStr, exercise);
+        data = await addExerciseToWorkout(data, dateStr, exercise);
     }
 
     return data;
 }
 
 // Save current workout as a template
-export function saveWorkoutAsTemplate(data, dateStr, templateName) {
+export async function saveWorkoutAsTemplate(data, dateStr, templateName) {
     const workout = getWorkoutByDate(data, dateStr);
     if (!workout || workout.exercises.length === 0) return data;
 
@@ -398,7 +398,7 @@ export function saveWorkoutAsTemplate(data, dateStr, templateName) {
     };
 
     data.workoutTemplates.push(newTemplate);
-    saveData(data);
+    await saveData(data);
     return data;
 }
 
