@@ -36,6 +36,7 @@ import { migrateToIndexedDB, retryMigration } from './data/migration.js';
 import { checkStorageCapacity } from './core/storageMonitor.js';
 import { showMigrationError } from './ui/toast.js';
 import { eventBus, EVENTS } from './core/eventBus.js';
+import { initNumpad, showNumpad, hideNumpad, getNumpad } from './ui/components/numpad.js';
 
 // App state
 let appData = null;
@@ -103,6 +104,15 @@ async function init() {
         // 5. Continue with existing initialization
         setupNavigation();
         setupEventListeners();
+
+        // 6. Initialize custom numpad
+        initNumpad({
+            step: 2.5, // Default step for weight
+            onNext: handleNumpadNext,
+            onSettings: openNumpadSettings
+        });
+        attachNumpadToInputs();
+
         renderTodayView();
         updateTodayDate();
 
@@ -112,9 +122,83 @@ async function init() {
         appData = await loadData();
         setupNavigation();
         setupEventListeners();
+
+        // Initialize custom numpad
+        initNumpad({
+            step: 2.5,
+            onNext: handleNumpadNext,
+            onSettings: openNumpadSettings
+        });
+        attachNumpadToInputs();
+
         renderTodayView();
         updateTodayDate();
     }
+}
+
+// Numpad handlers
+function handleNumpadNext(value, currentInput) {
+    // Find next input in the same row or next row
+    const setRow = currentInput.closest('.set-row');
+    if (!setRow) {
+        hideNumpad();
+        return;
+    }
+
+    const inputs = setRow.querySelectorAll('input[type="number"]');
+    const currentIndex = Array.from(inputs).indexOf(currentInput);
+
+    if (currentIndex < inputs.length - 1) {
+        // Move to next input in same row
+        const nextInput = inputs[currentIndex + 1];
+        showNumpad(nextInput, nextInput.value);
+    } else {
+        // Move to next row's first input, or close numpad
+        const nextRow = setRow.nextElementSibling;
+        if (nextRow && nextRow.classList.contains('set-row')) {
+            const nextInput = nextRow.querySelector('input[type="number"]');
+            if (nextInput) {
+                showNumpad(nextInput, nextInput.value);
+                return;
+            }
+        }
+        // No more inputs, hide numpad
+        hideNumpad();
+    }
+}
+
+function openNumpadSettings() {
+    // Future: open step size settings modal
+    console.log('Numpad settings - TODO');
+}
+
+function attachNumpadToInputs() {
+    // Show numpad when number inputs are focused
+    document.addEventListener('focus', (e) => {
+        if (e.target.matches('.number-input, input[type="number"]')) {
+            e.target.setAttribute('readonly', 'readonly'); // Prevent system keyboard
+
+            // Determine step based on input class or default
+            const step = e.target.step ? parseFloat(e.target.step) : 2.5;
+            const numpad = getNumpad();
+            if (numpad) numpad.step = step;
+
+            showNumpad(e.target, e.target.value);
+        }
+    }, true);
+
+    // Hide numpad when clicking outside
+    document.addEventListener('click', (e) => {
+        const numpad = getNumpad();
+        if (!numpad?.isVisible) return;
+
+        const clickedNumpad = e.target.closest('.numpad');
+        const clickedInput = e.target.matches('.number-input, input[type="number"]');
+
+        if (!clickedNumpad && !clickedInput) {
+            hideNumpad();
+        }
+    });
 }
 
 // Setup navigation
