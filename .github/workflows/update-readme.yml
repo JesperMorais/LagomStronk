@@ -1,0 +1,46 @@
+name: Update README
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'README.md'
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Update README
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          allowed_bots: "claude[bot],claude"
+          direct_prompt: |
+            Review and update README.md to reflect the current state of the codebase.
+
+            Guidelines:
+            - Keep it SHORT (under 50 lines)
+            - Keep existing badges, update if needed
+            - Update features list if new features were added
+            - Update tech stack if dependencies changed
+            - Do NOT add verbose explanations or tutorials
+            - Do NOT add emojis
+            - Maintain the current visual style
+
+            Only make changes if something is actually outdated. If README is current, make no changes.
+
+          claude_args: |
+            --allowedTools "Read,Glob,Edit"
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          git diff --staged --quiet || git commit -m "docs: Update README"
+          git push
