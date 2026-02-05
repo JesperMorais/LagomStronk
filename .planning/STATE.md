@@ -10,28 +10,28 @@ See: .planning/REQUIREMENTS.md (updated 2026-02-05)
 ## Current Position
 
 Phase: 2 of 7 (UX Overhaul & Exercise System)
-Plan: 6 of 8
+Plan: 7 of 8
 Status: In progress
-Last activity: 2026-02-05 — Completed 02-06-PLAN.md (Workout Calendar)
+Last activity: 2026-02-05 — Completed 02-05-PLAN.md (Workout Logging UX)
 
-Progress: [████░░░░░░] 47% (9/19 plans)
+Progress: [█████░░░░░] 52% (10/19 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 9
+- Total plans completed: 10
 - Average duration: 2 min
-- Total execution time: 0.31 hours
+- Total execution time: 0.33 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-technical-foundation | 4 | 8min | 2min |
-| 02-ux-overhaul-exercise-system | 5 | 14min | 2.8min |
+| 02-ux-overhaul-exercise-system | 6 | 20min | 3.3min |
 
 **Recent Trend:**
-- Last 5 plans: 02-02 (2min), 02-04 (3min), 02-03 (3min), 02-06 (4min)
+- Last 5 plans: 02-04 (3min), 02-03 (3min), 02-06 (4min), 02-05 (6min)
 - Trend: Slight increase as UI components grow in complexity
 
 *Updated after each plan completion*
@@ -70,6 +70,11 @@ Progress: [████░░░░░░] 47% (9/19 plans)
 | 02 | 06 | Cache intensity calculations | Map keyed by year-month prevents recalculation on re-render; cleared when workout data updates |
 | 02 | 06 | Calendar default view | Visual overview provides better pattern recognition than chronological list; toggle preserves list option |
 | 02 | 06 | Popup above bottom navigation | Mobile-first: fixed position above nav bar ensures popup always visible on tap |
+| 02 | 05 | Checkmark animation via CSS stroke-dasharray | 60fps animation with minimal CPU; cubic-bezier spring creates bounce feel |
+| 02 | 05 | canvas-confetti from CDN | Zero build overhead; 20 mint particles on set completion |
+| 02 | 05 | Mini-player custom events | Dispatches 'mini-player:expand' for loose coupling; app.js listens and navigates |
+| 02 | 05 | Previous set hints as placeholders | HTML placeholder attribute shows greyed hints without forcing input; non-intrusive UX |
+| 02 | 05 | Set checkbox first in row | Creates visual checklist feeling; onclick calls handleSetComplete for animations |
 
 ### Pending Todos
 
@@ -95,7 +100,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-05 14:18 UTC (plan execution)
-Stopped at: Completed 02-06-PLAN.md (Workout Calendar)
+Last session: 2026-02-05 14:20 UTC (plan execution)
+Stopped at: Completed 02-05-PLAN.md (Workout Logging UX)
 Resume file: None
-Next: Continue Phase 2 - remaining plans (02-05, 02-07, 02-08)
+Next: Continue Phase 2 - remaining plans (02-07, 02-08)
