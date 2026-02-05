@@ -1,0 +1,18 @@
+app:
+  - changed-files:
+      - any-glob-to-any-file: 'js/**'
+      - any-glob-to-any-file: 'css/**'
+      - any-glob-to-any-file: 'index.html'
+
+ci:
+  - changed-files:
+      - any-glob-to-any-file: '.github/**'
+
+docs:
+  - changed-files:
+      - any-glob-to-any-file: '**/*.md'
+
+android:
+  - changed-files:
+      - any-glob-to-any-file: 'android/**'
+      - any-glob-to-any-file: 'capacitor.config.json'
