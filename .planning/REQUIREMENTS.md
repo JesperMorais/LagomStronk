@@ -9,9 +9,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Foundation (FNDN)
 
-- [ ] **FNDN-01**: Storage abstraction layer with IndexedDB migration path
-- [ ] **FNDN-02**: Storage usage monitoring with warning at 70% capacity
-- [ ] **FNDN-03**: Event bus infrastructure for decoupled features
+- [x] **FNDN-01**: Storage abstraction layer with IndexedDB migration path
+- [x] **FNDN-02**: Storage usage monitoring with warning at 70% capacity
+- [x] **FNDN-03**: Event bus infrastructure for decoupled features
 
 ### UX Overhaul (UX)
 
@@ -137,9 +137,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| FNDN-01 | Phase 1 | Pending |
-| FNDN-02 | Phase 1 | Pending |
-| FNDN-03 | Phase 1 | Pending |
+| FNDN-01 | Phase 1 | Complete |
+| FNDN-02 | Phase 1 | Complete |
+| FNDN-03 | Phase 1 | Complete |
 | UX-01 | Phase 2 | Pending |
 | UX-02 | Phase 2 | Pending |
 | UX-03 | Phase 2 | Pending |

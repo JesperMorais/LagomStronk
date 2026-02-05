@@ -12,7 +12,7 @@ This roadmap transforms LagomStronk from a functional workout tracker into an in
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Technical Foundation** - Storage abstraction and event infrastructure
+- [x] **Phase 1: Technical Foundation** - Storage abstraction and event infrastructure
 - [ ] **Phase 2: UX Overhaul & Exercise System** - Modern interface and enhanced exercise management
 - [ ] **Phase 3: Workout Features** - Rest timer, PR tracking, and training programs
 - [ ] **Phase 4: Body Tracking** - Measurements and progress photos
@@ -35,10 +35,10 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 4 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Core infrastructure (event bus + storage abstraction)
-- [ ] 01-02-PLAN.md — Migration system (localStorage to IndexedDB)
-- [ ] 01-03-PLAN.md — Storage monitoring and toast notifications
-- [ ] 01-04-PLAN.md — Integration and app initialization
+- [x] 01-01-PLAN.md — Core infrastructure (event bus + storage abstraction)
+- [x] 01-02-PLAN.md — Migration system (localStorage to IndexedDB)
+- [x] 01-03-PLAN.md — Storage monitoring and toast notifications
+- [x] 01-04-PLAN.md — Integration and app initialization
 
 ### Phase 2: UX Overhaul & Exercise System
 **Goal**: Achieve parity with modern fitness apps and provide comprehensive exercise management
@@ -167,7 +167,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Technical Foundation | 0/4 | Planned | - |
+| 1. Technical Foundation | 4/4 | ✓ Complete | 2026-02-05 |
 | 2. UX Overhaul & Exercise System | 0/TBD | Not started | - |
 | 3. Workout Features | 0/TBD | Not started | - |
 | 4. Body Tracking | 0/TBD | Not started | - |
