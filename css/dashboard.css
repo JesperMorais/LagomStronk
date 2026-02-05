@@ -1,0 +1,182 @@
+/* Dashboard Hero Section */
+.dashboard-hero {
+    background: linear-gradient(135deg, rgba(35, 44, 51, 0.8), rgba(26, 31, 53, 0.6));
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+}
+
+.hero-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+/* Streak Display */
+.hero-streak {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-lg);
+}
+
+.streak-flame {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.flame-icon {
+    font-size: 2rem;
+    filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.5));
+}
+
+.streak-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--amber);
+}
+
+.streak-calendar {
+    display: flex;
+    gap: var(--spacing-xs);
+}
+
+.calendar-day {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: var(--spacing-xs);
+}
+
+.day-letter {
+    font-size: 0.625rem;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+}
+
+.day-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--border-color);
+}
+
+.calendar-day.active .day-dot {
+    background: var(--mint);
+    box-shadow: 0 0 6px rgba(209, 255, 198, 0.5);
+}
+
+.calendar-day.today .day-letter {
+    color: var(--mint);
+    font-weight: 600;
+}
+
+/* Suggested Workout */
+.hero-suggestion {
+    background: rgba(35, 44, 51, 0.6);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: var(--spacing-md);
+    transition: border-color 0.2s;
+}
+
+.hero-suggestion:hover {
+    border-color: var(--border-mint);
+}
+
+.suggestion-title {
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: var(--spacing-xs);
+}
+
+.suggestion-workout {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--mint);
+    margin-bottom: var(--spacing-xs);
+}
+
+.suggestion-reason {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+/* FAB - Floating Action Button */
+.fab {
+    position: fixed;
+    bottom: calc(var(--nav-height) + var(--spacing-md));
+    right: var(--spacing-md);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md) var(--spacing-lg);
+    background: linear-gradient(135deg, var(--mint), var(--mint-dark));
+    border: none;
+    border-radius: 50px;
+    color: #0f1419;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: var(--glow);
+    transform: translateY(100px);
+    opacity: 0;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.3s,
+                box-shadow 0.2s;
+    z-index: 90;
+}
+
+.fab.visible {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.fab:hover {
+    box-shadow: 0 4px 30px rgba(209, 255, 198, 0.5);
+}
+
+.fab:active {
+    transform: scale(0.95);
+}
+
+.fab-icon {
+    font-size: 1.25rem;
+}
+
+.fab-label {
+    white-space: nowrap;
+}
+
+/* Empty state for hero */
+.hero-empty {
+    text-align: center;
+    padding: var(--spacing-lg);
+}
+
+.hero-empty-icon {
+    font-size: 3rem;
+    margin-bottom: var(--spacing-sm);
+}
+
+.hero-empty-text {
+    color: var(--text-secondary);
+    font-size: 1rem;
+}
+
+.hero-empty-cta {
+    color: var(--mint);
+    font-weight: 500;
+    margin-top: var(--spacing-sm);
+}
+
+/* Responsive - Constrain FAB to max-width on larger screens */
+@media (min-width: 481px) {
+    .fab {
+        right: calc(50% - 240px + var(--spacing-md));
+    }
+}
