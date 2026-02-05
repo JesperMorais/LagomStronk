@@ -519,7 +519,7 @@ body {
     background-color: rgba(0, 0, 0, 0.8);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
-    z-index: 1100; /* Above numpad (1001) so close/cancel buttons are reachable */
+    z-index: 200;
     justify-content: center;
     align-items: flex-end;
 }
@@ -1130,6 +1130,171 @@ body.offline .main-content {
 .benefit-icon {
     color: var(--success-color);
     font-weight: bold;
+}
+
+/* ========== INLINE SETS (Today View) ========== */
+
+.inline-sets {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 2px;
+}
+
+.inline-sets thead th {
+    font-size: 0.65rem;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: var(--spacing-xs) var(--spacing-xs);
+    text-align: center;
+    font-weight: 500;
+}
+
+.inline-set-row td {
+    padding: 6px 4px;
+    text-align: center;
+    vertical-align: middle;
+    transition: background-color 0.2s ease;
+}
+
+.inline-set-row.completed td {
+    background-color: rgba(209, 255, 198, 0.08);
+}
+
+.inline-set-row.completed td:first-child {
+    border-radius: var(--radius) 0 0 var(--radius);
+}
+
+.inline-set-row.completed td:last-child {
+    border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+.set-num {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    width: 30px;
+}
+
+.set-prev {
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+    white-space: nowrap;
+}
+
+.inline-input {
+    width: 56px;
+    padding: 6px 4px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-align: center;
+    background-color: var(--background-color);
+    color: var(--text-primary);
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+.inline-input::-webkit-inner-spin-button,
+.inline-input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.inline-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(209, 255, 198, 0.15);
+}
+
+.inline-set-row.completed .inline-input {
+    background-color: rgba(209, 255, 198, 0.06);
+    border-color: rgba(209, 255, 198, 0.15);
+}
+
+.set-check-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: var(--radius);
+    border: 2px solid var(--border-color);
+    background: none;
+    color: var(--text-tertiary);
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+}
+
+.set-check-btn:active {
+    transform: scale(0.9);
+}
+
+.set-check-btn.checked {
+    background-color: var(--success-color);
+    border-color: var(--success-color);
+    color: #0f1419;
+}
+
+.btn-add-inline-set {
+    width: 100%;
+    padding: var(--spacing-sm);
+    margin-top: var(--spacing-sm);
+    background: none;
+    border: 1px dashed var(--border-color);
+    border-radius: var(--radius);
+    color: var(--text-tertiary);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-add-inline-set:active {
+    transform: scale(0.98);
+}
+
+.btn-add-inline-set:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+/* ========== EXERCISE SEARCH ========== */
+
+.exercise-search-results {
+    max-height: 50vh;
+    overflow-y: auto;
+    margin-top: var(--spacing-sm);
+}
+
+.exercise-search-item {
+    padding: var(--spacing-md);
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+    color: var(--text-primary);
+}
+
+.exercise-search-item:active {
+    background-color: var(--primary-muted);
+}
+
+.exercise-search-item:hover {
+    background-color: var(--card-hover);
+}
+
+.exercise-search-item:last-child {
+    border-bottom: none;
+}
+
+.exercise-search-create {
+    color: var(--primary-color);
+    font-weight: 600;
 }
 
 /* Hide install button when app is installed */

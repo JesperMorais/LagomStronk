@@ -20,15 +20,7 @@
     <link rel="apple-touch-icon" href="icons/icon-192.png">
 
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/toast.css">
-    <link rel="stylesheet" href="css/dashboard.css">
-    <link rel="stylesheet" href="css/numpad.css">
-    <link rel="stylesheet" href="css/library.css">
-    <link rel="stylesheet" href="css/calendar.css">
-    <link rel="stylesheet" href="css/workout.css">
-    <link rel="stylesheet" href="css/wizard.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.min.js"></script>
 </head>
 <body>
     <div class="app">
@@ -45,18 +37,14 @@
             <!-- Today View -->
             <section id="today-view" class="view active">
                 <div class="view-header">
-                    <h2>Dashboard</h2>
+                    <h2>Today's Workout</h2>
                     <span class="date-display" id="today-date"></span>
                 </div>
-                <div id="dashboard-hero"></div>
-                <div id="dashboard-stats" class="dashboard-stats"></div>
                 <div id="today-exercises" class="exercise-list">
                     <!-- Exercises will be added here -->
                 </div>
-                <!-- FAB for starting workout -->
-                <button class="fab" id="start-workout-fab">
-                    <span class="fab-icon">🏋️</span>
-                    <span class="fab-label">Start Workout</span>
+                <button class="btn btn-primary btn-add-exercise" id="add-exercise-btn">
+                    + Add Exercise
                 </button>
             </section>
 
@@ -64,29 +52,8 @@
             <section id="history-view" class="view">
                 <div class="view-header">
                     <h2>Workout History</h2>
-                    <div class="history-view-toggle">
-                        <button class="toggle-btn active" data-view="calendar" id="history-calendar-btn" title="Calendar View">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                                <line x1="16" y1="2" x2="16" y2="6"></line>
-                                <line x1="8" y1="2" x2="8" y2="6"></line>
-                                <line x1="3" y1="10" x2="21" y2="10"></line>
-                            </svg>
-                        </button>
-                        <button class="toggle-btn" data-view="list" id="history-list-btn" title="List View">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <line x1="8" y1="6" x2="21" y2="6"></line>
-                                <line x1="8" y1="12" x2="21" y2="12"></line>
-                                <line x1="8" y1="18" x2="21" y2="18"></line>
-                                <line x1="3" y1="6" x2="3.01" y2="6"></line>
-                                <line x1="3" y1="12" x2="3.01" y2="12"></line>
-                                <line x1="3" y1="18" x2="3.01" y2="18"></line>
-                            </svg>
-                        </button>
-                    </div>
                 </div>
-                <div id="history-calendar" class="history-calendar"></div>
-                <div id="history-list" class="history-list" style="display: none;">
+                <div id="history-list" class="history-list">
                     <!-- Past workouts will be listed here -->
                 </div>
             </section>
@@ -168,52 +135,15 @@
             <section id="library-view" class="view">
                 <div class="view-header">
                     <h2>Exercise Library</h2>
-                    <button class="header-action-btn" id="add-custom-exercise-header-btn" title="Add Custom Exercise">
-                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                        </svg>
+                </div>
+                <div class="library-actions">
+                    <button class="btn btn-secondary" id="add-custom-exercise-btn">
+                        + Add Custom Exercise
                     </button>
                 </div>
-
-                <div class="library-header">
-                    <div class="library-search">
-                        <svg class="library-search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                        </svg>
-                        <input type="text" class="library-search-input" placeholder="Search exercises..." id="library-search">
-                    </div>
-
-                    <div class="library-controls">
-                        <button class="library-filter-btn" id="open-filter-btn">
-                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
-                            </svg>
-                            <span>Filter</span>
-                        </button>
-
-                        <div class="library-view-toggle">
-                            <button class="toggle-btn active" id="library-list-btn" data-view="list" title="List View">
-                                <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
-                                </svg>
-                            </button>
-                            <button class="toggle-btn" id="library-grid-btn" data-view="grid" title="Grid View">
-                                <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M4 4h7v7H4V4zm9 0h7v7h-7V4zM4 13h7v7H4v-7zm9 0h7v7h-7v-7z" fill="currentColor"></path>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
+                <div id="exercise-library-list" class="library-list">
+                    <!-- Exercise library items -->
                 </div>
-
-                <div id="recent-exercises"></div>
-                <div id="exercise-library-list" class="library-list"></div>
-
-                <!-- FAB for adding custom exercise -->
-                <button class="fab library-fab" id="add-custom-exercise-btn">
-                    <span class="fab-icon">+</span>
-                    <span class="fab-label">Add Exercise</span>
-                </button>
             </section>
 
             <!-- Workouts View -->
@@ -259,7 +189,7 @@
             </button>
         </nav>
 
-        <!-- Add Exercise Modal -->
+        <!-- Add Exercise Modal (Search-based picker) -->
         <div class="modal" id="exercise-modal">
             <div class="modal-content">
                 <div class="modal-header">
@@ -267,23 +197,10 @@
                     <button class="modal-close" id="close-exercise-modal">&times;</button>
                 </div>
                 <div class="modal-body">
-                    <div class="form-group">
-                        <label for="exercise-name">Exercise</label>
-                        <select id="exercise-name" class="select-input">
-                            <!-- Populated from library -->
-                        </select>
+                    <input type="text" id="exercise-search" class="text-input" placeholder="Search exercises..." autocomplete="off">
+                    <div id="exercise-search-results" class="exercise-search-results">
+                        <!-- Filtered exercise list -->
                     </div>
-                    <div id="sets-container" class="sets-container">
-                        <h4>Sets</h4>
-                        <div class="sets-list" id="sets-list">
-                            <!-- Sets will be added here -->
-                        </div>
-                        <button class="btn btn-secondary btn-small" id="add-set-btn">+ Add Set</button>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" id="cancel-exercise">Cancel</button>
-                    <button class="btn btn-primary" id="save-exercise">Save Exercise</button>
                 </div>
             </div>
         </div>
