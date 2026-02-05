@@ -274,12 +274,71 @@
   color: #fbbf24;
 }
 
-/* Library Actions */
+/* Library Actions - Now uses FAB */
 .library-actions {
-  position: sticky;
-  bottom: var(--spacing-lg);
-  padding-top: var(--spacing-lg);
-  text-align: center;
+  display: none; /* Hidden, replaced by FAB */
+}
+
+/* Library FAB */
+.library-fab {
+  position: fixed;
+  bottom: calc(var(--nav-height) + var(--spacing-md));
+  right: var(--spacing-md);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: linear-gradient(135deg, var(--mint), var(--mint-dark, #a8e6a0));
+  border: none;
+  border-radius: 50px;
+  color: #0f1419;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(209, 255, 198, 0.4);
+  z-index: 90;
+  transition: all 0.2s;
+}
+
+.library-fab:hover {
+  box-shadow: 0 4px 30px rgba(209, 255, 198, 0.6);
+  transform: translateY(-2px);
+}
+
+.library-fab:active {
+  transform: scale(0.95);
+}
+
+.library-fab .fab-icon {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+/* Header action button (+ in header) */
+.header-action-btn {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  padding: 8px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.header-action-btn:hover {
+  background: rgba(209, 255, 198, 0.1);
+  border-color: var(--mint);
+  color: var(--mint);
+}
+
+/* View header adjustment to accommodate action button */
+#library-view .view-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 /* Library Empty State */
@@ -302,6 +361,10 @@
 .library-empty-state .empty-state-hint {
   font-size: 14px;
   color: var(--text-tertiary);
+}
+
+.library-empty-state .empty-state-cta {
+  margin-top: var(--spacing-md);
 }
 
 /* ========== FILTER DRAWER ========== */

@@ -168,6 +168,11 @@
             <section id="library-view" class="view">
                 <div class="view-header">
                     <h2>Exercise Library</h2>
+                    <button class="header-action-btn" id="add-custom-exercise-header-btn" title="Add Custom Exercise">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                    </button>
                 </div>
 
                 <div class="library-header">
@@ -204,11 +209,11 @@
                 <div id="recent-exercises"></div>
                 <div id="exercise-library-list" class="library-list"></div>
 
-                <div class="library-actions">
-                    <button class="btn btn-secondary" id="add-custom-exercise-btn">
-                        + Add Custom Exercise
-                    </button>
-                </div>
+                <!-- FAB for adding custom exercise -->
+                <button class="fab library-fab" id="add-custom-exercise-btn">
+                    <span class="fab-icon">+</span>
+                    <span class="fab-label">Add Exercise</span>
+                </button>
             </section>
 
             <!-- Workouts View -->

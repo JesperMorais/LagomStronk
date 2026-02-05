@@ -321,18 +321,11 @@ function setupEventListeners() {
     document.getElementById('save-exercise').addEventListener('click', saveExercise);
     document.getElementById('add-set-btn').addEventListener('click', handleAddSet);
 
-    // Custom exercise modal (replaced with wizard)
-    document.getElementById('add-custom-exercise-btn').addEventListener('click', () => {
-        openExerciseWizard({
-            onComplete: async (name, metadata) => {
-                appData = await addCustomExercise(appData, name, metadata);
-                renderLibraryView();
-            },
-            onCancel: () => {
-                // Nothing to do
-            }
-        });
-    });
+    // Custom exercise - FAB button
+    document.getElementById('add-custom-exercise-btn').addEventListener('click', openCustomExerciseWizard);
+
+    // Custom exercise - Header + button
+    document.getElementById('add-custom-exercise-header-btn')?.addEventListener('click', openCustomExerciseWizard);
 
     // Old custom exercise modal handlers (kept for backward compatibility if needed)
     document.getElementById('close-custom-modal').addEventListener('click', closeCustomExerciseModal);
@@ -692,6 +685,19 @@ function startWorkoutTimerUpdate() {
 // Volume settings placeholder
 function openVolumeSettings() {
     console.log('Volume settings - TODO');
+}
+
+// Open custom exercise wizard
+function openCustomExerciseWizard() {
+    openExerciseWizard({
+        onComplete: async (name, metadata) => {
+            appData = await addCustomExercise(appData, name, metadata);
+            renderLibraryView();
+        },
+        onCancel: () => {
+            // Nothing to do
+        }
+    });
 }
 
 // Render history view

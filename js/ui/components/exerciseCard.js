@@ -53,6 +53,9 @@ export function renderExerciseList(exercises, favorites = [], customExercises = 
         <div class="empty-state-icon">🔍</div>
         <p>No exercises found</p>
         <p class="empty-state-hint">Try adjusting your filters or search</p>
+        <button class="btn btn-primary empty-state-cta" onclick="document.getElementById('add-custom-exercise-btn').click()">
+          + Add Custom Exercise
+        </button>
       </div>
     `;
   }
@@ -85,6 +88,9 @@ export function renderExerciseGrid(exercises, favorites = [], customExercises = 
         <div class="empty-state-icon">🔍</div>
         <p>No exercises found</p>
         <p class="empty-state-hint">Try adjusting your filters or search</p>
+        <button class="btn btn-primary empty-state-cta" onclick="document.getElementById('add-custom-exercise-btn').click()">
+          + Add Custom Exercise
+        </button>
       </div>
     `;
   }
