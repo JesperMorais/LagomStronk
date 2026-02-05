@@ -519,7 +519,7 @@ body {
     background-color: rgba(0, 0, 0, 0.8);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
-    z-index: 200;
+    z-index: 1100; /* Above numpad (1001) so close/cancel buttons are reachable */
     justify-content: center;
     align-items: flex-end;
 }

@@ -428,16 +428,17 @@ function renderTodayView() {
     const workout = getWorkoutByDate(appData, currentDate);
     const hasActiveWorkout = workout && workout.startTime;
 
-    // Render dashboard stats section (side-by-side)
+    // Render hero section with streak and suggestion
+    const heroContainer = document.getElementById('dashboard-hero');
+    if (heroContainer) {
+        heroContainer.style.display = 'block';
+        renderHero(heroContainer, appData);
+    }
+
+    // Render dashboard stats section (side-by-side compact cards)
     const statsContainer = document.getElementById('dashboard-stats');
     if (statsContainer) {
         renderDashboardStats(statsContainer, appData);
-    }
-
-    // Hide hero section (replaced by compact stats)
-    const heroContainer = document.getElementById('dashboard-hero');
-    if (heroContainer) {
-        heroContainer.style.display = 'none';
     }
 
     // Show/hide FAB based on active workout
