@@ -10,29 +10,29 @@ See: .planning/REQUIREMENTS.md (updated 2026-02-05)
 ## Current Position
 
 Phase: 2 of 7 (UX Overhaul & Exercise System)
-Plan: 4 of 4
-Status: Phase 2 complete
-Last activity: 2026-02-05 — Completed 02-03-PLAN.md (Volume Chart & PR Cards)
+Plan: 6 of 8
+Status: In progress
+Last activity: 2026-02-05 — Completed 02-06-PLAN.md (Workout Calendar)
 
-Progress: [████░░░░░░] 42% (8/19 plans)
+Progress: [████░░░░░░] 47% (9/19 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 8
+- Total plans completed: 9
 - Average duration: 2 min
-- Total execution time: 0.27 hours
+- Total execution time: 0.31 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-technical-foundation | 4 | 8min | 2min |
-| 02-ux-overhaul-exercise-system | 4 | 10min | 2.5min |
+| 02-ux-overhaul-exercise-system | 5 | 14min | 2.8min |
 
 **Recent Trend:**
-- Last 5 plans: 02-01 (2min), 02-02 (2min), 02-04 (3min), 02-03 (3min)
-- Trend: Consistent pace with minor variation
+- Last 5 plans: 02-02 (2min), 02-04 (3min), 02-03 (3min), 02-06 (4min)
+- Trend: Slight increase as UI components grow in complexity
 
 *Updated after each plan completion*
 
@@ -66,6 +66,10 @@ Progress: [████░░░░░░] 42% (8/19 plans)
 | 02 | 03 | PR cards use horizontal scroll with snap | Mobile-first design; horizontal scroll saves vertical space, snap provides tactile feel; 140px cards show 2.5 cards on mobile |
 | 02 | 03 | PR tracking across three metrics | Different PRs matter for different goals: powerlifters track 1RM, bodybuilders track volume, beginners track weight |
 | 02 | 03 | Volume chart shows current week Monday-Sunday | Training weeks typically start Monday; Sunday end provides complete week view; aligns with standard training splits |
+| 02 | 06 | Intensity based on total volume | Sum (reps × weight) represents overall training load; normalize by monthly max for 0-1 range gradient |
+| 02 | 06 | Cache intensity calculations | Map keyed by year-month prevents recalculation on re-render; cleared when workout data updates |
+| 02 | 06 | Calendar default view | Visual overview provides better pattern recognition than chronological list; toggle preserves list option |
+| 02 | 06 | Popup above bottom navigation | Mobile-first: fixed position above nav bar ensures popup always visible on tap |
 
 ### Pending Todos
 
@@ -91,7 +95,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-05 14:16 UTC (plan execution)
-Stopped at: Completed 02-03-PLAN.md (Volume Chart & PR Cards)
+Last session: 2026-02-05 14:18 UTC (plan execution)
+Stopped at: Completed 02-06-PLAN.md (Workout Calendar)
 Resume file: None
-Next: Phase 2 complete. Ready to move to Phase 3 (Exercise Library & External Data)
+Next: Continue Phase 2 - remaining plans (02-05, 02-07, 02-08)
