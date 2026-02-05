@@ -1,5 +1,5 @@
 import { storageGet, storageSet, STORAGE_KEY } from './core/storage.js';
-import { EXERCISES, getExerciseMetadata } from './data/exercises.js';
+import { EXERCISES, MUSCLE_GROUPS, getExerciseMetadata } from './data/exercises.js';
 
 // Default exercise library - derived from EXERCISES database
 const DEFAULT_EXERCISES = Object.keys(EXERCISES).filter(name => EXERCISES[name].isDefault);
@@ -636,36 +636,25 @@ export function getEstimated1RMs(data) {
 
 // Get muscle group distribution
 export function getMuscleGroupStats(data) {
-    const muscleGroups = {
-        'Chest': ['Bench Press', 'Incline Bench Press', 'Dumbbell Bench Press'],
-        'Back': ['Barbell Row', 'Lat Pulldown', 'Seated Cable Row', 'Pull-ups', 'Chin-ups', 'Face Pulls'],
-        'Shoulders': ['Overhead Press', 'Lateral Raises'],
-        'Legs': ['Squat', 'Front Squat', 'Deadlift', 'Romanian Deadlift', 'Leg Press', 'Leg Extension', 'Leg Curl', 'Lunges', 'Bulgarian Split Squat', 'Calf Raises'],
-        'Arms': ['Bicep Curls', 'Hammer Curls', 'Tricep Extensions', 'Tricep Pushdown', 'Skull Crushers'],
-        'Core': ['Plank', 'Ab Wheel Rollout']
-    };
-
     const stats = {};
-    for (const group of Object.keys(muscleGroups)) {
+    // Initialize all primary muscle groups from MUSCLE_GROUPS
+    for (const group of Object.keys(MUSCLE_GROUPS)) {
         stats[group] = { sets: 0, volume: 0 };
     }
     stats['Other'] = { sets: 0, volume: 0 };
 
     for (const workout of data.workouts) {
         for (const exercise of workout.exercises) {
-            let found = false;
-            for (const [group, exercises] of Object.entries(muscleGroups)) {
-                if (exercises.includes(exercise.name)) {
-                    stats[group].sets += exercise.sets.length;
-                    stats[group].volume += exercise.sets.reduce((sum, s) => sum + s.reps * s.weight, 0);
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                stats['Other'].sets += exercise.sets.length;
-                stats['Other'].volume += exercise.sets.reduce((sum, s) => sum + s.reps * s.weight, 0);
-            }
+            // Get metadata from EXERCISES or customExercises
+            const metadata = EXERCISES[exercise.name] ||
+                           data.customExercises?.[exercise.name] ||
+                           { primaryMuscles: ['Other'] };
+
+            const primaryGroup = metadata.primaryMuscles[0] || 'Other';
+            const targetGroup = stats[primaryGroup] ? primaryGroup : 'Other';
+
+            stats[targetGroup].sets += exercise.sets.length;
+            stats[targetGroup].volume += exercise.sets.reduce((sum, s) => sum + s.reps * s.weight, 0);
         }
     }
 
