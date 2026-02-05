@@ -43,7 +43,8 @@
 }
 
 .numpad-btn:active {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(209, 255, 198, 0.15);
+  box-shadow: 0 0 8px rgba(209, 255, 198, 0.2);
 }
 
 .numpad-special {
@@ -55,6 +56,13 @@
   background: rgba(255, 255, 255, 0.05);
   font-size: 1.75rem;
   font-weight: 400;
+  transition: all 0.15s;
+}
+
+.numpad-stepper:active {
+  background: rgba(209, 255, 198, 0.2);
+  color: var(--mint);
+  box-shadow: 0 0 12px rgba(209, 255, 198, 0.3);
 }
 
 .numpad-keyboard,
@@ -66,16 +74,43 @@
 }
 
 .numpad-next {
-  background: #4A90D9;
-  color: white;
+  background: linear-gradient(135deg, var(--mint), var(--mint-dark, #a8e6a0));
+  color: #0f1419;
   font-size: 1rem;
   font-weight: 600;
   letter-spacing: 0.5px;
   border-radius: var(--radius);
+  box-shadow: 0 2px 12px rgba(209, 255, 198, 0.4);
+  transition: all 0.2s;
+}
+
+.numpad-next:hover {
+  box-shadow: 0 4px 20px rgba(209, 255, 198, 0.6);
 }
 
 .numpad-next:active {
-  background: #3a7bc8;
+  background: linear-gradient(135deg, var(--mint-dark, #a8e6a0), var(--mint));
+  transform: scale(0.98);
+}
+
+/* Plate calculator button */
+.numpad-plate-calc {
+  background: rgba(209, 255, 198, 0.15);
+  color: var(--mint);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  transition: all 0.2s;
+}
+
+.numpad-plate-calc:hover {
+  background: rgba(209, 255, 198, 0.25);
+  box-shadow: 0 0 8px rgba(209, 255, 198, 0.3);
+}
+
+.numpad-plate-calc:active {
+  background: rgba(209, 255, 198, 0.35);
 }
 
 /* Safe area for devices with home indicator */

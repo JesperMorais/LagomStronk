@@ -9,7 +9,7 @@ export class Numpad {
     this.maxDecimals = options.maxDecimals || 1;
     this.step = options.step || 2.5;
     this.onNext = options.onNext || (() => {});
-    this.onSettings = options.onSettings || (() => {});
+    this.onPlateCalc = options.onSettings || options.onPlateCalc || (() => {});
     this.currentInput = null;
     this.value = '';
     this.isVisible = false;
@@ -55,20 +55,18 @@ export class Numpad {
         <button class="numpad-btn numpad-stepper" data-action="stepDown">−</button>
         <button class="numpad-btn numpad-stepper" data-action="stepUp">+</button>
 
-        <!-- Row 3: 7, 8, 9, settings -->
+        <!-- Row 3: 7, 8, 9, plate calculator -->
         <button class="numpad-btn" data-action="digit" data-value="7">7</button>
         <button class="numpad-btn" data-action="digit" data-value="8">8</button>
         <button class="numpad-btn" data-action="digit" data-value="9">9</button>
-        <button class="numpad-btn numpad-special numpad-settings" data-action="settings" style="grid-column: span 2;">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-            <path d="M10 6a1 1 0 011 1v6a1 1 0 11-2 0V7a1 1 0 011-1z"/>
-            <path d="M6 10a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1z"/>
-            <circle cx="10" cy="10" r="8" fill="none" stroke="currentColor" stroke-width="1.5"/>
-            <circle cx="10" cy="5" r="1.5"/>
-            <circle cx="10" cy="15" r="1.5"/>
-            <circle cx="5" cy="10" r="1.5"/>
-            <circle cx="15" cy="10" r="1.5"/>
+        <button class="numpad-btn numpad-plate-calc" data-action="plateCalc" style="grid-column: span 2;" title="Plate Calculator">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <!-- Weight plate icon -->
+            <circle cx="12" cy="12" r="10"/>
+            <circle cx="12" cy="12" r="6"/>
+            <circle cx="12" cy="12" r="2"/>
           </svg>
+          <span style="font-size: 0.75rem; font-weight: 500;">Plates</span>
         </button>
 
         <!-- Row 4: ., 0, backspace, NEXT -->
@@ -125,8 +123,8 @@ export class Numpad {
         case 'keyboard':
           this.toggleKeyboard();
           break;
-        case 'settings':
-          this.onSettings();
+        case 'plateCalc':
+          this.onPlateCalc();
           break;
       }
     });
