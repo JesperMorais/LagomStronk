@@ -10,28 +10,28 @@ See: .planning/REQUIREMENTS.md (updated 2026-02-05)
 ## Current Position
 
 Phase: 2 of 7 (UX Overhaul & Exercise System)
-Plan: 1 of 4
+Plan: 2 of 4
 Status: In progress
-Last activity: 2026-02-05 — Completed 02-01-PLAN.md
+Last activity: 2026-02-05 — Completed 02-02-PLAN.md
 
-Progress: [██░░░░░░░░] 26% (5/19 plans)
+Progress: [███░░░░░░░] 32% (6/19 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 5
+- Total plans completed: 6
 - Average duration: 2 min
-- Total execution time: 0.17 hours
+- Total execution time: 0.20 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-technical-foundation | 4 | 8min | 2min |
-| 02-ux-overhaul-exercise-system | 1 | 2min | 2min |
+| 02-ux-overhaul-exercise-system | 2 | 4min | 2min |
 
 **Recent Trend:**
-- Last 5 plans: 01-02 (2min), 01-03 (2min), 01-04 (2min), 02-01 (2min)
+- Last 5 plans: 01-03 (2min), 01-04 (2min), 02-01 (2min), 02-02 (2min)
 - Trend: Consistent 2min pace
 
 *Updated after each plan completion*
@@ -53,6 +53,10 @@ Progress: [██░░░░░░░░] 26% (5/19 plans)
 | 02 | 01 | Exercise metadata structure | Store as {primaryMuscles, secondaryMuscles, equipment}; flexible for filtering, accurate tracking |
 | 02 | 01 | Muscle group taxonomy | Use broad categories matching training splits; detailed enough without overwhelming |
 | 02 | 01 | Custom exercise metadata storage | Separate customExercises object; keeps EXERCISES pure, enables runtime metadata |
+| 02 | 02 | Streak calculation in hero module | Hero owns streak display, should own calculation; makes calculateStreak reusable |
+| 02 | 02 | FAB singleton pattern | Only one FAB needed app-wide; provides clean API without prop drilling |
+| 02 | 02 | Suggested workout intelligence | Analyzes last 3 workouts, rotates muscle groups (Push/Pull/Legs) based on history |
+| 02 | 02 | Empty state for new users | Hero shows encouraging message when no workouts; guides users to start first workout |
 
 ### Pending Todos
 
@@ -78,7 +82,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-05 15:08 UTC (plan execution)
-Stopped at: Completed 02-01-PLAN.md (Exercise Data Model Enhancement)
+Last session: 2026-02-05 15:09 UTC (plan execution)
+Stopped at: Completed 02-02-PLAN.md (Dashboard Foundation)
 Resume file: None
-Next: Execute 02-02 through 02-04 to complete Phase 2
+Next: Execute 02-03 through 02-04 to complete Phase 2
