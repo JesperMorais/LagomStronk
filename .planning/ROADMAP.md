@@ -32,11 +32,13 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Storage monitoring warns users at 70% capacity with actionable guidance
   4. Event bus enables features to communicate without direct coupling
   5. Developer can add new features using event subscriptions without modifying core modules
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- [ ] 01-01: TBD
-- [ ] 01-02: TBD
+- [ ] 01-01-PLAN.md — Core infrastructure (event bus + storage abstraction)
+- [ ] 01-02-PLAN.md — Migration system (localStorage to IndexedDB)
+- [ ] 01-03-PLAN.md — Storage monitoring and toast notifications
+- [ ] 01-04-PLAN.md — Integration and app initialization
 
 ### Phase 2: UX Overhaul & Exercise System
 **Goal**: Achieve parity with modern fitness apps and provide comprehensive exercise management
@@ -165,7 +167,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Technical Foundation | 0/TBD | Not started | - |
+| 1. Technical Foundation | 0/4 | Planned | - |
 | 2. UX Overhaul & Exercise System | 0/TBD | Not started | - |
 | 3. Workout Features | 0/TBD | Not started | - |
 | 4. Body Tracking | 0/TBD | Not started | - |
