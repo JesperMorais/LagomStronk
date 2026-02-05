@@ -24,7 +24,8 @@ import {
     getEstimated1RMs,
     getMuscleGroupStats,
     getExerciseHistory,
-    getMostRecentExerciseFirstSet
+    getMostRecentExerciseFirstSet,
+    getMostRecentExerciseSets
 } from './data.js';
 
 import {
@@ -1218,19 +1219,21 @@ function closeExerciseModal() {
 }
 
 // Add set row to modal
-function addSetRow(reps = '', weight = '', options = {}) {
+function addSetRow(reps = '', weight = '') {
+    const setsList = document.getElementById('sets-list');
+    const setIndex = setsList.children.length; // 0-based index of this new set
+
     // Get placeholder hints from previous workout if available
     let repsPlaceholder = '';
     let weightPlaceholder = '';
 
-    if (options.showPlaceholders && !reps && !weight) {
-        const exerciseName = document.getElementById('exercise-name')?.value;
-        if (exerciseName) {
-            const recentData = getMostRecentExerciseFirstSet(appData, exerciseName);
-            if (recentData) {
-                repsPlaceholder = recentData.reps;
-                weightPlaceholder = recentData.weight;
-            }
+    // Get hints from previous workout session (for the specific set index)
+    const exerciseName = document.getElementById('exercise-name')?.value;
+    if (exerciseName && !reps && !weight) {
+        const previousSets = getMostRecentExerciseSets(appData, exerciseName);
+        if (previousSets && previousSets[setIndex]) {
+            repsPlaceholder = `Last: ${previousSets[setIndex].reps}`;
+            weightPlaceholder = `Last: ${previousSets[setIndex].weight}`;
         }
     }
 
@@ -1238,21 +1241,7 @@ function addSetRow(reps = '', weight = '', options = {}) {
     const repsValue = reps || (repsPlaceholder ? '' : 10);
     const weightValue = weight || (weightPlaceholder ? '' : 20);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-    const setsList = document.getElementById('sets-list');
-    const setNumber = setsList.children.length + 1;
+    const setNumber = setIndex + 1;
 
     const setRow = document.createElement('div');
     setRow.className = 'set-row';

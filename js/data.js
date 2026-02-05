@@ -674,3 +674,22 @@ export function getMostRecentExerciseFirstSet(data, exerciseName) {
         weight: mostRecent.sets[0].weight
     };
 }
+
+/**
+ * Get all sets from most recent workout session for an exercise
+ * @param {Object} data - App data
+ * @param {string} exerciseName - Exercise name
+ * @returns {Array|null} Array of {reps, weight} for each set, or null
+ */
+export function getMostRecentExerciseSets(data, exerciseName) {
+    const history = getExerciseHistory(data, exerciseName);
+    if (history.length === 0) return null;
+
+    const mostRecent = history[history.length - 1];
+    if (!mostRecent.sets || mostRecent.sets.length === 0) return null;
+
+    return mostRecent.sets.map(set => ({
+        reps: set.reps,
+        weight: set.weight
+    }));
+}
