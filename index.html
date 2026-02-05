@@ -23,6 +23,7 @@
     <link rel="stylesheet" href="css/toast.css">
     <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" href="css/numpad.css">
+    <link rel="stylesheet" href="css/workout.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.min.js"></script>
 </head>
@@ -45,6 +46,15 @@
                     <span class="date-display" id="today-date"></span>
                 </div>
                 <div id="dashboard-hero"></div>
+                <div id="dashboard-volume" class="dashboard-volume">
+                    <div class="volume-chart-header">
+                        <h3 class="volume-chart-title">This Week</h3>
+                    </div>
+                    <div class="volume-chart-container">
+                        <canvas id="dashboard-volume-chart"></canvas>
+                    </div>
+                </div>
+                <div id="dashboard-prs" class="dashboard-prs"></div>
                 <div id="today-exercises" class="exercise-list">
                     <!-- Exercises will be added here -->
                 </div>

@@ -37,6 +37,9 @@ import { checkStorageCapacity } from './core/storageMonitor.js';
 import { showMigrationError } from './ui/toast.js';
 import { eventBus, EVENTS } from './core/eventBus.js';
 import { initNumpad, showNumpad, hideNumpad, getNumpad } from './ui/components/numpad.js';
+import { renderHero } from './ui/dashboard/hero.js';
+import { renderDashboardVolumeChart } from './ui/dashboard/volumeChart.js';
+import { renderPRCards } from './ui/dashboard/prCards.js';
 
 // App state
 let appData = null;
@@ -313,6 +316,23 @@ function setupEventListeners() {
 
 // Render today's workout
 function renderTodayView() {
+    // Render dashboard components
+    const heroContainer = document.getElementById('dashboard-hero');
+    if (heroContainer) {
+        renderHero(heroContainer, appData);
+    }
+
+    const volumeContainer = document.getElementById('dashboard-volume');
+    if (volumeContainer) {
+        renderDashboardVolumeChart(volumeContainer, appData.workouts);
+    }
+
+    const prContainer = document.getElementById('dashboard-prs');
+    if (prContainer) {
+        renderPRCards(prContainer, appData.workouts);
+    }
+
+    // Render workout exercises
     const workout = getWorkoutByDate(appData, currentDate);
 
     if (!workout || workout.exercises.length === 0) {
