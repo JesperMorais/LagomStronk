@@ -40,6 +40,9 @@ import { eventBus, EVENTS } from './core/eventBus.js';
 import { initNumpad, showNumpad, hideNumpad, getNumpad } from './ui/components/numpad.js';
 import { showMiniPlayer, hideMiniPlayer, getMiniPlayer } from './ui/components/miniPlayer.js';
 import { renderCalendar } from './ui/components/calendar.js';
+import { initFilterDrawer, openFilterDrawer, closeFilterDrawer, getFilterDrawer } from './ui/components/filterDrawer.js';
+import { renderExerciseList, renderExerciseGrid, renderRecentExercises } from './ui/components/exerciseCard.js';
+import { searchExercises, filterExercises, getRecentExercises } from './data/exercises.js';
 import { animateCheckmark } from './ui/animations/checkmark.js';
 import { burstConfetti } from './ui/animations/confetti.js';
 import { renderHero } from './ui/dashboard/hero.js';
@@ -54,6 +57,11 @@ let editingExerciseIndex = null;
 let activeWorkout = null; // Track active workout for mini-player
 let historyCalendar = null; // Calendar instance
 let historyViewMode = 'calendar'; // 'calendar' or 'list'
+
+// Library view state
+let libraryViewMode = 'list'; // 'list' or 'grid'
+let librarySearchQuery = '';
+let libraryFilters = { muscleGroups: [], equipment: [] };
 
 // DOM Elements
 const views = {
