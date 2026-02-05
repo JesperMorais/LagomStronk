@@ -1,36 +1,8 @@
 import { storageGet, storageSet, STORAGE_KEY } from './core/storage.js';
+import { EXERCISES, getExerciseMetadata } from './data/exercises.js';
 
-// Default exercise library
-const DEFAULT_EXERCISES = [
-    'Bench Press',
-    'Incline Bench Press',
-    'Dumbbell Bench Press',
-    'Squat',
-    'Front Squat',
-    'Deadlift',
-    'Romanian Deadlift',
-    'Overhead Press',
-    'Barbell Row',
-    'Pull-ups',
-    'Chin-ups',
-    'Lat Pulldown',
-    'Seated Cable Row',
-    'Leg Press',
-    'Leg Extension',
-    'Leg Curl',
-    'Lunges',
-    'Bulgarian Split Squat',
-    'Bicep Curls',
-    'Hammer Curls',
-    'Tricep Extensions',
-    'Tricep Pushdown',
-    'Skull Crushers',
-    'Lateral Raises',
-    'Face Pulls',
-    'Calf Raises',
-    'Plank',
-    'Ab Wheel Rollout'
-];
+// Default exercise library - derived from EXERCISES database
+const DEFAULT_EXERCISES = Object.keys(EXERCISES).filter(name => EXERCISES[name].isDefault);
 
 // Default workout templates
 const DEFAULT_WORKOUT_TEMPLATES = [
@@ -102,7 +74,9 @@ function getDefaultData() {
     return {
         workouts: [],
         exerciseLibrary: [...DEFAULT_EXERCISES],
-        workoutTemplates: [...DEFAULT_WORKOUT_TEMPLATES]
+        workoutTemplates: [...DEFAULT_WORKOUT_TEMPLATES],
+        favorites: [],
+        customExercises: {}
     };
 }
 
@@ -111,7 +85,7 @@ export async function loadData() {
     try {
         const data = await storageGet(STORAGE_KEY);
         if (data) {
-            // Ensure required fields exist (same validation as before)
+            // Ensure required fields exist (backward compatibility)
             if (!data.exerciseLibrary) {
                 data.exerciseLibrary = [...DEFAULT_EXERCISES];
             }
@@ -120,6 +94,12 @@ export async function loadData() {
             }
             if (!data.workoutTemplates) {
                 data.workoutTemplates = [...DEFAULT_WORKOUT_TEMPLATES];
+            }
+            if (!data.favorites) {
+                data.favorites = [];
+            }
+            if (!data.customExercises) {
+                data.customExercises = {};
             }
             return data;
         }
@@ -212,11 +192,19 @@ export async function removeExerciseFromWorkout(data, dateStr, exerciseIndex) {
 }
 
 // Add custom exercise to library
-export async function addCustomExercise(data, exerciseName) {
+export async function addCustomExercise(data, exerciseName, metadata = {}) {
     const trimmed = exerciseName.trim();
     if (trimmed && !data.exerciseLibrary.includes(trimmed)) {
         data.exerciseLibrary.push(trimmed);
         data.exerciseLibrary.sort();
+        // Store custom exercise metadata
+        if (!data.customExercises) data.customExercises = {};
+        data.customExercises[trimmed] = {
+            primaryMuscles: metadata.primaryMuscles || ['Other'],
+            secondaryMuscles: metadata.secondaryMuscles || [],
+            equipment: metadata.equipment || 'Other',
+            isCustom: true
+        };
         await saveData(data);
     }
     return data;
@@ -229,6 +217,19 @@ export async function removeExerciseFromLibrary(data, exerciseName) {
         data.exerciseLibrary.splice(index, 1);
         await saveData(data);
     }
+    return data;
+}
+
+// Toggle favorite status for an exercise
+export async function toggleFavoriteExercise(data, exerciseName) {
+    if (!data.favorites) data.favorites = [];
+    const index = data.favorites.indexOf(exerciseName);
+    if (index >= 0) {
+        data.favorites.splice(index, 1);
+    } else {
+        data.favorites.push(exerciseName);
+    }
+    await saveData(data);
     return data;
 }
 
