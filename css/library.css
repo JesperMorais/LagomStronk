@@ -1,0 +1,436 @@
+/* ========== LIBRARY VIEW ========== */
+
+/* Library Header */
+.library-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+/* Search Input */
+.library-search {
+  position: relative;
+  width: 100%;
+}
+
+.library-search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  opacity: 0.5;
+}
+
+.library-search-input {
+  width: 100%;
+  padding: 12px 12px 12px 40px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--background);
+  color: var(--text-primary);
+  font-size: 16px;
+}
+
+.library-search-input:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+/* Library Controls */
+.library-controls {
+  display: flex;
+  gap: var(--spacing-sm);
+  justify-content: space-between;
+  align-items: center;
+}
+
+.library-filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--background);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.library-filter-btn:hover {
+  background: var(--background-elevated);
+  border-color: var(--primary);
+}
+
+.library-filter-btn.active::after {
+  content: '';
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 8px;
+  height: 8px;
+  background: var(--primary);
+  border-radius: 50%;
+}
+
+/* View Toggle */
+.library-view-toggle {
+  display: flex;
+  gap: 4px;
+  background: var(--background-elevated);
+  border-radius: var(--radius-md);
+  padding: 4px;
+}
+
+.toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.toggle-btn:hover {
+  color: var(--text-primary);
+}
+
+.toggle-btn.active {
+  background: var(--primary);
+  color: white;
+}
+
+/* Recent Exercises Section */
+.recent-exercises-section {
+  margin-bottom: var(--spacing-lg);
+}
+
+.recent-exercises-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.recent-exercises-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+
+.recent-exercise-chip {
+  padding: 8px 16px;
+  background: var(--background-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.recent-exercise-chip:hover {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+/* Exercise Cards */
+.library-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-lg);
+}
+
+.library-list.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-md);
+}
+
+.exercise-card-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: var(--card-background);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.exercise-card-item:hover {
+  background: var(--background-elevated);
+  transform: translateY(-2px);
+}
+
+.exercise-card-item:active {
+  transform: translateY(0);
+}
+
+/* Grid View Specific */
+.exercise-card-item.grid {
+  flex-direction: column;
+  align-items: stretch;
+  text-align: center;
+}
+
+.exercise-card-item.grid .exercise-card-image {
+  width: 100%;
+  aspect-ratio: 1;
+}
+
+.exercise-card-item.grid .exercise-card-content {
+  align-items: center;
+}
+
+/* Exercise Card Image Placeholder */
+.exercise-card-image {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-sm);
+  background: var(--background-elevated);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.exercise-card-placeholder {
+  font-size: 24px;
+  opacity: 0.6;
+}
+
+/* Exercise Card Content */
+.exercise-card-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.exercise-card-title {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.exercise-card-item.grid .exercise-card-title {
+  white-space: normal;
+  line-height: 1.3;
+}
+
+/* Custom Exercise Badge */
+.exercise-custom-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* Favorite Star Button */
+.exercise-card-favorite {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.exercise-card-favorite:hover {
+  background: var(--background-elevated);
+  color: #fbbf24;
+}
+
+.exercise-card-favorite.active {
+  color: #fbbf24;
+}
+
+/* Library Actions */
+.library-actions {
+  position: sticky;
+  bottom: var(--spacing-lg);
+  padding-top: var(--spacing-lg);
+  text-align: center;
+}
+
+/* Library Empty State */
+.library-empty-state {
+  text-align: center;
+  padding: var(--spacing-xl) var(--spacing-md);
+}
+
+.library-empty-state .empty-state-icon {
+  font-size: 64px;
+  margin-bottom: var(--spacing-md);
+  opacity: 0.5;
+}
+
+.library-empty-state p {
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.library-empty-state .empty-state-hint {
+  font-size: 14px;
+  color: var(--text-tertiary);
+}
+
+/* ========== FILTER DRAWER ========== */
+
+/* Overlay */
+.filter-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s;
+  z-index: 999;
+}
+
+.filter-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Drawer */
+.filter-drawer {
+  position: fixed;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 90%;
+  max-width: 400px;
+  background: var(--card-background);
+  transform: translateX(100%);
+  transition: transform 0.3s;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.2);
+}
+
+.filter-drawer.active {
+  transform: translateX(0);
+}
+
+/* Drawer Header */
+.filter-drawer-header {
+  padding: var(--spacing-lg);
+  border-bottom: 1px solid var(--border);
+}
+
+.filter-drawer-header h3 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Drawer Body */
+.filter-drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--spacing-lg);
+}
+
+.filter-section {
+  margin-bottom: var(--spacing-xl);
+}
+
+.filter-section:last-child {
+  margin-bottom: 0;
+}
+
+.filter-section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: var(--spacing-md);
+}
+
+/* Filter Chips */
+.filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+
+.filter-chip {
+  padding: 10px 16px;
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.filter-chip:hover {
+  border-color: var(--primary);
+}
+
+.filter-chip.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+/* Drawer Footer */
+.filter-drawer-footer {
+  padding: var(--spacing-lg);
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: var(--spacing-md);
+}
+
+.filter-drawer-footer .btn {
+  flex: 1;
+}
+
+/* Filter Count Badge */
+.filter-count-badge {
+  display: none;
+  margin-left: 8px;
+  padding: 2px 8px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 600;
+}

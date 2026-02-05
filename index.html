@@ -23,6 +23,7 @@
     <link rel="stylesheet" href="css/toast.css">
     <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" href="css/numpad.css">
+    <link rel="stylesheet" href="css/library.css">
     <link rel="stylesheet" href="css/calendar.css">
     <link rel="stylesheet" href="css/workout.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -68,8 +69,29 @@
             <section id="history-view" class="view">
                 <div class="view-header">
                     <h2>Workout History</h2>
+                    <div class="history-view-toggle">
+                        <button class="toggle-btn active" data-view="calendar" id="history-calendar-btn" title="Calendar View">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                            </svg>
+                        </button>
+                        <button class="toggle-btn" data-view="list" id="history-list-btn" title="List View">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="8" y1="6" x2="21" y2="6"></line>
+                                <line x1="8" y1="12" x2="21" y2="12"></line>
+                                <line x1="8" y1="18" x2="21" y2="18"></line>
+                                <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                                <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                                <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
-                <div id="history-list" class="history-list">
+                <div id="history-calendar" class="history-calendar"></div>
+                <div id="history-list" class="history-list" style="display: none;">
                     <!-- Past workouts will be listed here -->
                 </div>
             </section>
