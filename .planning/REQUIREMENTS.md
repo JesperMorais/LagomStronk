@@ -149,52 +149,52 @@ Which phases cover which requirements. Updated during roadmap creation.
 | UX-07 | Phase 2 | Pending |
 | UX-08 | Phase 2 | Pending |
 | UX-09 | Phase 2 | Pending |
-| EXER-01 | Phase 3 | Pending |
-| EXER-02 | Phase 3 | Pending |
-| EXER-03 | Phase 3 | Pending |
-| EXER-04 | Phase 3 | Pending |
-| EXER-05 | Phase 3 | Pending |
-| EXER-06 | Phase 3 | Pending |
-| EXER-07 | Phase 3 | Pending |
-| WORK-01 | Phase 4 | Pending |
-| WORK-02 | Phase 4 | Pending |
-| WORK-03 | Phase 4 | Pending |
-| WORK-04 | Phase 4 | Pending |
-| WORK-05 | Phase 4 | Pending |
-| WORK-06 | Phase 4 | Pending |
-| BODY-01 | Phase 5 | Pending |
-| BODY-02 | Phase 5 | Pending |
-| BODY-03 | Phase 5 | Pending |
-| BODY-04 | Phase 5 | Pending |
-| BODY-05 | Phase 5 | Pending |
-| BODY-06 | Phase 5 | Pending |
-| HLTH-01 | Phase 6 | Pending |
-| HLTH-02 | Phase 6 | Pending |
-| HLTH-03 | Phase 6 | Pending |
-| HLTH-04 | Phase 6 | Pending |
-| HLTH-05 | Phase 6 | Pending |
-| HLTH-06 | Phase 6 | Pending |
-| HLTH-07 | Phase 6 | Pending |
-| HLTH-08 | Phase 6 | Pending |
-| HLTH-09 | Phase 6 | Pending |
-| HLTH-10 | Phase 6 | Pending |
-| GAME-01 | Phase 7 | Pending |
-| GAME-02 | Phase 7 | Pending |
-| GAME-03 | Phase 7 | Pending |
-| GAME-04 | Phase 7 | Pending |
-| INTL-01 | Phase 8 | Pending |
-| INTL-02 | Phase 8 | Pending |
-| INTL-03 | Phase 8 | Pending |
-| INTL-04 | Phase 8 | Pending |
-| INTL-05 | Phase 8 | Pending |
-| INTL-06 | Phase 8 | Pending |
-| INTL-07 | Phase 8 | Pending |
-| INTL-08 | Phase 8 | Pending |
-| INTL-09 | Phase 8 | Pending |
-| INTL-10 | Phase 8 | Pending |
-| DOCS-01 | Phase 9 | Pending |
-| DOCS-02 | Phase 9 | Pending |
-| DOCS-03 | Phase 9 | Pending |
+| EXER-01 | Phase 2 | Pending |
+| EXER-02 | Phase 2 | Pending |
+| EXER-03 | Phase 2 | Pending |
+| EXER-04 | Phase 2 | Pending |
+| EXER-05 | Phase 2 | Pending |
+| EXER-06 | Phase 2 | Pending |
+| EXER-07 | Phase 2 | Pending |
+| WORK-01 | Phase 3 | Pending |
+| WORK-02 | Phase 3 | Pending |
+| WORK-03 | Phase 3 | Pending |
+| WORK-04 | Phase 3 | Pending |
+| WORK-05 | Phase 3 | Pending |
+| WORK-06 | Phase 3 | Pending |
+| BODY-01 | Phase 4 | Pending |
+| BODY-02 | Phase 4 | Pending |
+| BODY-03 | Phase 4 | Pending |
+| BODY-04 | Phase 4 | Pending |
+| BODY-05 | Phase 4 | Pending |
+| BODY-06 | Phase 4 | Pending |
+| HLTH-01 | Phase 5 | Pending |
+| HLTH-02 | Phase 5 | Pending |
+| HLTH-03 | Phase 5 | Pending |
+| HLTH-04 | Phase 5 | Pending |
+| HLTH-05 | Phase 5 | Pending |
+| HLTH-06 | Phase 5 | Pending |
+| HLTH-07 | Phase 5 | Pending |
+| HLTH-08 | Phase 5 | Pending |
+| HLTH-09 | Phase 5 | Pending |
+| HLTH-10 | Phase 5 | Pending |
+| GAME-01 | Phase 6 | Pending |
+| GAME-02 | Phase 6 | Pending |
+| GAME-03 | Phase 6 | Pending |
+| GAME-04 | Phase 6 | Pending |
+| INTL-01 | Phase 6 | Pending |
+| INTL-02 | Phase 6 | Pending |
+| INTL-03 | Phase 6 | Pending |
+| INTL-04 | Phase 6 | Pending |
+| INTL-05 | Phase 6 | Pending |
+| INTL-06 | Phase 6 | Pending |
+| INTL-07 | Phase 6 | Pending |
+| INTL-08 | Phase 6 | Pending |
+| INTL-09 | Phase 6 | Pending |
+| INTL-10 | Phase 6 | Pending |
+| DOCS-01 | Phase 7 | Pending |
+| DOCS-02 | Phase 7 | Pending |
+| DOCS-03 | Phase 7 | Pending |
 
 **Coverage:**
 - v1 requirements: 56 total
@@ -203,4 +203,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-05*
-*Last updated: 2026-02-05 after initial definition*
+*Last updated: 2026-02-05 after roadmap creation with 7-phase structure*

@@ -1,0 +1,174 @@
+# Roadmap: LagomStronk
+
+## Overview
+
+This roadmap transforms LagomStronk from a functional workout tracker into an intelligent fitness companion. The journey addresses critical technical foundations first (storage migration, architecture refactoring), then fills table stakes gaps (rest timer, PR detection, exercise system), and finally adds differentiation through body tracking, health platform integration, and intelligence features. Each phase delivers complete, verifiable user value while building toward a feature set that makes strength training feel effortless.
+
+## Phases
+
+**Phase Numbering:**
+- Integer phases (1, 2, 3): Planned milestone work
+- Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
+
+Decimal phases appear between their surrounding integers in numeric order.
+
+- [ ] **Phase 1: Technical Foundation** - Storage abstraction and event infrastructure
+- [ ] **Phase 2: UX Overhaul & Exercise System** - Modern interface and enhanced exercise management
+- [ ] **Phase 3: Workout Features** - Rest timer, PR tracking, and training programs
+- [ ] **Phase 4: Body Tracking** - Measurements and progress photos
+- [ ] **Phase 5: Health Integration** - Platform sync with Health Connect and HealthKit
+- [ ] **Phase 6: Gamification & Intelligence** - Engagement systems and adaptive recommendations
+- [ ] **Phase 7: Documentation** - Polish and release preparation
+
+## Phase Details
+
+### Phase 1: Technical Foundation
+**Goal**: Establish robust storage infrastructure and decoupled architecture that enables future features without technical debt
+**Depends on**: Nothing (first phase)
+**Requirements**: FNDN-01, FNDN-02, FNDN-03
+**Success Criteria** (what must be TRUE):
+  1. Storage abstraction layer exists that supports both localStorage and IndexedDB
+  2. Current workout data migrates to new storage layer without data loss
+  3. Storage monitoring warns users at 70% capacity with actionable guidance
+  4. Event bus enables features to communicate without direct coupling
+  5. Developer can add new features using event subscriptions without modifying core modules
+**Plans**: TBD
+
+Plans:
+- [ ] 01-01: TBD
+- [ ] 01-02: TBD
+
+### Phase 2: UX Overhaul & Exercise System
+**Goal**: Achieve parity with modern fitness apps and provide comprehensive exercise management
+**Depends on**: Phase 1
+**Requirements**: UX-01, UX-02, UX-03, UX-04, UX-05, UX-06, UX-07, UX-08, UX-09, EXER-01, EXER-02, EXER-03, EXER-04, EXER-05, EXER-06, EXER-07
+**Success Criteria** (what must be TRUE):
+  1. User sees modern landing screen with workout streak, weekly volume chart, and upcoming workout suggestion
+  2. User sees recent PRs displayed prominently on dashboard
+  3. User can exit or cancel active workout from any screen
+  4. User sees previous set values as greyed-out hints during workout logging
+  5. User experiences satisfying checkmark animations when completing sets
+  6. User can view workout history in calendar format
+  7. User can filter exercises by muscle group and equipment type
+  8. User sees exercise cards with placeholder for muscle highlight images
+  9. User can create custom exercises with muscle group and equipment metadata
+  10. User accesses dedicated exercise library view with search and favorites
+  11. User sees recently used exercises for quick access
+**Plans**: TBD
+
+Plans:
+- [ ] 02-01: TBD
+- [ ] 02-02: TBD
+- [ ] 02-03: TBD
+
+### Phase 3: Workout Features
+**Goal**: Add table stakes workout capabilities that competitive apps provide
+**Depends on**: Phase 2
+**Requirements**: WORK-01, WORK-02, WORK-03, WORK-04, WORK-05, WORK-06
+**Success Criteria** (what must be TRUE):
+  1. User can start configurable rest timer that works from lock screen with media controls
+  2. User sees inline exercise history showing previous workout values during set logging
+  3. System automatically detects PRs for weight, reps, volume, and 1RM
+  4. User experiences celebration animations when achieving new PRs
+  5. User sees plate calculator showing which plates to load for target weight
+  6. User can follow multi-week training programs including PPL, 5x5, and custom programs
+**Plans**: TBD
+
+Plans:
+- [ ] 03-01: TBD
+- [ ] 03-02: TBD
+
+### Phase 4: Body Tracking
+**Goal**: Enable comprehensive body progress tracking with measurements and photos
+**Depends on**: Phase 1 (storage infrastructure required)
+**Requirements**: BODY-01, BODY-02, BODY-03, BODY-04, BODY-05, BODY-06
+**Success Criteria** (what must be TRUE):
+  1. User can log body weight with chart visualization over time
+  2. User can record muscle measurements for bicep, chest, waist, thigh with history
+  3. User sees trend charts for all measurements showing progress over time
+  4. User can capture progress photos stored securely in IndexedDB
+  5. User can view progress photos in timeline format
+  6. User can compare photos side-by-side or with overlay view
+  7. User can manually track body composition data including body fat percentage and muscle mass
+**Plans**: TBD
+
+Plans:
+- [ ] 04-01: TBD
+- [ ] 04-02: TBD
+
+### Phase 5: Health Integration
+**Goal**: Sync workout and body data with native health platforms on Android and iOS
+**Depends on**: Phase 1 (event infrastructure), Phase 4 (body data to sync)
+**Requirements**: HLTH-01, HLTH-02, HLTH-03, HLTH-04, HLTH-05, HLTH-06, HLTH-07, HLTH-08, HLTH-09, HLTH-10
+**Success Criteria** (what must be TRUE):
+  1. Android users can connect to Health Connect and grant permissions
+  2. iOS users can connect to Apple HealthKit and grant permissions
+  3. User's body weight imports automatically from health platform
+  4. User's past workouts import from health platform with deduplication
+  5. LagomStronk workouts export to health platform after completion
+  6. User sees imported steps and daily activity data in app
+  7. User sees imported heart rate data from workouts
+  8. User sees imported sleep data for recovery insights
+  9. Body measurements sync bidirectionally with health platform
+  10. Calories burned data imports and exports correctly with disclaimer on accuracy
+**Plans**: TBD
+
+Plans:
+- [ ] 05-01: TBD
+- [ ] 05-02: TBD
+- [ ] 05-03: TBD
+
+### Phase 6: Gamification & Intelligence
+**Goal**: Add engagement systems and adaptive intelligence that makes training effortless
+**Depends on**: Phase 2 (exercise system), Phase 3 (workout data for recommendations)
+**Requirements**: GAME-01, GAME-02, GAME-03, GAME-04, INTL-01, INTL-02, INTL-03, INTL-04, INTL-05, INTL-06, INTL-07, INTL-08, INTL-09, INTL-10
+**Success Criteria** (what must be TRUE):
+  1. User sees workout streak tracker with 5 per week target and rest day logic
+  2. User accesses dedicated PR feed celebrating all personal records
+  3. User earns badges for milestones including 10, 50, 100 workouts and streak achievements
+  4. User experiences streak milestone celebrations with confetti animations
+  5. User completes onboarding flow that captures goals, experience, preferences, and equipment
+  6. User receives exercise recommendations based on workout history and goals
+  7. User sees training split suggestions tailored to their profile
+  8. User gets balance alerts when muscle groups are undertrained
+  9. User receives progressive overload hints suggesting weight increases
+  10. User sees recovery insights showing muscle recovery status
+  11. User sees workout quality score based on completion rate and PRs
+  12. User receives trend analysis showing progress over time
+  13. User sees muscle heatmap visualization showing weekly training distribution
+  14. User gets fatigue detection warnings to prevent overtraining
+**Plans**: TBD
+
+Plans:
+- [ ] 06-01: TBD
+- [ ] 06-02: TBD
+- [ ] 06-03: TBD
+- [ ] 06-04: TBD
+
+### Phase 7: Documentation
+**Goal**: Prepare polished documentation for public release and contributors
+**Depends on**: Phase 6 (all features complete)
+**Requirements**: DOCS-01, DOCS-02, DOCS-03
+**Success Criteria** (what must be TRUE):
+  1. README includes screenshots and comprehensive feature overview
+  2. User guide documentation exists covering all major features
+  3. Architecture documentation exists for potential contributors
+**Plans**: TBD
+
+Plans:
+- [ ] 07-01: TBD
+
+## Progress
+
+**Execution Order:**
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
+
+| Phase | Plans Complete | Status | Completed |
+|-------|----------------|--------|-----------|
+| 1. Technical Foundation | 0/TBD | Not started | - |
+| 2. UX Overhaul & Exercise System | 0/TBD | Not started | - |
+| 3. Workout Features | 0/TBD | Not started | - |
+| 4. Body Tracking | 0/TBD | Not started | - |
+| 5. Health Integration | 0/TBD | Not started | - |
+| 6. Gamification & Intelligence | 0/TBD | Not started | - |
+| 7. Documentation | 0/TBD | Not started | - |
