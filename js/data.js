@@ -1,3 +1,5 @@
+import { storageGet, storageSet, STORAGE_KEY } from './core/storage.js';
+
 // Default exercise library
 const DEFAULT_EXERCISES = [
     'Bench Press',
@@ -95,8 +97,6 @@ const DEFAULT_WORKOUT_TEMPLATES = [
     }
 ];
 
-const STORAGE_KEY = 'lagomstronk_data';
-
 // Initialize data structure
 function getDefaultData() {
     return {
@@ -106,21 +106,18 @@ function getDefaultData() {
     };
 }
 
-// Load data from localStorage
-export function loadData() {
+// Load data from storage
+export async function loadData() {
     try {
-        const stored = localStorage.getItem(STORAGE_KEY);
-        if (stored) {
-            const data = JSON.parse(stored);
-            // Ensure exerciseLibrary exists
+        const data = await storageGet(STORAGE_KEY);
+        if (data) {
+            // Ensure required fields exist (same validation as before)
             if (!data.exerciseLibrary) {
                 data.exerciseLibrary = [...DEFAULT_EXERCISES];
             }
-            // Ensure workouts array exists
             if (!data.workouts) {
                 data.workouts = [];
             }
-            // Ensure workoutTemplates exists
             if (!data.workoutTemplates) {
                 data.workoutTemplates = [...DEFAULT_WORKOUT_TEMPLATES];
             }
@@ -132,10 +129,10 @@ export function loadData() {
     return getDefaultData();
 }
 
-// Save data to localStorage
-export function saveData(data) {
+// Save data to storage
+export async function saveData(data) {
     try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        await storageSet(STORAGE_KEY, data);
     } catch (e) {
         console.error('Error saving data:', e);
     }
@@ -156,7 +153,7 @@ export function getWorkoutByDate(data, dateStr) {
 }
 
 // Create or update workout for a date
-export function saveWorkout(data, dateStr, exercises) {
+export async function saveWorkout(data, dateStr, exercises) {
     const existingIndex = data.workouts.findIndex(w => w.date === dateStr);
 
     if (existingIndex >= 0) {
@@ -172,12 +169,12 @@ export function saveWorkout(data, dateStr, exercises) {
     // Sort workouts by date (newest first)
     data.workouts.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-    saveData(data);
+    await saveData(data);
     return data;
 }
 
 // Add exercise to a workout
-export function addExerciseToWorkout(data, dateStr, exercise) {
+export async function addExerciseToWorkout(data, dateStr, exercise) {
     const workout = getWorkoutByDate(data, dateStr);
 
     if (workout) {
@@ -191,12 +188,12 @@ export function addExerciseToWorkout(data, dateStr, exercise) {
     }
 
     data.workouts.sort((a, b) => new Date(b.date) - new Date(a.date));
-    saveData(data);
+    await saveData(data);
     return data;
 }
 
 // Remove exercise from workout
-export function removeExerciseFromWorkout(data, dateStr, exerciseIndex) {
+export async function removeExerciseFromWorkout(data, dateStr, exerciseIndex) {
     const workout = getWorkoutByDate(data, dateStr);
 
     if (workout && workout.exercises[exerciseIndex]) {
@@ -208,29 +205,29 @@ export function removeExerciseFromWorkout(data, dateStr, exerciseIndex) {
             data.workouts.splice(workoutIndex, 1);
         }
 
-        saveData(data);
+        await saveData(data);
     }
 
     return data;
 }
 
 // Add custom exercise to library
-export function addCustomExercise(data, exerciseName) {
+export async function addCustomExercise(data, exerciseName) {
     const trimmed = exerciseName.trim();
     if (trimmed && !data.exerciseLibrary.includes(trimmed)) {
         data.exerciseLibrary.push(trimmed);
         data.exerciseLibrary.sort();
-        saveData(data);
+        await saveData(data);
     }
     return data;
 }
 
 // Remove exercise from library
-export function removeExerciseFromLibrary(data, exerciseName) {
+export async function removeExerciseFromLibrary(data, exerciseName) {
     const index = data.exerciseLibrary.indexOf(exerciseName);
     if (index >= 0) {
         data.exerciseLibrary.splice(index, 1);
-        saveData(data);
+        await saveData(data);
     }
     return data;
 }
@@ -324,7 +321,7 @@ export function getWorkoutTemplateById(data, templateId) {
 }
 
 // Add a custom workout template
-export function addWorkoutTemplate(data, template) {
+export async function addWorkoutTemplate(data, template) {
     const newTemplate = {
         id: generateId(),
         name: template.name.trim(),
@@ -332,19 +329,19 @@ export function addWorkoutTemplate(data, template) {
         exercises: template.exercises
     };
     data.workoutTemplates.push(newTemplate);
-    saveData(data);
+    await saveData(data);
     return data;
 }
 
 // Update a workout template
-export function updateWorkoutTemplate(data, templateId, updates) {
+export async function updateWorkoutTemplate(data, templateId, updates) {
     const index = data.workoutTemplates.findIndex(t => t.id === templateId);
     if (index >= 0) {
         data.workoutTemplates[index] = {
             ...data.workoutTemplates[index],
             ...updates
         };
-        saveData(data);
+        await saveData(data);
     }
     return data;
 }
