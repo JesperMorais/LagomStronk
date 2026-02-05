@@ -31,8 +31,14 @@ import {
     updateVolumeChart
 } from './charts.js';
 
+import { initializeStorage } from './core/storage.js';
+import { migrateToIndexedDB, retryMigration } from './data/migration.js';
+import { checkStorageCapacity } from './core/storageMonitor.js';
+import { showMigrationError } from './ui/toast.js';
+import { eventBus, EVENTS } from './core/eventBus.js';
+
 // App state
-let appData = loadData();
+let appData = null;
 let currentView = 'today';
 let currentDate = getTodayStr();
 let editingExerciseIndex = null;
@@ -66,11 +72,49 @@ let editingTemplateId = null;
 let viewingTemplateId = null;
 
 // Initialize app
-function init() {
-    setupNavigation();
-    setupEventListeners();
-    renderTodayView();
-    updateTodayDate();
+async function init() {
+    try {
+        // 1. Initialize storage (check if already migrated)
+        await initializeStorage();
+
+        // 2. Run migration (silent, skips if already done)
+        const migrationResult = await migrateToIndexedDB();
+
+        if (!migrationResult.success) {
+            // Show error toast with retry button
+            showMigrationError(migrationResult.error, async () => {
+                const retryResult = await retryMigration();
+                if (retryResult.success) {
+                    // Reload app after successful retry
+                    window.location.reload();
+                } else {
+                    showMigrationError(retryResult.error, null);
+                }
+            });
+            // Continue loading with localStorage fallback (initializeStorage handles this)
+        }
+
+        // 3. Load app data (now async)
+        appData = await loadData();
+
+        // 4. Check storage capacity (emits events if thresholds exceeded)
+        await checkStorageCapacity();
+
+        // 5. Continue with existing initialization
+        setupNavigation();
+        setupEventListeners();
+        renderTodayView();
+        updateTodayDate();
+
+    } catch (error) {
+        console.error('App initialization failed:', error);
+        // Fallback: try to load with localStorage
+        appData = await loadData();
+        setupNavigation();
+        setupEventListeners();
+        renderTodayView();
+        updateTodayDate();
+    }
 }
 
 // Setup navigation
@@ -626,7 +670,7 @@ window.removeSetRow = function(btn) {
 };
 
 // Save exercise from modal
-function saveExercise() {
+async function saveExercise() {
     const exerciseName = document.getElementById('exercise-name').value;
     const setsList = document.getElementById('sets-list');
     const setRows = setsList.querySelectorAll('.set-row');
@@ -652,11 +696,11 @@ function saveExercise() {
         if (workout) {
             workout.exercises[editingExerciseIndex] = exercise;
             appData = { ...appData };
-            saveData(appData);
+            await saveData(appData);
         }
     } else {
         // Add new exercise
-        appData = addExerciseToWorkout(appData, currentDate, exercise);
+        appData = await addExerciseToWorkout(appData, currentDate, exercise);
     }
 
     closeExerciseModal();
@@ -664,7 +708,7 @@ function saveExercise() {
 }
 
 // Edit exercise
-window.editExercise = function(index) {
+window.editExercise = async function(index) {
     const workout = getWorkoutByDate(appData, currentDate);
     if (!workout) return;
 
@@ -699,9 +743,9 @@ window.editExercise = function(index) {
 };
 
 // Delete exercise
-window.deleteExercise = function(index) {
+window.deleteExercise = async function(index) {
     if (confirm('Delete this exercise?')) {
-        appData = removeExerciseFromWorkout(appData, currentDate, index);
+        appData = await removeExerciseFromWorkout(appData, currentDate, index);
         renderTodayView();
     }
 };
@@ -718,7 +762,7 @@ function closeCustomExerciseModal() {
 }
 
 // Save custom exercise
-function saveCustomExercise() {
+async function saveCustomExercise() {
     const name = document.getElementById('custom-exercise-name').value.trim();
 
     if (!name) {
@@ -726,15 +770,15 @@ function saveCustomExercise() {
         return;
     }
 
-    appData = addCustomExercise(appData, name);
+    appData = await addCustomExercise(appData, name);
     closeCustomExerciseModal();
     renderLibraryView();
 }
 
 // Delete from library
-window.deleteFromLibrary = function(exerciseName) {
+window.deleteFromLibrary = async function(exerciseName) {
     if (confirm(`Remove "${exerciseName}" from library?`)) {
-        appData = removeExerciseFromLibrary(appData, exerciseName);
+        appData = await removeExerciseFromLibrary(appData, exerciseName);
         renderLibraryView();
     }
 };
@@ -880,7 +924,7 @@ window.removeTemplateExerciseRow = function(btn) {
 };
 
 // Save template
-function saveTemplate() {
+async function saveTemplate() {
     const name = document.getElementById('template-name').value.trim();
     if (!name) {
         alert('Please enter a workout name.');
@@ -901,7 +945,7 @@ function saveTemplate() {
         reps: parseInt(row.querySelector('.template-ex-reps').value) || 10
     }));
 
-    appData = addWorkoutTemplate(appData, { name, exercises });
+    appData = await addWorkoutTemplate(appData, { name, exercises });
     closeCreateTemplateModal();
     renderWorkoutsView();
 }
@@ -946,18 +990,18 @@ function closeViewTemplateModal() {
 }
 
 // Start workout from template
-function startTemplateWorkout() {
+async function startTemplateWorkout() {
     if (!viewingTemplateId) return;
 
-    appData = applyWorkoutTemplate(appData, currentDate, viewingTemplateId);
+    appData = await applyWorkoutTemplate(appData, currentDate, viewingTemplateId);
     closeViewTemplateModal();
     switchView('today');
 }
 
 // Delete template
-function deleteTemplate(templateId) {
+async function deleteTemplate(templateId) {
     if (confirm('Delete this workout template?')) {
-        appData = deleteWorkoutTemplate(appData, templateId);
+        appData = await deleteWorkoutTemplate(appData, templateId);
         closeViewTemplateModal();
         renderWorkoutsView();
     }
@@ -981,17 +1025,17 @@ function closeSaveTemplateModal() {
 }
 
 // Confirm save as template
-function confirmSaveAsTemplate() {
+async function confirmSaveAsTemplate() {
     const name = document.getElementById('save-template-name').value.trim();
     if (!name) {
         alert('Please enter a template name.');
         return;
     }
 
-    appData = saveWorkoutAsTemplate(appData, currentDate, name);
+    appData = await saveWorkoutAsTemplate(appData, currentDate, name);
     closeSaveTemplateModal();
     alert('Workout saved as template!');
 }
 
 // Initialize the app
-init();
+init().catch(err => console.error('Failed to initialize app:', err));
