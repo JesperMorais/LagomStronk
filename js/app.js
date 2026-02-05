@@ -43,6 +43,7 @@ import { renderCalendar } from './ui/components/calendar.js';
 import { initFilterDrawer, openFilterDrawer, closeFilterDrawer, getFilterDrawer } from './ui/components/filterDrawer.js';
 import { renderExerciseList, renderExerciseGrid, renderRecentExercises } from './ui/components/exerciseCard.js';
 import { searchExercises, filterExercises, getRecentExercises } from './data/exercises.js';
+import { openExerciseWizard } from './ui/components/exerciseWizard.js';
 import { animateCheckmark } from './ui/animations/checkmark.js';
 import { burstConfetti } from './ui/animations/confetti.js';
 import { renderHero } from './ui/dashboard/hero.js';
@@ -302,8 +303,20 @@ function setupEventListeners() {
     document.getElementById('save-exercise').addEventListener('click', saveExercise);
     document.getElementById('add-set-btn').addEventListener('click', handleAddSet);
 
-    // Custom exercise modal
-    document.getElementById('add-custom-exercise-btn').addEventListener('click', openCustomExerciseModal);
+    // Custom exercise modal (replaced with wizard)
+    document.getElementById('add-custom-exercise-btn').addEventListener('click', () => {
+        openExerciseWizard({
+            onComplete: async (name, metadata) => {
+                appData = await addCustomExercise(appData, name, metadata);
+                renderLibraryView();
+            },
+            onCancel: () => {
+                // Nothing to do
+            }
+        });
+    });
+
+    // Old custom exercise modal handlers (kept for backward compatibility if needed)
     document.getElementById('close-custom-modal').addEventListener('click', closeCustomExerciseModal);
     document.getElementById('cancel-custom').addEventListener('click', closeCustomExerciseModal);
     document.getElementById('save-custom').addEventListener('click', saveCustomExercise);
