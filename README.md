@@ -1,8 +1,20 @@
-# LagomStronk
+<p align="center">
+  <img src="icons/logo.png" alt="LagomStronk" width="120">
+</p>
 
-[![Build APK](https://github.com/JesperMorais/LagomStronk/actions/workflows/build-apk.yml/badge.svg)](https://github.com/JesperMorais/LagomStronk/actions/workflows/build-apk.yml)
+<h1 align="center">LagomStronk</h1>
 
-Track your gym workouts, progress, and personal records.
+<p align="center">
+  <a href="https://github.com/JesperMorais/LagomStronk/actions/workflows/build-apk.yml">
+    <img src="https://github.com/JesperMorais/LagomStronk/actions/workflows/build-apk.yml/badge.svg" alt="Build APK">
+  </a>
+</p>
+
+<p align="center">Track your gym workouts, progress, and personal records.</p>
+
+<p align="center">
+  <img src="docs/screenshot.png" alt="App Screenshot" width="300">
+</p>
 
 ## Features
 
@@ -16,7 +28,7 @@ Track your gym workouts, progress, and personal records.
 
 ```bash
 npm install
-npm start        # Serve locally
+npm start
 ```
 
 ## Android Build
@@ -24,8 +36,6 @@ npm start        # Serve locally
 ```bash
 npm run build:android
 ```
-
-Or trigger the [Build APK workflow](../../actions/workflows/build-apk.yml) manually.
 
 ## Tech Stack
 
