@@ -147,6 +147,35 @@
   font-weight: 600;
 }
 
+.mini-player-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.mini-player-close {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--primary);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mini-player-close:hover {
+  transform: scale(1.1);
+  box-shadow: var(--shadow-mint-sm);
+}
+
+.mini-player-close svg {
+  color: #1a1f35;
+}
+
 .mini-player-expand {
   flex-shrink: 0;
   width: 32px;

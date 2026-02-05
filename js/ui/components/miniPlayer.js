@@ -24,13 +24,27 @@ export class MiniPlayer {
             <div class="mini-player-name"></div>
             <div class="mini-player-timer"></div>
           </div>
-          <button class="mini-player-expand" aria-label="Expand workout">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="18 15 12 9 6 15"></polyline>
-            </svg>
-          </button>
+          <div class="mini-player-actions">
+            <button class="mini-player-close" aria-label="Finish workout" title="Finish workout">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </button>
+            <button class="mini-player-expand" aria-label="Expand workout">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="18 15 12 9 6 15"></polyline>
+              </svg>
+            </button>
+          </div>
         </div>
       `;
+
+      // Add click handler for close button
+      const closeBtn = this.element.querySelector('.mini-player-close');
+      closeBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.confirmClose();
+      });
 
       // Add click handler for expand button
       const expandBtn = this.element.querySelector('.mini-player-expand');
@@ -152,6 +166,13 @@ export class MiniPlayer {
     window.dispatchEvent(new CustomEvent('mini-player:expand', {
       detail: { workout: this.workout }
     }));
+  }
+
+  confirmClose() {
+    const confirmed = confirm('Finish this workout?');
+    if (confirmed && window.endWorkout) {
+      window.endWorkout();
+    }
   }
 }
 
