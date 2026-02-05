@@ -56,6 +56,8 @@ let currentView = 'today';
 let currentDate = getTodayStr();
 let editingExerciseIndex = null;
 let activeWorkout = null; // Track active workout for mini-player
+let workoutStartTime = null; // Track workout start time
+let workoutTimerInterval = null; // Timer interval
 let historyCalendar = null; // Calendar instance
 let historyViewMode = 'calendar'; // 'calendar' or 'list'
 
@@ -129,9 +131,12 @@ async function init() {
         initNumpad({
             step: 2.5, // Default step for weight
             onNext: handleNumpadNext,
-            onSettings: openNumpadSettings
+            onSettings: openPlateCalculator
         });
         attachNumpadToInputs();
+
+        // Check for active workout
+        checkActiveWorkout();
 
         renderTodayView();
         updateTodayDate();
@@ -147,9 +152,12 @@ async function init() {
         initNumpad({
             step: 2.5,
             onNext: handleNumpadNext,
-            onSettings: openNumpadSettings
+            onSettings: openPlateCalculator
         });
         attachNumpadToInputs();
+
+        // Check for active workout
+        checkActiveWorkout();
 
         renderTodayView();
         updateTodayDate();
@@ -187,9 +195,14 @@ function handleNumpadNext(value, currentInput) {
     }
 }
 
-function openNumpadSettings() {
-    // Future: open step size settings modal
-    console.log('Numpad settings - TODO');
+function openPlateCalculator() {
+    // Open plate calculator modal
+    const modal = document.getElementById('plate-calculator-modal');
+    if (modal) {
+        modal.classList.add('active');
+    } else {
+        console.log('Plate calculator - TODO: implement modal');
+    }
 }
 
 function attachNumpadToInputs() {
@@ -364,6 +377,13 @@ function setupEventListeners() {
         switchView('today');
     });
 
+    // FAB click handler - Start new workout
+    document.addEventListener('click', (e) => {
+        if (e.target.closest('#start-workout-fab')) {
+            startNewWorkout();
+        }
+    });
+
     // History view toggle
     document.getElementById('history-calendar-btn').addEventListener('click', () => {
         historyViewMode = 'calendar';
@@ -406,37 +426,78 @@ function setupEventListeners() {
 
 // Render today's workout
 function renderTodayView() {
-    // Render dashboard components
+    const workout = getWorkoutByDate(appData, currentDate);
+    const hasActiveWorkout = workout && workout.startTime;
+
+    // Render dashboard stats section (side-by-side)
+    const statsContainer = document.getElementById('dashboard-stats');
+    if (statsContainer) {
+        renderDashboardStats(statsContainer, appData);
+    }
+
+    // Hide hero section (replaced by compact stats)
     const heroContainer = document.getElementById('dashboard-hero');
     if (heroContainer) {
-        renderHero(heroContainer, appData);
+        heroContainer.style.display = 'none';
     }
 
-    const volumeContainer = document.getElementById('dashboard-volume');
-    if (volumeContainer) {
-        renderDashboardVolumeChart(volumeContainer, appData.workouts);
-    }
-
-    const prContainer = document.getElementById('dashboard-prs');
-    if (prContainer) {
-        renderPRCards(prContainer, appData.workouts);
+    // Show/hide FAB based on active workout
+    const fab = document.getElementById('start-workout-fab');
+    if (fab) {
+        if (hasActiveWorkout) {
+            fab.style.display = 'none';
+        } else {
+            fab.style.display = 'flex';
+            fab.classList.add('visible');
+        }
     }
 
     // Render workout exercises
-    const workout = getWorkoutByDate(appData, currentDate);
-
     if (!workout || workout.exercises.length === 0) {
-        todayExercisesEl.innerHTML = `
-            <div class="empty-state">
-                <div class="empty-state-icon">💪</div>
-                <p>No exercises logged today.</p>
-                <p>Tap the button below to add your first exercise!</p>
-            </div>
-        `;
+        if (hasActiveWorkout) {
+            // Active workout with no exercises yet
+            todayExercisesEl.innerHTML = `
+                <div class="active-workout-section">
+                    <div class="active-workout-header">
+                        <h3 class="active-workout-name">${workout.name || "Today's Workout"}</h3>
+                        <span class="active-workout-timer" id="workout-timer">${formatWorkoutTimer(workout.startTime)}</span>
+                    </div>
+                    <div class="empty-state empty-state-compact">
+                        <p>No exercises yet. Add your first exercise!</p>
+                    </div>
+                    <button class="btn btn-primary btn-add-exercise-inline" onclick="openExerciseModal()">
+                        + Add Exercise
+                    </button>
+                </div>
+            `;
+            startWorkoutTimerUpdate();
+        } else {
+            todayExercisesEl.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">💪</div>
+                    <p>Ready to train?</p>
+                    <p class="empty-state-hint">Tap "Start Workout" to begin</p>
+                </div>
+            `;
+        }
         return;
     }
 
-    todayExercisesEl.innerHTML = workout.exercises.map((exercise, index) => `
+    // Render exercises (with or without active workout header)
+    let exercisesHtml = '';
+
+    if (hasActiveWorkout) {
+        exercisesHtml = `
+            <div class="active-workout-section">
+                <div class="active-workout-header">
+                    <h3 class="active-workout-name">${workout.name || "Today's Workout"}</h3>
+                    <span class="active-workout-timer" id="workout-timer">${formatWorkoutTimer(workout.startTime)}</span>
+                </div>
+        `;
+        startWorkoutTimerUpdate();
+    }
+
+    exercisesHtml += workout.exercises.map((exercise, index) => `
         <div class="exercise-card">
             <div class="exercise-card-header">
                 <span class="exercise-card-title">${exercise.name}</span>
@@ -465,6 +526,167 @@ function renderTodayView() {
             </table>
         </div>
     `).join('');
+
+    if (hasActiveWorkout) {
+        exercisesHtml += `
+                <button class="btn btn-primary btn-add-exercise-inline" onclick="openExerciseModal()">
+                    + Add Exercise
+                </button>
+            </div>
+        `;
+    }
+
+    todayExercisesEl.innerHTML = exercisesHtml;
+}
+
+// Render compact side-by-side dashboard stats
+function renderDashboardStats(container, data) {
+    const weekData = getWeeklyVolume(data.workouts);
+    const totalVolume = weekData.reduce((sum, v) => sum + v, 0);
+    const prs = getRecentPRsCompact(data.workouts, 2);
+
+    container.innerHTML = `
+        <div class="dashboard-stats-row">
+            <div class="stats-card stats-card-volume">
+                <div class="stats-card-header">
+                    <h4 class="stats-card-title">This Week</h4>
+                    <button class="stats-settings-btn" onclick="openVolumeSettings()" title="Settings">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="stats-card-value">${formatVolumeCompact(totalVolume)}</div>
+                <div class="stats-mini-chart">
+                    ${weekData.map((vol, i) => {
+                        const maxVol = Math.max(...weekData, 1);
+                        const height = Math.max(4, (vol / maxVol) * 100);
+                        const days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+                        return `<div class="mini-bar-container">
+                            <div class="mini-bar" style="height: ${height}%"></div>
+                            <span class="mini-bar-label">${days[i]}</span>
+                        </div>`;
+                    }).join('')}
+                </div>
+            </div>
+            <div class="stats-card stats-card-prs">
+                <div class="stats-card-header">
+                    <h4 class="stats-card-title">Recent PRs</h4>
+                    ${prs.length > 2 ? '<a class="stats-view-all" onclick="switchView(\'progress\')">View all</a>' : ''}
+                </div>
+                ${prs.length > 0 ? prs.map(pr => `
+                    <div class="pr-compact">
+                        <span class="pr-compact-exercise">${pr.exercise}</span>
+                        <span class="pr-compact-value">💪 ${pr.value}kg</span>
+                    </div>
+                `).join('') : '<div class="pr-empty-compact">No PRs yet</div>'}
+            </div>
+        </div>
+    `;
+}
+
+// Get compact PR list
+function getRecentPRsCompact(workouts, limit = 2) {
+    if (!workouts || workouts.length === 0) return [];
+
+    const exerciseBests = {};
+    const prs = [];
+
+    const sortedWorkouts = [...workouts].sort((a, b) =>
+        new Date(b.date) - new Date(a.date)
+    );
+
+    for (let i = sortedWorkouts.length - 1; i >= 0; i--) {
+        const workout = sortedWorkouts[i];
+        workout.exercises.forEach(exercise => {
+            const maxWeight = Math.max(...exercise.sets.map(s => s.weight || 0));
+            if (!exerciseBests[exercise.name] || maxWeight > exerciseBests[exercise.name]) {
+                if (exerciseBests[exercise.name] && maxWeight > exerciseBests[exercise.name]) {
+                    prs.push({
+                        exercise: exercise.name,
+                        value: maxWeight,
+                        date: workout.date
+                    });
+                }
+                exerciseBests[exercise.name] = maxWeight;
+            }
+        });
+    }
+
+    return prs.sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, limit);
+}
+
+// Get weekly volume data
+function getWeeklyVolume(workouts) {
+    if (!workouts || workouts.length === 0) {
+        return Array(7).fill(0);
+    }
+
+    const today = new Date();
+    const currentDay = today.getDay();
+    const mondayOffset = currentDay === 0 ? -6 : 1 - currentDay;
+
+    const monday = new Date(today);
+    monday.setDate(today.getDate() + mondayOffset);
+    monday.setHours(0, 0, 0, 0);
+
+    const weekVolume = Array(7).fill(0);
+
+    workouts.forEach(workout => {
+        const workoutDate = new Date(workout.date);
+        workoutDate.setHours(0, 0, 0, 0);
+
+        const daysSinceMonday = Math.floor((workoutDate - monday) / (1000 * 60 * 60 * 24));
+
+        if (daysSinceMonday >= 0 && daysSinceMonday < 7) {
+            const volume = workout.exercises.reduce((total, exercise) => {
+                return total + exercise.sets.reduce((setTotal, set) => {
+                    return setTotal + (set.reps * set.weight);
+                }, 0);
+            }, 0);
+            weekVolume[daysSinceMonday] += volume;
+        }
+    });
+
+    return weekVolume;
+}
+
+// Format volume for compact display
+function formatVolumeCompact(volume) {
+    if (volume >= 1000) {
+        return (volume / 1000).toFixed(1) + 'k kg';
+    }
+    return volume + ' kg';
+}
+
+// Format workout timer
+function formatWorkoutTimer(startTime) {
+    const elapsed = Math.floor((Date.now() - startTime) / 1000);
+    const mins = Math.floor(elapsed / 60);
+    const secs = elapsed % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+}
+
+// Start workout timer updates
+function startWorkoutTimerUpdate() {
+    if (workoutTimerInterval) {
+        clearInterval(workoutTimerInterval);
+    }
+
+    const updateTimer = () => {
+        const timerEl = document.getElementById('workout-timer');
+        if (timerEl && workoutStartTime) {
+            timerEl.textContent = formatWorkoutTimer(workoutStartTime);
+        }
+    };
+
+    workoutTimerInterval = setInterval(updateTimer, 1000);
+}
+
+// Volume settings placeholder
+function openVolumeSettings() {
+    console.log('Volume settings - TODO');
 }
 
 // Render history view
@@ -1426,6 +1648,104 @@ async function confirmSaveAsTemplate() {
     closeSaveTemplateModal();
     alert('Workout saved as template!');
 }
+
+// ========== NEW WORKOUT FLOW ==========
+
+// Get next workout number for auto-naming
+function getNextWorkoutNumber() {
+    const existingNames = appData.workouts
+        .map(w => w.name)
+        .filter(name => name && name.startsWith('My Workout #'));
+
+    if (existingNames.length === 0) return 1;
+
+    const numbers = existingNames.map(name => {
+        const match = name.match(/My Workout #(\d+)/);
+        return match ? parseInt(match[1], 10) : 0;
+    });
+
+    return Math.max(...numbers) + 1;
+}
+
+// Start a new workout
+async function startNewWorkout() {
+    const workoutNumber = getNextWorkoutNumber();
+    const workoutName = `My Workout #${workoutNumber}`;
+
+    // Create empty workout object
+    const newWorkout = {
+        id: Date.now().toString(),
+        date: currentDate,
+        name: workoutName,
+        startTime: Date.now(),
+        exercises: []
+    };
+
+    // Check if workout already exists for today
+    const existingWorkout = getWorkoutByDate(appData, currentDate);
+    if (existingWorkout) {
+        // Update existing workout with timer info
+        existingWorkout.name = existingWorkout.name || workoutName;
+        existingWorkout.startTime = existingWorkout.startTime || Date.now();
+    } else {
+        // Add new workout
+        appData.workouts.push(newWorkout);
+    }
+
+    await saveData(appData);
+
+    // Set active workout state
+    activeWorkout = existingWorkout || newWorkout;
+    workoutStartTime = activeWorkout.startTime;
+
+    // Show mini-player immediately
+    showMiniPlayer({
+        name: activeWorkout.name,
+        date: currentDate,
+        startTime: workoutStartTime
+    });
+
+    // Stay on dashboard and render active workout state
+    renderTodayView();
+}
+
+// Check for active workout on load
+function checkActiveWorkout() {
+    const todayWorkout = getWorkoutByDate(appData, currentDate);
+    if (todayWorkout && todayWorkout.startTime) {
+        // There's an active workout from today
+        activeWorkout = todayWorkout;
+        workoutStartTime = todayWorkout.startTime;
+
+        // Show mini-player if not on today view
+        if (currentView !== 'today') {
+            showMiniPlayer({
+                name: todayWorkout.name || "Today's Workout",
+                date: currentDate,
+                startTime: workoutStartTime
+            });
+        }
+    }
+}
+
+// End workout
+async function endWorkout() {
+    if (!activeWorkout) return;
+
+    const workout = getWorkoutByDate(appData, currentDate);
+    if (workout) {
+        workout.endTime = Date.now();
+        await saveData(appData);
+    }
+
+    activeWorkout = null;
+    workoutStartTime = null;
+    hideMiniPlayer();
+    renderTodayView();
+}
+
+// Make endWorkout globally accessible
+window.endWorkout = endWorkout;
 
 // Initialize the app
 init().catch(err => console.error('Failed to initialize app:', err));

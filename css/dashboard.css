@@ -1,4 +1,197 @@
-/* Dashboard Hero Section */
+/* ========== DASHBOARD STATS ROW ========== */
+
+.dashboard-stats {
+    margin-bottom: var(--spacing-lg);
+}
+
+.dashboard-stats-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-md);
+}
+
+.stats-card {
+    background: linear-gradient(135deg, rgba(35, 44, 51, 0.8), rgba(26, 31, 53, 0.6));
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-md);
+}
+
+.stats-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-sm);
+}
+
+.stats-card-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0;
+}
+
+.stats-settings-btn {
+    background: transparent;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    color: var(--text-tertiary);
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+
+.stats-settings-btn:hover {
+    opacity: 1;
+    color: var(--mint);
+}
+
+.stats-view-all {
+    font-size: 0.75rem;
+    color: var(--mint);
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.stats-view-all:hover {
+    text-decoration: underline;
+}
+
+.stats-card-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-sm);
+}
+
+/* Mini bar chart */
+.stats-mini-chart {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    height: 40px;
+    gap: 4px;
+}
+
+.mini-bar-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+}
+
+.mini-bar {
+    width: 100%;
+    max-width: 20px;
+    background: linear-gradient(to top, rgba(209, 255, 198, 0.3), var(--mint));
+    border-radius: 2px;
+    margin-top: auto;
+    min-height: 4px;
+    transition: height 0.3s ease;
+}
+
+.mini-bar-label {
+    font-size: 0.5rem;
+    color: var(--text-tertiary);
+    margin-top: 2px;
+}
+
+/* Compact PR display */
+.pr-compact {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-xs) 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.pr-compact:last-child {
+    border-bottom: none;
+}
+
+.pr-compact-exercise {
+    font-size: 0.875rem;
+    color: var(--mint);
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 60%;
+}
+
+.pr-compact-value {
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.pr-empty-compact {
+    font-size: 0.875rem;
+    color: var(--text-tertiary);
+    text-align: center;
+    padding: var(--spacing-md) 0;
+}
+
+/* Active workout section */
+.active-workout-section {
+    background: linear-gradient(135deg, rgba(35, 44, 51, 0.8), rgba(26, 31, 53, 0.6));
+    border: 1px solid var(--border-mint);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.active-workout-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-md);
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.active-workout-name {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--mint);
+    margin: 0;
+}
+
+.active-workout-timer {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
+    background: rgba(209, 255, 198, 0.1);
+    padding: 4px 12px;
+    border-radius: var(--radius);
+}
+
+.btn-add-exercise-inline {
+    width: 100%;
+    margin-top: var(--spacing-md);
+}
+
+.empty-state-compact {
+    padding: var(--spacing-md);
+    text-align: center;
+}
+
+.empty-state-compact p {
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.empty-state-hint {
+    font-size: 0.875rem;
+    color: var(--text-tertiary);
+    margin-top: var(--spacing-xs);
+}
+
+/* Dashboard Hero Section (hidden by default now) */
 .dashboard-hero {
     background: linear-gradient(135deg, rgba(35, 44, 51, 0.8), rgba(26, 31, 53, 0.6));
     border: 1px solid var(--border-color);
