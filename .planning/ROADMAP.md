@@ -56,12 +56,17 @@ Plans:
   9. User can create custom exercises with muscle group and equipment metadata
   10. User accesses dedicated exercise library view with search and favorites
   11. User sees recently used exercises for quick access
-**Plans**: TBD
+**Plans**: 8 plans
 
 Plans:
-- [ ] 02-01: TBD
-- [ ] 02-02: TBD
-- [ ] 02-03: TBD
+- [ ] 02-01-PLAN.md — Exercise data model with metadata (muscle groups, equipment, filtering)
+- [ ] 02-02-PLAN.md — Dashboard foundation (hero section, streak, FAB)
+- [ ] 02-03-PLAN.md — Dashboard charts and PR cards (volume chart, recent PRs)
+- [ ] 02-04-PLAN.md — Custom numpad component
+- [ ] 02-05-PLAN.md — Workout logging UX (hints, animations, mini-player)
+- [ ] 02-06-PLAN.md — Workout history calendar
+- [ ] 02-07-PLAN.md — Exercise library UI (filter, search, favorites)
+- [ ] 02-08-PLAN.md — Custom exercise wizard
 
 ### Phase 3: Workout Features
 **Goal**: Add table stakes workout capabilities that competitive apps provide
@@ -167,8 +172,8 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Technical Foundation | 4/4 | ✓ Complete | 2026-02-05 |
-| 2. UX Overhaul & Exercise System | 0/TBD | Not started | - |
+| 1. Technical Foundation | 4/4 | Complete | 2026-02-05 |
+| 2. UX Overhaul & Exercise System | 0/8 | Planned | - |
 | 3. Workout Features | 0/TBD | Not started | - |
 | 4. Body Tracking | 0/TBD | Not started | - |
 | 5. Health Integration | 0/TBD | Not started | - |
