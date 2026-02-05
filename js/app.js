@@ -806,9 +806,41 @@ function openExerciseModal() {
     // Add event listener for exercise selection (auto-fill from history)
     // Clone and replace to prevent duplicate listeners
     const newSelect = exerciseNameSelect.cloneNode(true);
+    exerciseNameSelect.parentNode.replaceChild(newSelect, exerciseNameSelect);
+    newSelect.addEventListener('change', handleExerciseSelection);
 
+    // Trigger auto-fill for the default selected exercise
+    handleExerciseSelection({ target: newSelect });
 
+    exerciseModal.classList.add('active');
+}
 
+// Close exercise modal
+function closeExerciseModal() {
+    exerciseModal.classList.remove('active');
+    editingExerciseIndex = null;
+}
+
+// Add set row to modal
+function addSetRow(reps = '', weight = '', options = {}) {
+    // Get placeholder hints from previous workout if available
+    let repsPlaceholder = '';
+    let weightPlaceholder = '';
+
+    if (options.showPlaceholders && !reps && !weight) {
+        const exerciseName = document.getElementById('exercise-name')?.value;
+        if (exerciseName) {
+            const recentData = getMostRecentExerciseFirstSet(appData, exerciseName);
+            if (recentData) {
+                repsPlaceholder = recentData.reps;
+                weightPlaceholder = recentData.weight;
+            }
+        }
+    }
+
+    // Use default values if not provided and no placeholders
+    const repsValue = reps || (repsPlaceholder ? '' : 10);
+    const weightValue = weight || (weightPlaceholder ? '' : 20);
 
 
 
@@ -829,11 +861,18 @@ function openExerciseModal() {
     const setRow = document.createElement('div');
     setRow.className = 'set-row';
     setRow.innerHTML = `
+        <div class="set-checkbox" onclick="handleSetComplete(this, this.parentElement)" title="Mark as complete"></div>
         <span>Set ${setNumber}</span>
         <label>Reps</label>
-        <input type="number" class="number-input set-reps" value="${reps}" min="1" max="100">
+        <input type="number" class="number-input set-reps"
+               value="${repsValue}"
+               ${repsPlaceholder ? `placeholder="${repsPlaceholder}"` : ''}
+               min="1" max="100" step="1">
         <label>kg</label>
-        <input type="number" class="number-input set-weight" value="${weight}" min="0" max="1000" step="0.5">
+        <input type="number" class="number-input set-weight"
+               value="${weightValue}"
+               ${weightPlaceholder ? `placeholder="${weightPlaceholder}"` : ''}
+               min="0" max="1000" step="2.5">
         <button class="btn-icon remove-set-btn" onclick="removeSetRow(this)" title="Remove">✕</button>
     `;
 
