@@ -8,6 +8,7 @@ import {
     removeExerciseFromWorkout,
     addCustomExercise,
     removeExerciseFromLibrary,
+    toggleFavoriteExercise,
     getWorkoutsSorted,
     getUsedExercises,
     getWorkoutTemplates,
@@ -37,6 +38,10 @@ import { checkStorageCapacity } from './core/storageMonitor.js';
 import { showMigrationError } from './ui/toast.js';
 import { eventBus, EVENTS } from './core/eventBus.js';
 import { initNumpad, showNumpad, hideNumpad, getNumpad } from './ui/components/numpad.js';
+import { showMiniPlayer, hideMiniPlayer, getMiniPlayer } from './ui/components/miniPlayer.js';
+import { renderCalendar } from './ui/components/calendar.js';
+import { animateCheckmark } from './ui/animations/checkmark.js';
+import { burstConfetti } from './ui/animations/confetti.js';
 import { renderHero } from './ui/dashboard/hero.js';
 import { renderDashboardVolumeChart } from './ui/dashboard/volumeChart.js';
 import { renderPRCards } from './ui/dashboard/prCards.js';
@@ -46,6 +51,9 @@ let appData = null;
 let currentView = 'today';
 let currentDate = getTodayStr();
 let editingExerciseIndex = null;
+let activeWorkout = null; // Track active workout for mini-player
+let historyCalendar = null; // Calendar instance
+let historyViewMode = 'calendar'; // 'calendar' or 'list'
 
 // DOM Elements
 const views = {
@@ -228,6 +236,23 @@ function switchView(viewName) {
         views[key].classList.toggle('active', key === viewName);
     });
 
+    // Handle mini-player for active workouts
+    if (viewName === 'today') {
+        // Hide mini-player when viewing today
+        hideMiniPlayer();
+        activeWorkout = null;
+    } else {
+        // Show mini-player if there are exercises in today's workout
+        const workout = getWorkoutByDate(appData, currentDate);
+        if (workout && workout.exercises.length > 0) {
+            activeWorkout = {
+                name: "Today's Workout",
+                date: currentDate
+            };
+            showMiniPlayer(activeWorkout);
+        }
+    }
+
     // Render view content
     switch (viewName) {
         case 'today':
@@ -312,6 +337,26 @@ function setupEventListeners() {
     document.getElementById('close-save-template-modal').addEventListener('click', closeSaveTemplateModal);
     document.getElementById('cancel-save-template').addEventListener('click', closeSaveTemplateModal);
     document.getElementById('confirm-save-template').addEventListener('click', confirmSaveAsTemplate);
+
+    // Mini-player expand event
+    window.addEventListener('mini-player:expand', () => {
+        switchView('today');
+    });
+
+    // History view toggle
+    document.getElementById('history-calendar-btn').addEventListener('click', () => {
+        historyViewMode = 'calendar';
+        document.getElementById('history-calendar-btn').classList.add('active');
+        document.getElementById('history-list-btn').classList.remove('active');
+        renderHistoryView();
+    });
+
+    document.getElementById('history-list-btn').addEventListener('click', () => {
+        historyViewMode = 'list';
+        document.getElementById('history-list-btn').classList.add('active');
+        document.getElementById('history-calendar-btn').classList.remove('active');
+        renderHistoryView();
+    });
 }
 
 // Render today's workout
@@ -379,6 +424,27 @@ function renderTodayView() {
 
 // Render history view
 function renderHistoryView() {
+    const calendarContainer = document.getElementById('history-calendar');
+    const listContainer = document.getElementById('history-list');
+
+    if (historyViewMode === 'calendar') {
+        calendarContainer.style.display = 'block';
+        listContainer.style.display = 'none';
+
+        if (!historyCalendar) {
+            historyCalendar = renderCalendar(calendarContainer, appData.workouts);
+        } else {
+            historyCalendar.updateWorkouts(appData.workouts);
+        }
+    } else {
+        calendarContainer.style.display = 'none';
+        listContainer.style.display = 'block';
+        renderHistoryList();
+    }
+}
+
+function renderHistoryList() {
+    const historyListEl = document.getElementById('history-list');
     const workouts = getWorkoutsSorted(appData);
 
     if (workouts.length === 0) {
@@ -671,6 +737,30 @@ function renderLibraryView() {
     `).join('');
 }
 
+// Handle set completion (checkbox animation)
+function handleSetComplete(checkbox, setRow) {
+    if (checkbox.classList.contains('checked')) {
+        // Unchecking
+        checkbox.classList.remove('checked');
+        setRow.classList.remove('completed');
+        return;
+    }
+
+    // Checking
+    checkbox.classList.add('checked');
+    animateCheckmark(checkbox);
+    burstConfetti(checkbox);
+    setRow.classList.add('completed');
+
+    // Haptic feedback
+    if (navigator.vibrate) {
+        navigator.vibrate(50);
+    }
+}
+
+// Make handleSetComplete globally accessible for onclick handlers
+window.handleSetComplete = handleSetComplete;
+
 // Handle exercise selection (between-sessions auto-fill)
 function handleExerciseSelection(event) {
     const exerciseName = event.target.value;
@@ -708,23 +798,23 @@ function openExerciseModal() {
     // Add event listener for exercise selection (auto-fill from history)
     // Clone and replace to prevent duplicate listeners
     const newSelect = exerciseNameSelect.cloneNode(true);
-    exerciseNameSelect.parentNode.replaceChild(newSelect, exerciseNameSelect);
-    newSelect.addEventListener('change', handleExerciseSelection);
 
-    // Trigger auto-fill for the default selected exercise
-    handleExerciseSelection({ target: newSelect });
 
-    exerciseModal.classList.add('active');
-}
 
-// Close exercise modal
-function closeExerciseModal() {
-    exerciseModal.classList.remove('active');
-    editingExerciseIndex = null;
-}
 
-// Add set row to modal
-function addSetRow(reps = 10, weight = 20) {
+
+
+
+
+
+
+
+
+
+
+
+
+
     const setsList = document.getElementById('sets-list');
     const setNumber = setsList.children.length + 1;
 
