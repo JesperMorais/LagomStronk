@@ -1215,6 +1215,16 @@ body.offline .main-content {
     opacity: 0.7;
 }
 
+/* Pre-filled values shown in softer gray, brighten when editing */
+.inline-input {
+    color: #9ca3af;
+}
+
+.inline-input:focus,
+.inline-input.numpad-active {
+    color: var(--text-primary);
+}
+
 .inline-set-row.completed .inline-input {
     background-color: rgba(209, 255, 198, 0.06);
     border-color: rgba(209, 255, 198, 0.15);
