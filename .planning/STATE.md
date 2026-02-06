@@ -5,23 +5,23 @@
 See: .planning/REQUIREMENTS.md (updated 2026-02-05)
 
 **Core value:** Make strength training feel effortless and intelligent
-**Current focus:** Phase 3 - Workout Features (next)
+**Current focus:** Phase 3 - Workout Features (in progress)
 
 ## Current Position
 
-Phase: 2 of 7 (UX Overhaul & Exercise System) - COMPLETE
-Plan: 11 of 11 (all plans executed, including gap closures)
-Status: Phase 2 complete - ready for Phase 3
-Last activity: 2026-02-06 - Completed 02-11-PLAN.md (final gap closure)
+Phase: 3 of 7 (Workout Features) - IN PROGRESS
+Plan: 1 of 4 complete
+Status: In progress - executing Phase 3 plans
+Last activity: 2026-02-06 - Completed 03-01-PLAN.md (Training Programs Data Model)
 
-Progress: [██████░░░░] 65% (15/~22 plans)
+Progress: [██████░░░░] 68% (16/~23 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 16
+- Total plans completed: 17
 - Average duration: 2.8 min
-- Total execution time: 0.75 hours
+- Total execution time: 0.8 hours
 
 **By Phase:**
 
@@ -29,10 +29,11 @@ Progress: [██████░░░░] 65% (15/~22 plans)
 |-------|-------|-------|----------|
 | 01-technical-foundation | 4 | 8min | 2min |
 | 02-ux-overhaul-exercise-system | 11 | 45min | 4.1min |
+| 03-workout-features | 1 | 3min | 3min |
 
 **Recent Trend:**
-- Last 5 plans: 02-08 (1min), 02-09 (8min), 02-10 (8min), 02-11 (3min)
-- Trend: Gap closure plans faster than feature implementations
+- Last 5 plans: 02-09 (8min), 02-10 (8min), 02-11 (3min), 03-01 (3min)
+- Trend: Data model plans completing quickly
 
 *Updated after each plan completion*
 
@@ -106,6 +107,11 @@ Progress: [██████░░░░] 65% (15/~22 plans)
 | 02 | 11 | CSS transitions with visibility pattern | Changed from display: none to visibility/pointer-events for smooth animations |
 | 02 | 11 | GPU acceleration for mobile animations | will-change: transform promotes to GPU layer for 60fps on mobile |
 | 02 | 11 | Defensive DOM element validation | showNumpad() checks element existence before operations to prevent errors |
+| 03 | 01 | 6 core training programs | PPL, 5x5, Upper/Lower, Bro Split, Full Body 3x, PHUL cover beginner to advanced |
+| 03 | 01 | Cyclic scheduling | currentDay cycles through schedule using modulo arithmetic for indefinite program continuation |
+| 03 | 01 | +2.5kg progression | Standard plate increment for progressive overload suggestions |
+| 03 | 01 | Nullable activeProgram | Stored in main data object, null when no program active |
+| 03 | 01 | Rest day allowance in adherence | Adherence streak allows 1 rest day between workouts without breaking streak |
 
 ### Pending Todos
 
@@ -137,7 +143,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-06 (gap closure execution)
-Stopped at: Completed 02-11-PLAN.md (Numpad Fixes and Animation Polish)
+Last session: 2026-02-06 (Phase 3 execution)
+Stopped at: Completed 03-01-PLAN.md (Training Programs Data Model)
 Resume file: None
-Next: Phase 2 complete - ready to plan Phase 3 (Workout Features)
+Next: Continue Phase 3 with 03-02-PLAN.md (Program UI)
