@@ -1462,6 +1462,39 @@ export function getProgressiveOverloadSuggestion(data, exerciseName) {
     };
 }
 
+// Check if a set represents a new personal record
+// Returns array of PR types achieved: ['weight', 'e1rm']
+export function checkForPR(data, exerciseName, newSet, todayDate) {
+    const prTypes = [];
+
+    // Validate set has weight and reps
+    if (!newSet.weight || newSet.weight <= 0 || !newSet.reps || newSet.reps <= 0) {
+        return prTypes;
+    }
+
+    // Get current PRs for this exercise
+    const prs = getPersonalRecords(data);
+    const e1rms = getEstimated1RMs(data);
+
+    const exercisePR = prs[exerciseName];
+    const exerciseE1RM = e1rms[exerciseName];
+
+    // Calculate new set's estimated 1RM
+    const newE1RM = calculateEstimated1RM(newSet.weight, newSet.reps);
+
+    // Check weight PR (heaviest ever for this exercise)
+    if (!exercisePR || newSet.weight > exercisePR.maxWeight.value) {
+        prTypes.push('weight');
+    }
+
+    // Check e1RM PR (highest estimated 1RM)
+    if (!exerciseE1RM || newE1RM > exerciseE1RM.value) {
+        prTypes.push('e1rm');
+    }
+
+    return prTypes;
+}
+
 // Get muscle groups not trained recently
 export function getMissedMuscleGroups(data, daysBack = 7) {
     const today = new Date();
