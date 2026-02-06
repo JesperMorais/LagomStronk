@@ -2374,6 +2374,148 @@ body.workout-active .main-content {
     }
 }
 
+/* ========== WORKOUT FULLSCREEN VIEW ========== */
+
+.workout-fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto;
+    background-color: var(--background-color);
+    z-index: 500;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    animation: slide-up 0.3s ease-out;
+}
+
+.workout-fullscreen.active {
+    display: flex;
+}
+
+@keyframes slide-up {
+    from {
+        transform: translateY(100%);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+/* Workout Header */
+.workout-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-md);
+    background-color: var(--card-background);
+    border-bottom: 1px solid var(--border-color);
+    flex-shrink: 0;
+}
+
+.workout-minimize-btn,
+.workout-finish-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border-color);
+    background-color: var(--background-color);
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.workout-minimize-btn:hover,
+.workout-finish-btn:hover {
+    border-color: var(--border-mint);
+    color: var(--mint);
+}
+
+.workout-minimize-btn:active,
+.workout-finish-btn:active {
+    transform: scale(0.95);
+}
+
+.workout-finish-btn {
+    background: linear-gradient(135deg, var(--mint), var(--mint-dark));
+    border-color: var(--mint);
+    color: var(--background-color);
+}
+
+.workout-name-input {
+    flex: 1;
+    margin: 0 var(--spacing-md);
+    padding: var(--spacing-sm);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    background-color: var(--background-color);
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.workout-name-input:focus {
+    outline: none;
+    border-color: var(--mint);
+    box-shadow: 0 0 0 2px rgba(209, 255, 198, 0.15);
+}
+
+/* Workout Timer Hero */
+.workout-timer-hero {
+    padding: var(--spacing-xl) var(--spacing-md);
+    text-align: center;
+    background: linear-gradient(135deg, var(--bg-indigo) 0%, var(--bg-teal) 100%);
+    border-bottom: 1px solid var(--border-color);
+    flex-shrink: 0;
+}
+
+.workout-timer-value {
+    font-family: 'SF Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--mint);
+    text-shadow: 0 0 20px rgba(209, 255, 198, 0.5);
+    letter-spacing: 2px;
+}
+
+/* Workout Exercise Container */
+.workout-exercise-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--spacing-md);
+    padding-bottom: calc(var(--spacing-md) + 60px); /* Space for actions */
+}
+
+/* Workout Actions (Fixed at bottom) */
+.workout-actions {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: var(--spacing-md);
+    background-color: var(--card-background);
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.workout-actions .btn {
+    flex: 1;
+}
+
+/* Hide bottom nav when workout fullscreen is active */
+.workout-fullscreen.active ~ .bottom-nav {
+    display: none;
+}
+
 /* ========== EXERCISE WIZARD ========== */
 
 .wizard-progress {
