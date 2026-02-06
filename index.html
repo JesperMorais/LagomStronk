@@ -171,11 +171,39 @@
                 <div class="view-header">
                     <h2>Exercise Library</h2>
                 </div>
+
+                <!-- Search and Controls -->
+                <div class="library-controls">
+                    <div class="library-search-wrapper">
+                        <span class="library-search-icon">🔍</span>
+                        <input type="text" id="library-search" class="library-search-input" placeholder="Search exercises..." autocomplete="off">
+                    </div>
+                    <div class="library-control-buttons">
+                        <button class="btn btn-secondary library-filter-btn" id="library-filter-btn">
+                            <span class="filter-icon">⚙️</span>
+                            <span class="filter-badge" id="filter-badge" style="display: none;">0</span>
+                        </button>
+                        <button class="btn btn-secondary library-view-toggle" id="library-view-toggle" title="Toggle view">
+                            <span id="view-toggle-icon">☰</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Recent Exercises -->
+                <div class="library-recent" id="library-recent">
+                    <span class="library-recent-label">Recent:</span>
+                    <div class="library-recent-chips" id="library-recent-chips">
+                        <!-- Recent exercise chips rendered by JS -->
+                    </div>
+                </div>
+
+                <!-- Add Custom Exercise Button -->
                 <div class="library-actions">
                     <button class="btn btn-secondary" id="add-custom-exercise-btn">
                         + Add Custom Exercise
                     </button>
                 </div>
+
                 <div id="exercise-library-list" class="library-list">
                     <!-- Exercise library items -->
                 </div>
@@ -389,6 +417,33 @@
             </div>
         </div>
     </div>
+
+    <!-- Filter Drawer -->
+        <div class="filter-drawer-overlay" id="filter-drawer-overlay"></div>
+        <div class="filter-drawer" id="filter-drawer">
+            <div class="filter-drawer-header">
+                <h3>Filter Exercises</h3>
+                <button class="modal-close" id="close-filter-drawer">&times;</button>
+            </div>
+            <div class="filter-drawer-body">
+                <div class="filter-section">
+                    <h4>Muscle Groups</h4>
+                    <div class="filter-chips" id="muscle-filter-chips">
+                        <!-- Muscle group chips rendered by JS -->
+                    </div>
+                </div>
+                <div class="filter-section">
+                    <h4>Equipment</h4>
+                    <div class="filter-chips" id="equipment-filter-chips">
+                        <!-- Equipment chips rendered by JS -->
+                    </div>
+                </div>
+            </div>
+            <div class="filter-drawer-footer">
+                <button class="btn btn-secondary" id="clear-filters-btn">Clear All</button>
+                <button class="btn btn-primary" id="apply-filters-btn">Apply</button>
+            </div>
+        </div>
 
     <!-- Custom Numpad -->
     <div class="numpad-overlay" id="numpad-overlay">
