@@ -2172,12 +2172,31 @@ function toggleSetCompletion(exIdx, setIdx, buttonElement) {
         // Add row highlight
         row.classList.add('completed', 'highlight-complete');
 
-        // Fire confetti at button position
-        fireSetConfetti(btn);
+        // Check for PR before normal confetti
+        const exercise = workout.exercises[exIdx];
+        const prTypes = checkForPR(appData, exercise.name, set, currentDate);
 
-        // Haptic feedback if supported
-        if (navigator.vibrate) {
-            navigator.vibrate(30);
+        if (prTypes.length > 0) {
+            // It's a PR! Show celebration (weight PR takes priority)
+            const prType = prTypes.includes('weight') ? 'weight' : 'e1rm';
+            let prValue;
+            if (prType === 'weight') {
+                prValue = set.weight;
+            } else {
+                prValue = calculateEstimated1RM(set.weight, set.reps);
+            }
+            showPRCelebration(exercise.name, prValue, prType);
+
+            // Add PR badge to the row
+            addPRBadgeToRow(row, prType);
+        } else {
+            // Normal set completion - fire confetti at button position
+            fireSetConfetti(btn);
+
+            // Haptic feedback if supported
+            if (navigator.vibrate) {
+                navigator.vibrate(30);
+            }
         }
 
         // Auto-start rest timer when completing a set (only during active workout)
@@ -2501,6 +2520,24 @@ function hidePRCelebration() {
     if (prCelebrationTimeout) {
         clearTimeout(prCelebrationTimeout);
         prCelebrationTimeout = null;
+    }
+}
+
+// Add PR badge to a set row
+function addPRBadgeToRow(row, prType) {
+    if (!row) return;
+
+    // Check if badge already exists
+    if (row.querySelector('.pr-set-badge')) return;
+
+    // Find the set number cell to add badge after
+    const setNumCell = row.querySelector('.set-num');
+    if (setNumCell) {
+        const badge = document.createElement('span');
+        badge.className = 'pr-set-badge';
+        badge.textContent = prType === 'weight' ? 'PR' : '1RM';
+        badge.title = prType === 'weight' ? 'Weight PR!' : 'Estimated 1RM PR!';
+        setNumCell.appendChild(badge);
     }
 }
 
