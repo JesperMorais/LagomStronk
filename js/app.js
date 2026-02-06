@@ -52,7 +52,8 @@ import {
     updateProgressChart,
     updateVolumeChart,
     updateWeightChart,
-    updateMeasurementChart
+    updateMeasurementChart,
+    updateBodyFatChart
 } from './charts.js';
 
 // App state
@@ -3706,6 +3707,7 @@ function renderBodyView() {
     updateWeightChart(appData);
     renderWeightHistory();
     renderMeasurements();
+    renderBodyFat();
 }
 
 function renderCurrentWeight() {
@@ -3966,6 +3968,82 @@ for (const type of MEASUREMENT_TYPES) {
         }
     });
 }
+
+// ========== BODY FAT TRACKING ==========
+
+function renderBodyFat() {
+    updateBodyFatChart(appData);
+
+    // Show latest value with delta
+    const latestEl = document.getElementById('bodyfat-latest');
+    if (!latestEl) return;
+
+    const history = getBodyFatHistory(appData);
+    if (history.length === 0) {
+        latestEl.innerHTML = '';
+        return;
+    }
+
+    const latest = history[history.length - 1];
+    let deltaHtml = '';
+    if (history.length >= 2) {
+        const prev = history[history.length - 2];
+        const delta = latest.value - prev.value;
+        const deltaSign = delta > 0 ? '+' : '';
+        const deltaClass = delta > 0 ? 'body-delta-up' : delta < 0 ? 'body-delta-down' : 'body-delta-neutral';
+        deltaHtml = `<span class="bodyfat-delta ${deltaClass}">${deltaSign}${delta.toFixed(1)}%</span>`;
+    }
+
+    latestEl.innerHTML = `
+        <span class="bodyfat-latest-value">${latest.value.toFixed(1)}%</span>
+        ${deltaHtml}
+    `;
+}
+
+function handleLogBodyFat() {
+    const input = document.getElementById('bodyfat-input');
+    if (!input) return;
+
+    const value = parseFloat(input.value);
+    if (isNaN(value) || value <= 0 || value >= 60) {
+        input.classList.add('input-error');
+        setTimeout(() => input.classList.remove('input-error'), 1000);
+        return;
+    }
+
+    const todayStr = getTodayStr();
+    addBodyFatEntry(appData, todayStr, value);
+    saveData(appData);
+
+    // Clear input and re-render
+    input.value = '';
+    renderBodyView();
+
+    // Show brief feedback
+    showBodyFatLoggedFeedback();
+}
+
+function showBodyFatLoggedFeedback() {
+    const btn = document.getElementById('log-bodyfat-btn');
+    if (!btn) return;
+    const originalText = btn.textContent;
+    btn.textContent = 'Logged!';
+    btn.classList.add('btn-success-flash');
+    setTimeout(() => {
+        btn.textContent = originalText;
+        btn.classList.remove('btn-success-flash');
+    }, 1500);
+}
+
+// Body fat event listeners
+document.getElementById('log-bodyfat-btn')?.addEventListener('click', handleLogBodyFat);
+
+document.getElementById('bodyfat-input')?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        handleLogBodyFat();
+    }
+});
 
 // Initialize the app
 init();

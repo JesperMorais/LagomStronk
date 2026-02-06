@@ -3653,6 +3653,37 @@ body.workout-active .bottom-nav {
     max-height: 130px;
 }
 
+/* ========== BODY FAT SECTION ========== */
+
+.bodyfat-form {
+    background-color: rgba(35, 44, 51, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+}
+
+.bodyfat-latest {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-sm);
+    min-height: 20px;
+}
+
+.bodyfat-latest-value {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.bodyfat-delta {
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
 /* Nav label size for 6 tabs */
 .nav-label {
     font-size: 0.55rem;

@@ -402,8 +402,29 @@
                 </div>
                 </div>
 
-                <!-- Body Fat Section (placeholder for 04-02) -->
-                <div id="bodyfat-section"></div>
+                <!-- Body Fat Section -->
+                <div id="bodyfat-section">
+                <div class="stats-section">
+                    <h3 class="stats-section-title">Body Composition</h3>
+
+                    <div class="bodyfat-form card">
+                        <div class="body-input-row">
+                            <label>Body Fat</label>
+                            <div class="body-input-group">
+                                <input type="number" id="bodyfat-input" step="0.1" placeholder="0.0" class="body-number-input">
+                                <span class="body-unit">%</span>
+                            </div>
+                        </div>
+                        <button id="log-bodyfat-btn" class="btn-primary body-log-btn">Log Body Fat</button>
+                    </div>
+
+                    <!-- Body Fat Latest + Chart -->
+                    <div class="bodyfat-latest" id="bodyfat-latest"></div>
+                    <div class="chart-container chart-container-sm">
+                        <canvas id="bodyfat-chart"></canvas>
+                    </div>
+                </div>
+                </div>
             </section>
 
             <!-- Library View -->
