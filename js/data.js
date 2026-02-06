@@ -883,3 +883,54 @@ export function getMostRecentExerciseSets(data, exerciseName, excludeDate) {
     }
     return [];
 }
+
+// ========== EXERCISE METADATA HELPERS ==========
+
+// Get metadata for an exercise (returns default if unknown)
+export function getExerciseMetadata(exerciseName) {
+    return EXERCISE_METADATA[exerciseName] || DEFAULT_EXERCISE_METADATA;
+}
+
+// Get all muscle groups
+export function getMuscleGroups() {
+    return MUSCLE_GROUPS;
+}
+
+// Get all equipment types
+export function getEquipmentTypes() {
+    return EQUIPMENT_TYPES;
+}
+
+// Filter exercises by muscle group (checks primary and secondary)
+export function filterExercisesByMuscle(muscleGroup, exerciseList = DEFAULT_EXERCISES) {
+    return exerciseList.filter(name => {
+        const meta = getExerciseMetadata(name);
+        return meta.primaryMuscles.includes(muscleGroup) ||
+               meta.secondaryMuscles.includes(muscleGroup);
+    });
+}
+
+// Filter exercises by primary muscle group only
+export function filterExercisesByPrimaryMuscle(muscleGroup, exerciseList = DEFAULT_EXERCISES) {
+    return exerciseList.filter(name => {
+        const meta = getExerciseMetadata(name);
+        return meta.primaryMuscles.includes(muscleGroup);
+    });
+}
+
+// Filter exercises by equipment type
+export function filterExercisesByEquipment(equipment, exerciseList = DEFAULT_EXERCISES) {
+    return exerciseList.filter(name => {
+        const meta = getExerciseMetadata(name);
+        return meta.equipment === equipment;
+    });
+}
+
+// Get all exercises for a specific muscle group with their metadata
+export function getExercisesForMuscle(muscleGroup) {
+    const exercises = filterExercisesByMuscle(muscleGroup);
+    return exercises.map(name => ({
+        name,
+        ...getExerciseMetadata(name)
+    }));
+}
