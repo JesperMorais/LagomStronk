@@ -35,7 +35,9 @@ import {
     setActiveProgram,
     endActiveProgram,
     getProgramProgress,
-    getTodaysProgrammedWorkout
+    getTodaysProgrammedWorkout,
+    checkForPR,
+    calculateEstimated1RM
 } from './data.js';
 
 import {
@@ -907,6 +909,7 @@ function init() {
     setupNavigation();
     setupEventListeners();
     setupMiniPlayerListeners();
+    setupRestTimerListeners();
     renderTodayView();
     updateTodayDate();
     updateFABVisibility();
@@ -2176,6 +2179,11 @@ function toggleSetCompletion(exIdx, setIdx, buttonElement) {
         if (navigator.vibrate) {
             navigator.vibrate(30);
         }
+
+        // Auto-start rest timer when completing a set (only during active workout)
+        if (activeWorkout.isActive) {
+            startRestTimer(restTimer.defaultSeconds);
+        }
     } else if (wasCompleted && row && btn) {
         // Unchecking - remove completed state
         btn.classList.remove('checked', 'animate-pop');
@@ -2205,6 +2213,210 @@ function fireSetConfetti(element) {
         ticks: 50,
         scalar: 0.7,
         disableForReducedMotion: true
+    });
+}
+
+// ========== REST TIMER FUNCTIONS ==========
+
+// Format seconds to M:SS display
+function formatRestTime(seconds) {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${String(secs).padStart(2, '0')}`;
+}
+
+// Update rest timer display
+function updateRestTimerDisplay() {
+    if (restTimerTimeEl) {
+        restTimerTimeEl.textContent = formatRestTime(restTimer.remainingSeconds);
+    }
+}
+
+// Start rest timer
+function startRestTimer(seconds = restTimer.defaultSeconds) {
+    // Stop any existing timer
+    if (restTimer.intervalId) {
+        clearInterval(restTimer.intervalId);
+    }
+
+    restTimer.remainingSeconds = seconds;
+    restTimer.isRunning = true;
+
+    // Show timer UI
+    if (restTimerEl) {
+        restTimerEl.style.display = '';
+        restTimerEl.classList.remove('complete', 'paused');
+    }
+
+    // Update toggle button to pause icon
+    updateRestTimerToggleIcon();
+
+    // Update display
+    updateRestTimerDisplay();
+
+    // Setup Media Session for lock screen controls
+    setupMediaSession();
+
+    // Start countdown
+    restTimer.intervalId = setInterval(() => {
+        restTimer.remainingSeconds--;
+        updateRestTimerDisplay();
+
+        if (restTimer.remainingSeconds <= 0) {
+            completeRestTimer();
+        }
+    }, 1000);
+}
+
+// Pause rest timer
+function pauseRestTimer() {
+    if (!restTimer.isRunning) return;
+
+    clearInterval(restTimer.intervalId);
+    restTimer.intervalId = null;
+    restTimer.isRunning = false;
+
+    if (restTimerEl) {
+        restTimerEl.classList.add('paused');
+    }
+
+    updateRestTimerToggleIcon();
+}
+
+// Resume rest timer
+function resumeRestTimer() {
+    if (restTimer.isRunning || restTimer.remainingSeconds <= 0) return;
+
+    restTimer.isRunning = true;
+
+    if (restTimerEl) {
+        restTimerEl.classList.remove('paused');
+    }
+
+    updateRestTimerToggleIcon();
+
+    // Resume countdown
+    restTimer.intervalId = setInterval(() => {
+        restTimer.remainingSeconds--;
+        updateRestTimerDisplay();
+
+        if (restTimer.remainingSeconds <= 0) {
+            completeRestTimer();
+        }
+    }, 1000);
+}
+
+// Toggle rest timer pause/resume
+function toggleRestTimer() {
+    if (restTimer.isRunning) {
+        pauseRestTimer();
+    } else if (restTimer.remainingSeconds > 0) {
+        resumeRestTimer();
+    } else {
+        // Timer finished, restart with default
+        startRestTimer(restTimer.defaultSeconds);
+    }
+}
+
+// Update toggle button icon (pause/play)
+function updateRestTimerToggleIcon() {
+    const icon = restTimerToggleBtn ? restTimerToggleBtn.querySelector('.rest-timer__pause-icon') : null;
+    if (icon) {
+        icon.textContent = restTimer.isRunning ? '⏸' : '▶';
+    }
+}
+
+// Adjust rest timer (+/- seconds)
+function adjustRestTimer(seconds) {
+    const newValue = restTimer.remainingSeconds + seconds;
+    restTimer.remainingSeconds = Math.max(0, Math.min(600, newValue)); // 0 to 10 min
+    updateRestTimerDisplay();
+
+    // If timer was complete and we added time, restart
+    if (seconds > 0 && !restTimer.isRunning && restTimer.remainingSeconds > 0) {
+        if (restTimerEl) {
+            restTimerEl.classList.remove('complete');
+        }
+    }
+}
+
+// Set rest timer preset
+function setRestTimerPreset(seconds) {
+    restTimer.defaultSeconds = seconds;
+
+    // Update preset button states
+    document.querySelectorAll('.rest-timer__preset').forEach(btn => {
+        const btnSeconds = parseInt(btn.dataset.seconds);
+        btn.classList.toggle('active', btnSeconds === seconds);
+    });
+
+    // If timer not running, also update remaining seconds and restart
+    if (!restTimer.isRunning) {
+        startRestTimer(seconds);
+    }
+}
+
+// Complete rest timer (called when reaches 0)
+function completeRestTimer() {
+    clearInterval(restTimer.intervalId);
+    restTimer.intervalId = null;
+    restTimer.isRunning = false;
+    restTimer.remainingSeconds = 0;
+
+    updateRestTimerDisplay();
+    updateRestTimerToggleIcon();
+
+    if (restTimerEl) {
+        restTimerEl.classList.add('complete');
+        restTimerEl.classList.remove('paused');
+    }
+
+    // Vibration alert
+    if (navigator.vibrate) {
+        navigator.vibrate([200, 100, 200, 100, 200]);
+    }
+
+    // Clear media session
+    clearMediaSession();
+}
+
+// Hide rest timer
+function hideRestTimer() {
+    if (restTimer.intervalId) {
+        clearInterval(restTimer.intervalId);
+        restTimer.intervalId = null;
+    }
+    restTimer.isRunning = false;
+
+    if (restTimerEl) {
+        restTimerEl.style.display = 'none';
+        restTimerEl.classList.remove('complete', 'paused');
+    }
+
+    clearMediaSession();
+}
+
+// Setup rest timer event listeners
+function setupRestTimerListeners() {
+    // Toggle button
+    if (restTimerToggleBtn) {
+        restTimerToggleBtn.addEventListener('click', toggleRestTimer);
+    }
+
+    // Adjust buttons (+/- 15s)
+    document.querySelectorAll('.rest-timer__btn--adjust').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const adjust = parseInt(btn.dataset.adjust);
+            adjustRestTimer(adjust);
+        });
+    });
+
+    // Preset buttons
+    document.querySelectorAll('.rest-timer__preset').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const seconds = parseInt(btn.dataset.seconds);
+            setRestTimerPreset(seconds);
+        });
     });
 }
 
