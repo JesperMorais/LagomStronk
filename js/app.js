@@ -669,24 +669,6 @@ function updateWorkoutTimer() {
 function updateMiniPlayerTimer() {
     updateWorkoutTimer();
 }
-    if (!activeWorkout.startTime) return;
-
-    const elapsed = Date.now() - activeWorkout.startTime;
-    const seconds = Math.floor(elapsed / 1000) % 60;
-    const minutes = Math.floor(elapsed / 60000) % 60;
-    const hours = Math.floor(elapsed / 3600000);
-
-    let timeStr;
-    if (hours > 0) {
-        timeStr = `${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-    } else {
-        timeStr = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-    }
-
-    if (miniPlayerTimer) {
-        miniPlayerTimer.textContent = timeStr;
-    }
-}
 
 // Update mini-player visibility based on current view and workout state
 function updateMiniPlayerVisibility() {
