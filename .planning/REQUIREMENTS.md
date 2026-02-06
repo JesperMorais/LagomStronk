@@ -15,25 +15,25 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### UX Overhaul (UX)
 
-- [ ] **UX-01**: Modern landing screen with customizable workout visualization
-- [ ] **UX-02**: Workout streak prominently displayed on dashboard
-- [ ] **UX-03**: Weekly volume chart (this week vs last)
-- [ ] **UX-04**: Upcoming/suggested workout on dashboard
-- [ ] **UX-05**: Recent PRs displayed on dashboard
-- [ ] **UX-06**: Fix inability to exit/cancel active workout
-- [ ] **UX-07**: Previous set values displayed as greyed-out hints
-- [ ] **UX-08**: Satisfying checkmark and completion animations
-- [ ] **UX-09**: Calendar view of workout history
+- [x] **UX-01**: Modern landing screen with customizable workout visualization
+- [x] **UX-02**: Workout streak prominently displayed on dashboard
+- [x] **UX-03**: Weekly volume chart (this week vs last)
+- [x] **UX-04**: Upcoming/suggested workout on dashboard
+- [x] **UX-05**: Recent PRs displayed on dashboard
+- [x] **UX-06**: Fix inability to exit/cancel active workout
+- [x] **UX-07**: Previous set values displayed as greyed-out hints
+- [x] **UX-08**: Satisfying checkmark and completion animations
+- [x] **UX-09**: Calendar view of workout history
 
 ### Exercise System (EXER)
 
-- [ ] **EXER-01**: Filter exercises by muscle group
-- [ ] **EXER-02**: Filter exercises by equipment type (barbell, dumbbell, machine, bodyweight, cable)
-- [ ] **EXER-03**: Exercise cards with placeholder for muscle highlight images
-- [ ] **EXER-04**: Custom exercise creation with muscle group and equipment metadata
-- [ ] **EXER-05**: Dedicated exercise library view/screen
-- [ ] **EXER-06**: Recently used exercises quick access
-- [ ] **EXER-07**: Favorite exercises with star/bookmark
+- [x] **EXER-01**: Filter exercises by muscle group
+- [x] **EXER-02**: Filter exercises by equipment type (barbell, dumbbell, machine, bodyweight, cable)
+- [x] **EXER-03**: Exercise cards with placeholder for muscle highlight images
+- [x] **EXER-04**: Custom exercise creation with muscle group and equipment metadata
+- [x] **EXER-05**: Dedicated exercise library view/screen
+- [x] **EXER-06**: Recently used exercises quick access
+- [x] **EXER-07**: Favorite exercises with star/bookmark
 
 ### Workout Features (WORK)
 

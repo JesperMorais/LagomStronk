@@ -13,7 +13,7 @@ This roadmap transforms LagomStronk from a functional workout tracker into an in
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Technical Foundation** - Storage abstraction and event infrastructure
-- [ ] **Phase 2: UX Overhaul & Exercise System** - Modern interface and enhanced exercise management
+- [x] **Phase 2: UX Overhaul & Exercise System** - Modern interface and enhanced exercise management
 - [ ] **Phase 3: Workout Features** - Rest timer, PR tracking, and training programs
 - [ ] **Phase 4: Body Tracking** - Measurements and progress photos
 - [ ] **Phase 5: Health Integration** - Platform sync with Health Connect and HealthKit
@@ -56,19 +56,18 @@ Plans:
   9. User can create custom exercises with muscle group and equipment metadata
   10. User accesses dedicated exercise library view with search and favorites
   11. User sees recently used exercises for quick access
-**Plans**: 10 plans
+**Plans**: 9 plans
 
 Plans:
-- [x] 02-01-PLAN.md — Exercise data model with metadata (muscle groups, equipment, filtering)
-- [x] 02-02-PLAN.md — Dashboard foundation (hero section, streak, FAB)
-- [x] 02-03-PLAN.md — Dashboard charts and PR cards (volume chart, recent PRs)
+- [x] 02-01-PLAN.md — Dashboard hero section (streak, calendar, stat cards)
+- [x] 02-02-PLAN.md — Exercise metadata model (muscle groups, equipment, filtering)
+- [x] 02-03-PLAN.md — Volume chart with gradient
 - [x] 02-04-PLAN.md — Custom numpad component
-- [x] 02-05-PLAN.md — Workout logging UX (hints, animations, mini-player)
-- [x] 02-06-PLAN.md — Workout history calendar
-- [x] 02-07-PLAN.md — Exercise library UI (filter, search, favorites)
-- [x] 02-08-PLAN.md — Custom exercise wizard
-- [x] 02-09-PLAN.md — UX fixes (workout flow, mini-player, dashboard layout, numpad theme)
-- [ ] 02-10-PLAN.md — Gap closure: Exit workout UI + comprehensive set hints
+- [x] 02-05-PLAN.md — Exercise library UI (filter, search, favorites)
+- [x] 02-06-PLAN.md — Workout logging UX (hints, animations, confetti)
+- [x] 02-07-PLAN.md — Workout history calendar
+- [x] 02-08-PLAN.md — Mini-player and workout flow
+- [x] 02-09-PLAN.md — Custom exercise wizard
 
 ### Phase 3: Workout Features
 **Goal**: Add table stakes workout capabilities that competitive apps provide
@@ -175,7 +174,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Technical Foundation | 4/4 | Complete | 2026-02-05 |
-| 2. UX Overhaul & Exercise System | 9/10 | In Progress | - |
+| 2. UX Overhaul & Exercise System | 9/9 | Complete | 2026-02-06 |
 | 3. Workout Features | 0/TBD | Not started | - |
 | 4. Body Tracking | 0/TBD | Not started | - |
 | 5. Health Integration | 0/TBD | Not started | - |
