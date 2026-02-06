@@ -288,6 +288,52 @@
                 </div>
             </section>
 
+            <!-- Body View -->
+            <section id="body-view" class="view">
+                <div class="view-header">
+                    <h2>Body Tracking</h2>
+                </div>
+
+                <!-- Quick Log Card -->
+                <div class="body-quick-log card">
+                    <div class="body-current-stats" id="body-current-stats">
+                        <!-- Current weight + change rendered here -->
+                    </div>
+                    <div class="body-log-form">
+                        <div class="body-input-row">
+                            <label>Weight</label>
+                            <div class="body-input-group">
+                                <input type="number" id="weight-input" step="0.1" placeholder="0.0" class="body-number-input">
+                                <span class="body-unit">kg</span>
+                            </div>
+                        </div>
+                        <button id="log-weight-btn" class="btn-primary body-log-btn">Log Weight</button>
+                    </div>
+                </div>
+
+                <!-- Weight Trend Chart -->
+                <div class="stats-section">
+                    <h3 class="stats-section-title">Weight Trend</h3>
+                    <div class="chart-container">
+                        <canvas id="weight-chart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Weight History -->
+                <div class="stats-section">
+                    <h3 class="stats-section-title">Recent Entries</h3>
+                    <div id="weight-history" class="weight-history-list">
+                        <!-- Weight entries rendered here -->
+                    </div>
+                </div>
+
+                <!-- Measurements Section (placeholder for 04-02) -->
+                <div id="measurements-section"></div>
+
+                <!-- Body Fat Section (placeholder for 04-02) -->
+                <div id="bodyfat-section"></div>
+            </section>
+
             <!-- Library View -->
             <section id="library-view" class="view">
                 <div class="view-header">
@@ -398,6 +444,10 @@
             <button class="nav-btn" data-view="progress">
                 <span class="nav-icon">📈</span>
                 <span class="nav-label">Stats</span>
+            </button>
+            <button class="nav-btn" data-view="body">
+                <span class="nav-icon">📏</span>
+                <span class="nav-label">Body</span>
             </button>
             <button class="nav-btn" data-view="library">
                 <span class="nav-icon">📚</span>

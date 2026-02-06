@@ -38,12 +38,16 @@ import {
     getProgramProgress,
     getTodaysProgrammedWorkout,
     checkForPR,
-    calculateEstimated1RM
+    calculateEstimated1RM,
+    addWeightEntry,
+    getWeightHistory,
+    getLatestWeight
 } from './data.js';
 
 import {
     updateProgressChart,
-    updateVolumeChart
+    updateVolumeChart,
+    updateWeightChart
 } from './charts.js';
 
 // App state
@@ -73,7 +77,8 @@ const views = {
     history: document.getElementById('history-view'),
     progress: document.getElementById('progress-view'),
     library: document.getElementById('library-view'),
-    workouts: document.getElementById('workouts-view')
+    workouts: document.getElementById('workouts-view'),
+    body: document.getElementById('body-view')
 };
 
 const navButtons = document.querySelectorAll('.nav-btn');
@@ -989,6 +994,9 @@ function switchView(viewName) {
             break;
         case 'workouts':
             renderWorkoutsView();
+            break;
+        case 'body':
+            renderBodyView();
             break;
     }
 }
@@ -3685,6 +3693,157 @@ function setupWizardListeners() {
 
 // Make openExerciseWizard available globally
 window.openExerciseWizard = openExerciseWizard;
+
+// ========== BODY TRACKING VIEW ==========
+
+function renderBodyView() {
+    renderCurrentWeight();
+    updateWeightChart(appData);
+    renderWeightHistory();
+}
+
+function renderCurrentWeight() {
+    const container = document.getElementById('body-current-stats');
+    if (!container) return;
+
+    const latest = getLatestWeight(appData);
+
+    if (!latest) {
+        container.innerHTML = `
+            <div class="body-empty-state">
+                <span class="body-empty-icon">⚖️</span>
+                <span class="body-empty-text">No weight logged yet</span>
+            </div>
+        `;
+        return;
+    }
+
+    // Find previous entry for delta
+    const history = getWeightHistory(appData);
+    let deltaHtml = '';
+    if (history.length >= 2) {
+        const prev = history[history.length - 2];
+        const delta = latest.value - prev.value;
+        const deltaSign = delta > 0 ? '+' : '';
+        const deltaClass = delta > 0 ? 'body-delta-up' : delta < 0 ? 'body-delta-down' : 'body-delta-neutral';
+        const arrow = delta > 0 ? '&#9650;' : delta < 0 ? '&#9660;' : '';
+        deltaHtml = `<span class="body-delta ${deltaClass}">${arrow} ${deltaSign}${delta.toFixed(1)} ${latest.unit}</span>`;
+    }
+
+    container.innerHTML = `
+        <div class="body-current-weight">${latest.value.toFixed(1)}<span class="body-current-unit">${latest.unit}</span></div>
+        ${deltaHtml}
+        <div class="body-current-date">${formatDate(latest.date)}</div>
+    `;
+}
+
+function renderWeightHistory() {
+    const container = document.getElementById('weight-history');
+    if (!container) return;
+
+    const history = getWeightHistory(appData);
+
+    if (history.length === 0) {
+        container.innerHTML = `<p class="empty-hint">No weight entries yet. Log your first weight above!</p>`;
+        return;
+    }
+
+    // Show last 10 entries, newest first
+    const recent = [...history].reverse().slice(0, 10);
+    let html = '';
+
+    for (let i = 0; i < recent.length; i++) {
+        const entry = recent[i];
+        let deltaHtml = '';
+
+        // Compare with previous entry (next in reversed list)
+        if (i < recent.length - 1) {
+            const prev = recent[i + 1];
+            const delta = entry.value - prev.value;
+            const deltaSign = delta > 0 ? '+' : '';
+            const deltaClass = delta > 0 ? 'body-delta-up' : delta < 0 ? 'body-delta-down' : 'body-delta-neutral';
+            deltaHtml = `<span class="weight-entry-delta ${deltaClass}">${deltaSign}${delta.toFixed(1)}</span>`;
+        }
+
+        html += `
+            <div class="weight-entry" data-date="${entry.date}">
+                <span class="weight-entry-date">${formatDate(entry.date)}</span>
+                <span class="weight-entry-value">${entry.value.toFixed(1)} ${entry.unit}</span>
+                ${deltaHtml}
+                <button class="weight-entry-delete" data-date="${entry.date}" title="Delete entry">&times;</button>
+            </div>
+        `;
+    }
+
+    container.innerHTML = html;
+}
+
+function handleLogWeight() {
+    const input = document.getElementById('weight-input');
+    if (!input) return;
+
+    const value = parseFloat(input.value);
+    if (isNaN(value) || value <= 0 || value >= 500) {
+        input.classList.add('input-error');
+        setTimeout(() => input.classList.remove('input-error'), 1000);
+        return;
+    }
+
+    const todayStr = getTodayStr();
+    addWeightEntry(appData, todayStr, value, 'kg');
+    saveData(appData);
+
+    // Clear input and re-render
+    input.value = '';
+    renderBodyView();
+
+    // Show brief feedback
+    showWeightLoggedFeedback();
+}
+
+function showWeightLoggedFeedback() {
+    const btn = document.getElementById('log-weight-btn');
+    if (!btn) return;
+    const originalText = btn.textContent;
+    btn.textContent = 'Logged!';
+    btn.classList.add('btn-success-flash');
+    setTimeout(() => {
+        btn.textContent = originalText;
+        btn.classList.remove('btn-success-flash');
+    }, 1500);
+}
+
+function handleDeleteWeightEntry(date) {
+    if (!appData.bodyTracking || !appData.bodyTracking.weight) return;
+    const index = appData.bodyTracking.weight.findIndex(e => e.date === date);
+    if (index >= 0) {
+        appData.bodyTracking.weight.splice(index, 1);
+        saveData(appData);
+        renderBodyView();
+    }
+}
+
+// Body view event listeners
+document.getElementById('log-weight-btn')?.addEventListener('click', handleLogWeight);
+
+// Enter key on weight input
+document.getElementById('weight-input')?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        handleLogWeight();
+    }
+});
+
+// Delete weight entry via event delegation
+document.getElementById('weight-history')?.addEventListener('click', (e) => {
+    const deleteBtn = e.target.closest('.weight-entry-delete');
+    if (deleteBtn) {
+        const date = deleteBtn.dataset.date;
+        if (date) {
+            handleDeleteWeightEntry(date);
+        }
+    }
+});
 
 // Initialize the app
 init();

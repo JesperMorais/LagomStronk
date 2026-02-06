@@ -3358,3 +3358,223 @@ body.workout-active .bottom-nav {
     border-color: var(--mint);
     color: var(--mint);
 }
+
+/* ========== BODY TRACKING VIEW ========== */
+
+.body-quick-log {
+    background-color: rgba(35, 44, 51, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+}
+
+.body-current-stats {
+    text-align: center;
+    margin-bottom: var(--spacing-lg);
+}
+
+.body-current-weight {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.2;
+}
+
+.body-current-unit {
+    font-size: 1rem;
+    font-weight: 400;
+    color: var(--text-tertiary);
+    margin-left: 4px;
+}
+
+.body-current-date {
+    font-size: 0.8rem;
+    color: var(--text-tertiary);
+    margin-top: 4px;
+}
+
+.body-delta {
+    display: inline-block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-top: 4px;
+}
+
+.body-delta-up {
+    color: var(--amber);
+}
+
+.body-delta-down {
+    color: var(--mint);
+}
+
+.body-delta-neutral {
+    color: var(--text-tertiary);
+}
+
+.body-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md) 0;
+}
+
+.body-empty-icon {
+    font-size: 2rem;
+}
+
+.body-empty-text {
+    color: var(--text-tertiary);
+    font-size: 0.9rem;
+}
+
+.body-log-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.body-input-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-md);
+}
+
+.body-input-row label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.body-input-group {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.body-number-input {
+    width: 100px;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--background-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-align: center;
+    -moz-appearance: textfield;
+}
+
+.body-number-input::-webkit-outer-spin-button,
+.body-number-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.body-number-input:focus {
+    outline: none;
+    border-color: var(--mint);
+    box-shadow: 0 0 0 2px rgba(209, 255, 198, 0.2);
+}
+
+.body-number-input.input-error {
+    border-color: var(--danger-color);
+    animation: shake 0.3s ease;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+}
+
+.body-unit {
+    font-size: 0.9rem;
+    color: var(--text-tertiary);
+    font-weight: 500;
+}
+
+.body-log-btn {
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: none;
+    border-radius: var(--radius);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-success-flash {
+    background: var(--mint) !important;
+    color: var(--background-color) !important;
+}
+
+/* Weight History List */
+.weight-history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.weight-entry {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: rgba(35, 44, 51, 0.4);
+    border-radius: var(--radius);
+    transition: background 0.2s;
+}
+
+.weight-entry:hover {
+    background: rgba(35, 44, 51, 0.7);
+}
+
+.weight-entry-date {
+    flex: 1;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.weight-entry-value {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    min-width: 70px;
+    text-align: right;
+}
+
+.weight-entry-delta {
+    font-size: 0.8rem;
+    font-weight: 600;
+    min-width: 50px;
+    text-align: right;
+}
+
+.weight-entry-delete {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 4px;
+    transition: all 0.2s;
+    line-height: 1;
+}
+
+.weight-entry-delete:hover {
+    color: var(--danger-color);
+    background: rgba(248, 113, 113, 0.15);
+}
+
+/* Nav label size for 6 tabs */
+.nav-label {
+    font-size: 0.55rem;
+}

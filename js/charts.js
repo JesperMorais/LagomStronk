@@ -1,7 +1,8 @@
-import { getExerciseHistory, getVolumeHistory, formatDate } from './data.js';
+import { getExerciseHistory, getVolumeHistory, getWeightHistory, formatDate } from './data.js';
 
 let progressChart = null;
 let volumeChart = null;
+let weightChart = null;
 
 // Initialize or update the progress chart for a specific exercise
 export function updateProgressChart(data, exerciseName) {
@@ -165,6 +166,111 @@ function getChartOptions(title) {
     };
 }
 
+// Initialize or update the weight trend chart
+export function updateWeightChart(data) {
+    const ctx = document.getElementById('weight-chart');
+    if (!ctx) return;
+
+    const history = getWeightHistory(data);
+
+    // Destroy existing chart if it exists
+    if (weightChart) {
+        weightChart.destroy();
+        weightChart = null;
+    }
+
+    if (history.length < 2) {
+        // Show encouraging empty state
+        const emptyMsg = history.length === 0
+            ? 'Log your weight to see trends'
+            : 'Log one more entry to see the trend';
+        weightChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: history.map(h => formatDate(h.date)),
+                datasets: [{
+                    label: 'Weight (kg)',
+                    data: history.map(h => h.value),
+                    borderColor: '#D1FFC6',
+                    backgroundColor: 'rgba(209, 255, 198, 0.15)',
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: '#D1FFC6',
+                    pointBorderColor: '#0f1419',
+                    pointBorderWidth: 2,
+                    pointRadius: 6,
+                    pointHoverRadius: 8
+                }]
+            },
+            options: getChartOptions(emptyMsg)
+        });
+        return;
+    }
+
+    const labels = history.map(h => formatDate(h.date));
+    const weights = history.map(h => h.value);
+
+    // Calculate Y-axis range based on data for better visibility
+    const minWeight = Math.min(...weights);
+    const maxWeight = Math.max(...weights);
+    const padding = Math.max(2, (maxWeight - minWeight) * 0.3);
+
+    weightChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels,
+            datasets: [{
+                label: 'Weight (kg)',
+                data: weights,
+                borderColor: '#D1FFC6',
+                backgroundColor: 'rgba(209, 255, 198, 0.15)',
+                tension: 0.4,
+                fill: true,
+                pointBackgroundColor: '#D1FFC6',
+                pointBorderColor: '#0f1419',
+                pointBorderWidth: 2,
+                pointRadius: 5,
+                pointHoverRadius: 7,
+                borderWidth: 2.5
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: { display: false },
+                title: {
+                    display: true,
+                    text: 'Weight Trend',
+                    font: { size: 14, weight: '600' },
+                    color: '#D1FFC6',
+                    padding: { bottom: 16 }
+                }
+            },
+            scales: {
+                x: {
+                    grid: { display: false },
+                    ticks: {
+                        maxRotation: 45,
+                        minRotation: 45,
+                        font: { size: 10 },
+                        color: '#9ca3af'
+                    },
+                    border: { display: false }
+                },
+                y: {
+                    beginAtZero: false,
+                    suggestedMin: Math.floor(minWeight - padding),
+                    suggestedMax: Math.ceil(maxWeight + padding),
+                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                    ticks: { color: '#9ca3af' },
+                    border: { display: false }
+                }
+            }
+        }
+    });
+}
+
 // Destroy all charts (cleanup)
 export function destroyCharts() {
     if (progressChart) {
@@ -174,5 +280,9 @@ export function destroyCharts() {
     if (volumeChart) {
         volumeChart.destroy();
         volumeChart = null;
+    }
+    if (weightChart) {
+        weightChart.destroy();
+        weightChart = null;
     }
 }
