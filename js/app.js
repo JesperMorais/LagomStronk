@@ -2131,6 +2131,90 @@ function fireSetConfetti(element) {
     });
 }
 
+// PR Celebration state
+let prCelebrationTimeout = null;
+
+// Show PR celebration overlay with animations and confetti
+function showPRCelebration(exerciseName, value, prType) {
+    const overlay = document.getElementById('pr-celebration');
+    const exerciseEl = document.getElementById('pr-celebration-exercise');
+    const valueEl = document.getElementById('pr-celebration-value');
+    const typeEl = document.getElementById('pr-celebration-type');
+
+    if (!overlay || !exerciseEl || !valueEl || !typeEl) return;
+
+    // Clear any existing timeout
+    if (prCelebrationTimeout) {
+        clearTimeout(prCelebrationTimeout);
+    }
+
+    // Set content
+    exerciseEl.textContent = exerciseName;
+    valueEl.textContent = `${value} kg`;
+    typeEl.textContent = prType === 'weight' ? 'Weight PR' : 'Estimated 1RM PR';
+
+    // Show overlay
+    overlay.classList.add('active');
+
+    // Fire gold confetti celebration
+    if (typeof confetti === 'function') {
+        // Big celebration burst
+        confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { x: 0.5, y: 0.5 },
+            colors: ['#fbbf24', '#f97316', '#D1FFC6', '#86efac', '#ffffff'],
+            startVelocity: 30,
+            gravity: 0.8,
+            ticks: 100,
+            scalar: 1.2,
+            disableForReducedMotion: true
+        });
+
+        // Second burst for more impact
+        setTimeout(() => {
+            confetti({
+                particleCount: 50,
+                spread: 120,
+                origin: { x: 0.5, y: 0.4 },
+                colors: ['#fbbf24', '#f97316', '#D1FFC6'],
+                startVelocity: 25,
+                gravity: 1,
+                ticks: 80,
+                scalar: 0.9,
+                disableForReducedMotion: true
+            });
+        }, 200);
+    }
+
+    // Longer haptic feedback for PR
+    if (navigator.vibrate) {
+        navigator.vibrate([50, 50, 100]);
+    }
+
+    // Auto-dismiss after 2.5 seconds
+    prCelebrationTimeout = setTimeout(() => {
+        hidePRCelebration();
+    }, 2500);
+
+    // Tap anywhere to dismiss
+    overlay.onclick = () => {
+        hidePRCelebration();
+    };
+}
+
+// Hide PR celebration overlay
+function hidePRCelebration() {
+    const overlay = document.getElementById('pr-celebration');
+    if (overlay) {
+        overlay.classList.remove('active');
+    }
+    if (prCelebrationTimeout) {
+        clearTimeout(prCelebrationTimeout);
+        prCelebrationTimeout = null;
+    }
+}
+
 // Update set weight/reps from inline inputs
 function updateInlineSetValue(exIdx, setIdx, row) {
     const workout = getWorkoutByDate(appData, currentDate);
