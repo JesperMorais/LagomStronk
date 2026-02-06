@@ -13,8 +13,8 @@ This roadmap transforms LagomStronk from a functional workout tracker into an in
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Technical Foundation** - Storage abstraction and event infrastructure
-- [ ] **Phase 2: UX Overhaul & Exercise System** - Modern interface and enhanced exercise management
-- [ ] **Phase 3: Workout Features** - Rest timer, PR tracking, and training programs
+- [x] **Phase 2: UX Overhaul & Exercise System** - Modern interface and enhanced exercise management
+- [x] **Phase 3: Workout Features** - Rest timer, PR tracking, and training programs
 - [ ] **Phase 4: Body Tracking** - Measurements and progress photos
 - [ ] **Phase 5: Health Integration** - Platform sync with Health Connect and HealthKit
 - [ ] **Phase 6: Gamification & Intelligence** - Engagement systems and adaptive recommendations
@@ -82,11 +82,14 @@ Plans:
   4. User experiences celebration animations when achieving new PRs
   5. User sees plate calculator showing which plates to load for target weight
   6. User can follow multi-week training programs including PPL, 5x5, and custom programs
-**Plans**: TBD
+**Plans**: 5 plans
 
 Plans:
-- [ ] 03-01: TBD
-- [ ] 03-02: TBD
+- [x] 03-01-PLAN.md — Training programs data model
+- [x] 03-02-PLAN.md — Program selection UI and dashboard integration
+- [x] 03-03-PLAN.md — Coach intelligence (progressive overload hints)
+- [x] 03-04-PLAN.md — PR detection with celebration animations
+- [x] 03-05-PLAN.md — Rest timer with media session controls
 
 ### Phase 4: Body Tracking
 **Goal**: Enable comprehensive body progress tracking with measurements and photos
@@ -177,7 +180,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 |-------|----------------|--------|-----------|
 | 1. Technical Foundation | 4/4 | Complete | 2026-02-05 |
 | 2. UX Overhaul & Exercise System | 11/11 | Complete | 2026-02-06 |
-| 3. Workout Features | 0/TBD | Not started | - |
+| 3. Workout Features | 5/5 | Complete | 2026-02-06 |
 | 4. Body Tracking | 0/TBD | Not started | - |
 | 5. Health Integration | 0/TBD | Not started | - |
 | 6. Gamification & Intelligence | 0/TBD | Not started | - |
