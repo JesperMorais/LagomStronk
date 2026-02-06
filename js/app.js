@@ -132,6 +132,94 @@ function getWeekWorkoutDays() {
     return weekDays;
 }
 
+// Get total volume for the current week (Mon-Sun or Sun-Sat based on locale)
+function getThisWeekVolume() {
+    const today = new Date();
+    const dayOfWeek = today.getDay(); // 0 = Sunday
+
+    // Get start of week (Sunday)
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - dayOfWeek);
+    startOfWeek.setHours(0, 0, 0, 0);
+
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 6);
+    endOfWeek.setHours(23, 59, 59, 999);
+
+    let totalVolume = 0;
+
+    for (const workout of appData.workouts) {
+        const workoutDate = new Date(workout.date);
+        if (workoutDate >= startOfWeek && workoutDate <= endOfWeek) {
+            for (const exercise of workout.exercises) {
+                for (const set of exercise.sets) {
+                    totalVolume += (set.weight || 0) * (set.reps || 0);
+                }
+            }
+        }
+    }
+
+    return totalVolume;
+}
+
+// Get count of recent PRs (last 7 days)
+function getRecentPRs() {
+    const prs = getPersonalRecords(appData);
+    const exercises = Object.keys(prs);
+
+    if (exercises.length === 0) return { count: 0, exercises: [] };
+
+    const today = new Date();
+    const sevenDaysAgo = new Date(today);
+    sevenDaysAgo.setDate(today.getDate() - 7);
+
+    const recentPRExercises = [];
+
+    for (const exercise of exercises) {
+        const pr = prs[exercise];
+        // Check if any PR was set in last 7 days
+        const maxWeightDate = new Date(pr.maxWeight.date);
+        const maxVolumeDate = new Date(pr.maxVolume.date);
+        const maxRepsDate = new Date(pr.maxReps.date);
+
+        if (maxWeightDate >= sevenDaysAgo || maxVolumeDate >= sevenDaysAgo || maxRepsDate >= sevenDaysAgo) {
+            recentPRExercises.push(exercise);
+        }
+    }
+
+    return {
+        count: recentPRExercises.length,
+        exercises: recentPRExercises.slice(0, 3) // Top 3 for display
+    };
+}
+
+// Format volume for display
+function formatVolumeDisplay(volume) {
+    if (volume >= 1000000) {
+        return (volume / 1000000).toFixed(1) + 'M kg';
+    } else if (volume >= 1000) {
+        return (volume / 1000).toFixed(1) + 'K kg';
+    }
+    return volume + ' kg';
+}
+
+// Render hero stat cards
+function renderHeroStats() {
+    // This Week Volume
+    const volumeEl = document.getElementById('this-week-volume');
+    if (volumeEl) {
+        const volume = getThisWeekVolume();
+        volumeEl.textContent = formatVolumeDisplay(volume);
+    }
+
+    // Recent PRs
+    const prsEl = document.getElementById('recent-prs-count');
+    if (prsEl) {
+        const recentPRs = getRecentPRs();
+        prsEl.textContent = recentPRs.count > 0 ? recentPRs.count : '-';
+    }
+}
+
 // Render the hero section
 function renderHero() {
     const streakCount = calculateStreak();
