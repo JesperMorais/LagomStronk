@@ -28,6 +28,158 @@ const EQUIPMENT_TYPES = {
     other: { id: 'other', displayName: 'Other' }
 };
 
+// ========== EXERCISE METADATA ==========
+// Maps exercise names to primary/secondary muscles and equipment
+const EXERCISE_METADATA = {
+    'Bench Press': {
+        primaryMuscles: ['chest'],
+        secondaryMuscles: ['triceps', 'shoulders'],
+        equipment: 'barbell'
+    },
+    'Incline Bench Press': {
+        primaryMuscles: ['chest'],
+        secondaryMuscles: ['triceps', 'shoulders'],
+        equipment: 'barbell'
+    },
+    'Dumbbell Bench Press': {
+        primaryMuscles: ['chest'],
+        secondaryMuscles: ['triceps', 'shoulders'],
+        equipment: 'dumbbell'
+    },
+    'Squat': {
+        primaryMuscles: ['quads', 'glutes'],
+        secondaryMuscles: ['hamstrings', 'abs'],
+        equipment: 'barbell'
+    },
+    'Front Squat': {
+        primaryMuscles: ['quads'],
+        secondaryMuscles: ['glutes', 'abs'],
+        equipment: 'barbell'
+    },
+    'Deadlift': {
+        primaryMuscles: ['back', 'glutes', 'hamstrings'],
+        secondaryMuscles: ['quads', 'forearms', 'abs'],
+        equipment: 'barbell'
+    },
+    'Romanian Deadlift': {
+        primaryMuscles: ['hamstrings', 'glutes'],
+        secondaryMuscles: ['back', 'forearms'],
+        equipment: 'barbell'
+    },
+    'Overhead Press': {
+        primaryMuscles: ['shoulders'],
+        secondaryMuscles: ['triceps', 'abs'],
+        equipment: 'barbell'
+    },
+    'Barbell Row': {
+        primaryMuscles: ['back'],
+        secondaryMuscles: ['biceps', 'forearms'],
+        equipment: 'barbell'
+    },
+    'Pull-ups': {
+        primaryMuscles: ['back'],
+        secondaryMuscles: ['biceps', 'forearms'],
+        equipment: 'bodyweight'
+    },
+    'Chin-ups': {
+        primaryMuscles: ['back', 'biceps'],
+        secondaryMuscles: ['forearms'],
+        equipment: 'bodyweight'
+    },
+    'Lat Pulldown': {
+        primaryMuscles: ['back'],
+        secondaryMuscles: ['biceps', 'forearms'],
+        equipment: 'cable'
+    },
+    'Seated Cable Row': {
+        primaryMuscles: ['back'],
+        secondaryMuscles: ['biceps', 'forearms'],
+        equipment: 'cable'
+    },
+    'Leg Press': {
+        primaryMuscles: ['quads', 'glutes'],
+        secondaryMuscles: ['hamstrings'],
+        equipment: 'machine'
+    },
+    'Leg Extension': {
+        primaryMuscles: ['quads'],
+        secondaryMuscles: [],
+        equipment: 'machine'
+    },
+    'Leg Curl': {
+        primaryMuscles: ['hamstrings'],
+        secondaryMuscles: [],
+        equipment: 'machine'
+    },
+    'Lunges': {
+        primaryMuscles: ['quads', 'glutes'],
+        secondaryMuscles: ['hamstrings', 'calves'],
+        equipment: 'bodyweight'
+    },
+    'Bulgarian Split Squat': {
+        primaryMuscles: ['quads', 'glutes'],
+        secondaryMuscles: ['hamstrings'],
+        equipment: 'bodyweight'
+    },
+    'Bicep Curls': {
+        primaryMuscles: ['biceps'],
+        secondaryMuscles: ['forearms'],
+        equipment: 'dumbbell'
+    },
+    'Hammer Curls': {
+        primaryMuscles: ['biceps'],
+        secondaryMuscles: ['forearms'],
+        equipment: 'dumbbell'
+    },
+    'Tricep Extensions': {
+        primaryMuscles: ['triceps'],
+        secondaryMuscles: [],
+        equipment: 'dumbbell'
+    },
+    'Tricep Pushdown': {
+        primaryMuscles: ['triceps'],
+        secondaryMuscles: [],
+        equipment: 'cable'
+    },
+    'Skull Crushers': {
+        primaryMuscles: ['triceps'],
+        secondaryMuscles: [],
+        equipment: 'ezbar'
+    },
+    'Lateral Raises': {
+        primaryMuscles: ['shoulders'],
+        secondaryMuscles: [],
+        equipment: 'dumbbell'
+    },
+    'Face Pulls': {
+        primaryMuscles: ['shoulders', 'back'],
+        secondaryMuscles: [],
+        equipment: 'cable'
+    },
+    'Calf Raises': {
+        primaryMuscles: ['calves'],
+        secondaryMuscles: [],
+        equipment: 'machine'
+    },
+    'Plank': {
+        primaryMuscles: ['abs'],
+        secondaryMuscles: ['obliques', 'shoulders'],
+        equipment: 'bodyweight'
+    },
+    'Ab Wheel Rollout': {
+        primaryMuscles: ['abs'],
+        secondaryMuscles: ['obliques', 'shoulders'],
+        equipment: 'other'
+    }
+};
+
+// Default metadata for unknown exercises
+const DEFAULT_EXERCISE_METADATA = {
+    primaryMuscles: [],
+    secondaryMuscles: [],
+    equipment: 'other'
+};
+
 // Default exercise library
 const DEFAULT_EXERCISES = [
     'Bench Press',
