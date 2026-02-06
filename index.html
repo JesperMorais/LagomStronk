@@ -262,6 +262,28 @@
             </section>
         </main>
 
+        <!-- FAB (shown when no active workout) -->
+        <button class="fab" id="fab-start-workout" title="Start workout">
+            <span class="fab-icon">+</span>
+        </button>
+
+        <!-- Mini-Player (shown when workout active and navigated away) -->
+        <div class="mini-player" id="mini-player">
+            <div class="mini-player-content" id="mini-player-expand">
+                <div class="mini-player-info">
+                    <span class="mini-player-name" id="mini-player-name">Workout</span>
+                    <span class="mini-player-timer" id="mini-player-timer">00:00</span>
+                </div>
+                <div class="mini-player-actions">
+                    <button class="mini-player-finish-btn" id="mini-player-finish" title="Finish workout">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <!-- Bottom Navigation -->
         <nav class="bottom-nav">
             <button class="nav-btn active" data-view="today">
