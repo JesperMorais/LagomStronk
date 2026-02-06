@@ -204,6 +204,43 @@ function formatVolumeDisplay(volume) {
     return volume + ' kg';
 }
 
+// Get volume data for current week (Mon-Sun)
+function getWeekVolumeData() {
+    const today = new Date();
+    const dayOfWeek = today.getDay(); // 0 = Sunday
+
+    // Calculate Monday (start of week)
+    // If today is Sunday (0), go back 6 days; otherwise go back (dayOfWeek - 1) days
+    const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - daysToMonday);
+    monday.setHours(0, 0, 0, 0);
+
+    // Create array for Mon-Sun (7 days)
+    const weekVolumes = [0, 0, 0, 0, 0, 0, 0];
+
+    for (const workout of appData.workouts) {
+        const workoutDate = new Date(workout.date);
+        workoutDate.setHours(0, 0, 0, 0);
+
+        // Calculate which day of the week (0=Mon, 6=Sun)
+        const diffDays = Math.round((workoutDate - monday) / (1000 * 60 * 60 * 24));
+
+        // Check if workout is within this week (Mon-Sun)
+        if (diffDays >= 0 && diffDays < 7) {
+            let dayVolume = 0;
+            for (const exercise of workout.exercises) {
+                for (const set of exercise.sets) {
+                    dayVolume += (set.weight || 0) * (set.reps || 0);
+                }
+            }
+            weekVolumes[diffDays] += dayVolume;
+        }
+    }
+
+    return weekVolumes;
+}
+
 // Initialize hero volume chart with gradient bars
 function initHeroVolumeChart(weekData) {
     const canvas = document.getElementById('hero-volume-chart');
