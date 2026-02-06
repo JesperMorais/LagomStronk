@@ -338,6 +338,26 @@ function renderHeroStats() {
         const recentPRs = getRecentPRs();
         prsEl.textContent = recentPRs.count > 0 ? recentPRs.count : '-';
     }
+
+    // Hero Volume Chart
+    const weekData = getWeekVolumeData();
+    const hasData = weekData.some(v => v > 0);
+
+    const chartContainer = document.getElementById('hero-volume-chart-container');
+    if (chartContainer) {
+        // Show/hide chart based on data availability
+        if (hasData) {
+            chartContainer.style.display = '';
+            initHeroVolumeChart(weekData);
+        } else {
+            chartContainer.style.display = 'none';
+            // Destroy chart if hidden
+            if (heroVolumeChart) {
+                heroVolumeChart.destroy();
+                heroVolumeChart = null;
+            }
+        }
+    }
 }
 
 // Render the hero section
