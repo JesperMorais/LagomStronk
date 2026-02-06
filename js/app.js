@@ -1287,15 +1287,70 @@ function handleTodayInputChange(e) {
     updateInlineSetValue(exIdx, setIdx, row);
 }
 
-// Toggle set completion
-function toggleSetCompletion(exIdx, setIdx) {
+// Toggle set completion with animations
+function toggleSetCompletion(exIdx, setIdx, buttonElement) {
     const workout = getWorkoutByDate(appData, currentDate);
     if (!workout) return;
     const set = workout.exercises[exIdx].sets[setIdx];
-    const isCompleted = set.completed !== false;
-    set.completed = !isCompleted;
+    const wasCompleted = set.completed !== false;
+    set.completed = !wasCompleted;
     saveData(appData);
-    renderTodayView();
+
+    // Get the row and button elements
+    const row = document.querySelector(`.inline-set-row[data-exercise="${exIdx}"][data-set="${setIdx}"]`);
+    const btn = row ? row.querySelector('.set-check-btn') : null;
+
+    // Only trigger animations when COMPLETING a set (not unchecking)
+    if (!wasCompleted && row && btn) {
+        // Add checkmark checked state
+        btn.classList.add('checked');
+
+        // Trigger pop animation
+        btn.classList.remove('animate-pop');
+        // Force reflow for animation restart
+        void btn.offsetWidth;
+        btn.classList.add('animate-pop');
+
+        // Add row highlight
+        row.classList.add('completed', 'highlight-complete');
+
+        // Fire confetti at button position
+        fireSetConfetti(btn);
+
+        // Haptic feedback if supported
+        if (navigator.vibrate) {
+            navigator.vibrate(30);
+        }
+    } else if (wasCompleted && row && btn) {
+        // Unchecking - remove completed state
+        btn.classList.remove('checked', 'animate-pop');
+        row.classList.remove('completed', 'highlight-complete');
+    }
+
+    // Update hero stats after set completion (don't re-render whole view)
+    renderHeroStats();
+}
+
+// Fire confetti from a specific element's position
+function fireSetConfetti(element) {
+    if (typeof confetti !== 'function') return;
+
+    const rect = element.getBoundingClientRect();
+    const x = (rect.left + rect.width / 2) / window.innerWidth;
+    const y = (rect.top + rect.height / 2) / window.innerHeight;
+
+    // Small burst of mint-colored confetti
+    confetti({
+        particleCount: 20,
+        spread: 40,
+        origin: { x, y },
+        colors: ['#D1FFC6', '#86efac', '#4ade80'],
+        startVelocity: 15,
+        gravity: 0.8,
+        ticks: 50,
+        scalar: 0.7,
+        disableForReducedMotion: true
+    });
 }
 
 // Update set weight/reps from inline inputs
