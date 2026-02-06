@@ -97,6 +97,9 @@ const miniPlayerName = document.getElementById('mini-player-name');
 const miniPlayerTimer = document.getElementById('mini-player-timer');
 const miniPlayerExpand = document.getElementById('mini-player-expand');
 const miniPlayerFinish = document.getElementById('mini-player-finish');
+const miniPlayerWorkoutName = document.getElementById('mini-player-workout-name');
+const miniPlayerExercise = document.getElementById('mini-player-exercise');
+const miniPlayerProgress = document.getElementById('mini-player-progress');
 const fabStartWorkout = document.getElementById('fab-start-workout');
 
 // Workout view DOM elements
@@ -695,11 +698,53 @@ function updateMiniPlayerVisibility() {
 
     if (shouldShow) {
         miniPlayer.classList.add('active');
-        if (miniPlayerName) {
-            miniPlayerName.textContent = activeWorkout.name;
-        }
+        updateMiniPlayerContent();
     } else {
         miniPlayer.classList.remove('active');
+    }
+}
+
+// Update mini-player content (exercise, progress, workout name)
+function updateMiniPlayerContent() {
+    const workout = getWorkoutByDate(appData, currentDate);
+
+    // Update workout name
+    if (miniPlayerWorkoutName) {
+        miniPlayerWorkoutName.textContent = activeWorkout.name || 'Workout';
+    }
+
+    // Update current exercise and progress
+    if (workout && workout.exercises.length > 0) {
+        // Find the first exercise with incomplete sets (or last exercise)
+        let currentExercise = workout.exercises[workout.exercises.length - 1];
+        for (const ex of workout.exercises) {
+            const hasIncompleteSets = ex.sets.some(s => s.completed === false);
+            if (hasIncompleteSets) {
+                currentExercise = ex;
+                break;
+            }
+        }
+
+        // Update exercise name
+        if (miniPlayerExercise) {
+            miniPlayerExercise.textContent = currentExercise.name;
+        }
+
+        // Calculate progress (completed / total sets)
+        const completedSets = currentExercise.sets.filter(s => s.completed !== false).length;
+        const totalSets = currentExercise.sets.length;
+
+        if (miniPlayerProgress) {
+            miniPlayerProgress.textContent = `${completedSets}/${totalSets} sets`;
+        }
+    } else {
+        // No exercises
+        if (miniPlayerExercise) {
+            miniPlayerExercise.textContent = 'No exercises';
+        }
+        if (miniPlayerProgress) {
+            miniPlayerProgress.textContent = '0/0 sets';
+        }
     }
 }
 
@@ -1893,6 +1938,11 @@ function addNewExerciseToWorkout(exerciseName) {
     if (workoutView && workoutView.classList.contains('active')) {
         renderWorkoutExercises();
     }
+
+    // Update mini-player content
+    if (activeWorkout.isActive) {
+        updateMiniPlayerContent();
+    }
 }
 
 // ========== INLINE TODAY VIEW EVENT HANDLERS ==========
@@ -1928,6 +1978,10 @@ function handleTodayClick(e) {
             if (workoutView && workoutView.classList.contains('active')) {
                 renderWorkoutExercises();
             }
+            // Update mini-player content
+            if (activeWorkout.isActive) {
+                updateMiniPlayerContent();
+            }
         }
         return;
     }
@@ -1957,6 +2011,11 @@ function toggleSetCompletion(exIdx, setIdx, buttonElement) {
     const wasCompleted = set.completed !== false;
     set.completed = !wasCompleted;
     saveData(appData);
+
+    // Update mini-player content
+    if (activeWorkout.isActive) {
+        updateMiniPlayerContent();
+    }
 
     // Get the row and button elements
     const row = document.querySelector(`.inline-set-row[data-exercise="${exIdx}"][data-set="${setIdx}"]`);
@@ -2041,6 +2100,10 @@ function addInlineSet(exIdx) {
     // If workout screen is active, render exercises there too
     if (workoutView && workoutView.classList.contains('active')) {
         renderWorkoutExercises();
+    }
+    // Update mini-player content
+    if (activeWorkout.isActive) {
+        updateMiniPlayerContent();
     }
 }
 

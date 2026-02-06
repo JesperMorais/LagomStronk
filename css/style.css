@@ -2232,12 +2232,13 @@ body.offline .main-content {
     transform: translateX(-50%);
     width: 100%;
     max-width: 480px;
-    height: 56px;
+    height: 64px;
     background-color: rgba(26, 31, 46, 0.95);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border-top: 1px solid var(--border-mint);
-    z-index: 100;
+    box-shadow: 0 -2px 12px rgba(209, 255, 198, 0.1);
+    z-index: 150;
     animation: mini-player-slide-up 0.25s ease-out;
 }
 
@@ -2263,68 +2264,79 @@ body.offline .main-content {
     height: 100%;
     padding: 0 var(--spacing-md);
     cursor: pointer;
+    transition: background-color 0.2s ease;
 }
 
-.mini-player-info {
+.mini-player-content:hover {
+    background-color: rgba(209, 255, 198, 0.05);
+}
+
+.mini-player-content:active {
+    background-color: rgba(209, 255, 198, 0.1);
+}
+
+.mini-player-left {
     display: flex;
     align-items: center;
-    gap: var(--spacing-md);
-    flex: 1;
-}
-
-.mini-player-name {
-    font-weight: 600;
-    font-size: 0.9rem;
-    color: var(--mint);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 200px;
+    flex-shrink: 0;
 }
 
 .mini-player-timer {
     font-family: 'SF Mono', 'Menlo', 'Monaco', monospace;
     font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--text-secondary);
-    background-color: rgba(255, 255, 255, 0.08);
-    padding: 4px 8px;
+    font-weight: 600;
+    color: var(--mint);
+    background-color: rgba(209, 255, 198, 0.1);
+    padding: 6px 10px;
     border-radius: var(--radius);
+    border: 1px solid rgba(209, 255, 198, 0.2);
 }
 
-.mini-player-actions {
+.mini-player-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    padding: 0 var(--spacing-md);
+    min-width: 0;
+}
+
+.mini-player-exercise {
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.mini-player-progress {
+    font-size: 0.7rem;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+}
+
+.mini-player-right {
     display: flex;
     align-items: center;
-    gap: var(--spacing-sm);
+    flex-shrink: 0;
 }
 
-.mini-player-finish-btn {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    border: none;
-    background: linear-gradient(135deg, var(--mint), var(--mint-dark));
-    color: var(--background-color);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 8px rgba(209, 255, 198, 0.3);
-}
-
-.mini-player-finish-btn:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 12px rgba(209, 255, 198, 0.4);
-}
-
-.mini-player-finish-btn:active {
-    transform: scale(0.95);
+.mini-player-workout-name {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100px;
 }
 
 /* Adjust main content padding when mini-player is shown */
 body.workout-active .main-content {
-    padding-bottom: calc(var(--nav-height) + 56px + var(--spacing-lg));
+    padding-bottom: calc(var(--nav-height) + 64px + var(--spacing-lg));
 }
 
 /* ========== FAB (Floating Action Button) ========== */
