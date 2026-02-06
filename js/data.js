@@ -14,6 +14,20 @@ const MUSCLE_GROUPS = {
     obliques: { id: 'obliques', displayName: 'Obliques' }
 };
 
+// ========== EQUIPMENT TYPES ==========
+const EQUIPMENT_TYPES = {
+    barbell: { id: 'barbell', displayName: 'Barbell' },
+    dumbbell: { id: 'dumbbell', displayName: 'Dumbbell' },
+    ezbar: { id: 'ezbar', displayName: 'EZ Bar' },
+    machine: { id: 'machine', displayName: 'Machine' },
+    cable: { id: 'cable', displayName: 'Cable' },
+    smithMachine: { id: 'smithMachine', displayName: 'Smith Machine' },
+    kettlebell: { id: 'kettlebell', displayName: 'Kettlebell' },
+    resistanceBand: { id: 'resistanceBand', displayName: 'Resistance Band' },
+    bodyweight: { id: 'bodyweight', displayName: 'Bodyweight' },
+    other: { id: 'other', displayName: 'Other' }
+};
+
 // Default exercise library
 const DEFAULT_EXERCISES = [
     'Bench Press',
