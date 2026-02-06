@@ -2399,6 +2399,71 @@ function completeRestTimer() {
     clearMediaSession();
 }
 
+// ========== MEDIA SESSION API FOR LOCK SCREEN CONTROLS ==========
+
+// Silent audio element for keeping media session active
+let silentAudio = null;
+
+// Initialize silent audio (creates a very short silent audio to keep media session alive)
+function initSilentAudio() {
+    if (silentAudio) return;
+
+    // Create a minimal silent WAV (44-byte header + 1 sample)
+    // This is a valid WAV file that plays silence
+    silentAudio = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=');
+    silentAudio.loop = true;
+    silentAudio.volume = 0.01; // Very quiet, essentially silent
+}
+
+// Setup Media Session for lock screen controls
+function setupMediaSession() {
+    // Check if Media Session API is supported
+    if (!('mediaSession' in navigator)) {
+        return;
+    }
+
+    // Initialize silent audio if needed
+    initSilentAudio();
+
+    // Set metadata for lock screen display
+    navigator.mediaSession.metadata = new MediaMetadata({
+        title: 'Rest Timer',
+        artist: 'LagomStronk',
+        album: 'Workout'
+    });
+
+    // Set action handlers for lock screen controls
+    navigator.mediaSession.setActionHandler('play', () => {
+        resumeRestTimer();
+    });
+
+    navigator.mediaSession.setActionHandler('pause', () => {
+        pauseRestTimer();
+    });
+
+    // Start silent audio to activate media controls on lock screen
+    if (silentAudio) {
+        silentAudio.play().catch(() => {
+            // Autoplay may be blocked, that's OK - user interaction will enable it
+        });
+    }
+}
+
+// Clear Media Session when timer is done
+function clearMediaSession() {
+    // Pause silent audio
+    if (silentAudio) {
+        silentAudio.pause();
+    }
+
+    // Clear metadata
+    if ('mediaSession' in navigator) {
+        navigator.mediaSession.metadata = null;
+        navigator.mediaSession.setActionHandler('play', null);
+        navigator.mediaSession.setActionHandler('pause', null);
+    }
+}
+
 // Hide rest timer
 function hideRestTimer() {
     if (restTimer.intervalId) {
