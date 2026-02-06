@@ -284,7 +284,8 @@ function getDefaultData() {
     return {
         workouts: [],
         exerciseLibrary: [...DEFAULT_EXERCISES],
-        workoutTemplates: [...DEFAULT_WORKOUT_TEMPLATES]
+        workoutTemplates: [...DEFAULT_WORKOUT_TEMPLATES],
+        activeProgram: DEFAULT_ACTIVE_PROGRAM
     };
 }
 
@@ -305,6 +306,10 @@ export function loadData() {
             // Ensure workoutTemplates exists
             if (!data.workoutTemplates) {
                 data.workoutTemplates = [...DEFAULT_WORKOUT_TEMPLATES];
+            }
+            // Ensure activeProgram exists (defaults to null if missing)
+            if (data.activeProgram === undefined) {
+                data.activeProgram = null;
             }
             return data;
         }
@@ -1230,3 +1235,155 @@ const DEFAULT_ACTIVE_PROGRAM = null;
  *   customizations: {}             // Exercise swaps, weight adjustments (future use)
  * }
  */
+
+// ========== PROGRAM MANAGEMENT FUNCTIONS ==========
+
+// Get all available program templates
+export function getPrograms() {
+    return PROGRAM_TEMPLATES;
+}
+
+// Get a specific program by ID
+export function getProgramById(programId) {
+    return PROGRAM_TEMPLATES.find(p => p.id === programId);
+}
+
+// Get current active program state from data
+export function getActiveProgram(data) {
+    return data.activeProgram || null;
+}
+
+// Start a program (sets startDate to today, currentDay to 1)
+export function setActiveProgram(data, programId) {
+    const program = getProgramById(programId);
+    if (!program) {
+        console.error(`Program not found: ${programId}`);
+        return data;
+    }
+
+    data.activeProgram = {
+        programId: programId,
+        startDate: getTodayStr(),
+        currentDay: 1,
+        completedDays: [],
+        lastWorkoutDate: null,
+        customizations: {}
+    };
+
+    saveData(data);
+    return data;
+}
+
+// End current program (clears active state)
+export function endActiveProgram(data) {
+    data.activeProgram = null;
+    saveData(data);
+    return data;
+}
+
+// Get today's scheduled workout based on active program
+export function getTodaysProgrammedWorkout(data) {
+    const activeProgram = getActiveProgram(data);
+    if (!activeProgram) return null;
+
+    const program = getProgramById(activeProgram.programId);
+    if (!program) return null;
+
+    // Calculate which day in schedule based on currentDay
+    // Schedule is 1-indexed, so we use modulo to cycle
+    const scheduleIndex = (activeProgram.currentDay - 1) % program.schedule.length;
+    const scheduledDay = program.schedule[scheduleIndex];
+    const workout = program.workouts[scheduledDay.workout];
+
+    // Get next workout info
+    const nextIndex = activeProgram.currentDay % program.schedule.length;
+    const nextScheduledDay = program.schedule[nextIndex];
+    const nextWorkout = program.workouts[nextScheduledDay.workout];
+
+    return {
+        dayNumber: activeProgram.currentDay,
+        label: scheduledDay.label,
+        workout: workout,
+        workoutId: scheduledDay.workout,
+        programName: program.name,
+        nextWorkout: {
+            label: nextScheduledDay.label,
+            name: nextWorkout.name
+        }
+    };
+}
+
+// Increment currentDay after completing a workout
+export function advanceProgramDay(data) {
+    const activeProgram = getActiveProgram(data);
+    if (!activeProgram) return data;
+
+    const today = getTodayStr();
+
+    // Don't advance if already completed today
+    if (activeProgram.completedDays.includes(today)) {
+        return data;
+    }
+
+    activeProgram.currentDay += 1;
+    activeProgram.completedDays.push(today);
+    activeProgram.lastWorkoutDate = today;
+
+    saveData(data);
+    return data;
+}
+
+// Skip today and advance (for missed days)
+export function skipProgramDay(data) {
+    const activeProgram = getActiveProgram(data);
+    if (!activeProgram) return data;
+
+    activeProgram.currentDay += 1;
+    // Don't add to completedDays since it was skipped
+
+    saveData(data);
+    return data;
+}
+
+// Get program progress statistics
+export function getProgramProgress(data) {
+    const activeProgram = getActiveProgram(data);
+    if (!activeProgram) {
+        return {
+            currentDay: 0,
+            totalDays: 0,
+            percentComplete: 0,
+            daysCompleted: 0,
+            isActive: false
+        };
+    }
+
+    const program = getProgramById(activeProgram.programId);
+    if (!program) {
+        return {
+            currentDay: 0,
+            totalDays: 0,
+            percentComplete: 0,
+            daysCompleted: 0,
+            isActive: false
+        };
+    }
+
+    // Calculate completion based on cycle
+    const totalDaysInCycle = program.schedule.length;
+    const cyclePosition = ((activeProgram.currentDay - 1) % totalDaysInCycle) + 1;
+    const cycleNumber = Math.floor((activeProgram.currentDay - 1) / totalDaysInCycle) + 1;
+    const percentComplete = Math.round((cyclePosition / totalDaysInCycle) * 100);
+
+    return {
+        currentDay: activeProgram.currentDay,
+        totalDays: totalDaysInCycle,
+        percentComplete: percentComplete,
+        daysCompleted: activeProgram.completedDays.length,
+        cycleNumber: cycleNumber,
+        cyclePosition: cyclePosition,
+        isActive: true,
+        programName: program.name,
+        startDate: activeProgram.startDate
+    };
+}
