@@ -103,6 +103,10 @@ let activeWorkout = {
     timerInterval: null
 };
 
+// Track PRs achieved during current session to avoid repeat celebrations
+// Format: { "exerciseName": { weight: 100, e1rm: 120 } }
+let sessionPRs = {};
+
 // Rest timer state
 let restTimer = {
     isRunning: false,
@@ -557,6 +561,9 @@ function startWorkout(workoutName = null) {
     activeWorkout.isActive = true;
     activeWorkout.name = workoutName;
     activeWorkout.startTime = Date.now();
+
+    // Clear session PR tracking for new workout
+    sessionPRs = {};
 
     // Start timer
     updateWorkoutTimer();
@@ -1260,6 +1267,19 @@ function startProgrammedWorkout(todaysWorkout) {
     if (!todaysWorkout || !todaysWorkout.workout) return;
 
     const today = getTodayStr();
+
+    // Check if there's already a workout for today
+    const existingWorkout = getWorkoutByDate(appData, today);
+    if (existingWorkout && existingWorkout.exercises.length > 0) {
+        // Ask user if they want to replace existing workout
+        if (!confirm('You already have exercises logged today. Start a fresh workout with this program?')) {
+            return;
+        }
+        // Clear existing exercises by removing them all
+        while (existingWorkout.exercises.length > 0) {
+            appData = removeExerciseFromWorkout(appData, today, 0);
+        }
+    }
 
     // Add each exercise from the program workout
     for (const templateEx of todaysWorkout.workout.exercises) {
@@ -2363,19 +2383,48 @@ function toggleSetCompletion(exIdx, setIdx, buttonElement) {
         const exercise = workout.exercises[exIdx];
         const prTypes = checkForPR(appData, exercise.name, set, currentDate);
 
-        if (prTypes.length > 0) {
-            // It's a PR! Show celebration (weight PR takes priority)
-            const prType = prTypes.includes('weight') ? 'weight' : 'e1rm';
+        // Filter out PRs we've already celebrated this session (avoid repeats)
+        const newPRTypes = prTypes.filter(prType => {
+            const sessionPR = sessionPRs[exercise.name] || {};
+            if (prType === 'weight' && sessionPR.weight >= set.weight) {
+                return false; // Already celebrated a weight PR at this weight or higher
+            }
+            if (prType === 'e1rm') {
+                const e1rm = calculateEstimated1RM(set.weight, set.reps);
+                if (sessionPR.e1rm >= e1rm) {
+                    return false; // Already celebrated an e1rm PR at this value or higher
+                }
+            }
+            return true;
+        });
+
+        if (newPRTypes.length > 0) {
+            // It's a NEW PR this session! Show celebration (weight PR takes priority)
+            const prType = newPRTypes.includes('weight') ? 'weight' : 'e1rm';
             let prValue;
             if (prType === 'weight') {
                 prValue = set.weight;
+                // Track this PR in session
+                sessionPRs[exercise.name] = sessionPRs[exercise.name] || {};
+                sessionPRs[exercise.name].weight = set.weight;
             } else {
                 prValue = calculateEstimated1RM(set.weight, set.reps);
+                sessionPRs[exercise.name] = sessionPRs[exercise.name] || {};
+                sessionPRs[exercise.name].e1rm = prValue;
             }
             showPRCelebration(exercise.name, prValue, prType);
 
             // Add PR badge to the row
             addPRBadgeToRow(row, prType);
+        } else if (prTypes.length > 0) {
+            // It's a PR but we already celebrated, just add badge without celebration
+            const prType = prTypes.includes('weight') ? 'weight' : 'e1rm';
+            addPRBadgeToRow(row, prType);
+            // Normal confetti instead
+            fireSetConfetti(btn);
+            if (navigator.vibrate) {
+                navigator.vibrate(30);
+            }
         } else {
             // Normal set completion - fire confetti at button position
             fireSetConfetti(btn);
@@ -3254,6 +3303,10 @@ function updateNumpadDisplay() {
 
     if (numpadState.currentInput) {
         numpadState.currentInput.value = numpadState.value;
+        // Mark as user-entered to show white text instead of gray placeholder
+        if (numpadState.value) {
+            numpadState.currentInput.classList.add('user-entered');
+        }
     }
 }
 

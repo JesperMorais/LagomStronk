@@ -1215,13 +1215,14 @@ body.offline .main-content {
     opacity: 0.7;
 }
 
-/* Pre-filled values shown in softer gray, brighten when editing */
+/* Pre-filled values shown in muted gray, user-entered values white */
 .inline-input {
-    color: #9ca3af;
+    color: #6b7280;
 }
 
 .inline-input:focus,
-.inline-input.numpad-active {
+.inline-input.numpad-active,
+.inline-input.user-entered {
     color: var(--text-primary);
 }
 
