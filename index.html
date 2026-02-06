@@ -88,6 +88,39 @@
                 <div class="view-header">
                     <h2>Workout History</h2>
                 </div>
+
+                <!-- Calendar View -->
+                <div class="history-calendar" id="history-calendar">
+                    <div class="calendar-nav">
+                        <button class="calendar-nav-btn" id="calendar-prev">&lt;</button>
+                        <span class="calendar-month-year" id="calendar-month-year">February 2026</span>
+                        <button class="calendar-nav-btn" id="calendar-next">&gt;</button>
+                    </div>
+                    <div class="calendar-day-headers">
+                        <span>M</span>
+                        <span>T</span>
+                        <span>W</span>
+                        <span>T</span>
+                        <span>F</span>
+                        <span>S</span>
+                        <span>S</span>
+                    </div>
+                    <div class="calendar-grid" id="calendar-grid">
+                        <!-- 6 weeks x 7 days = 42 day cells -->
+                    </div>
+                </div>
+
+                <!-- Day Summary Popup -->
+                <div class="calendar-popup" id="calendar-popup">
+                    <div class="calendar-popup-header">
+                        <span class="calendar-popup-date" id="calendar-popup-date">January 1, 2026</span>
+                        <button class="calendar-popup-close" id="calendar-popup-close">&times;</button>
+                    </div>
+                    <div class="calendar-popup-body" id="calendar-popup-body">
+                        <!-- Summary content -->
+                    </div>
+                </div>
+
                 <div id="history-list" class="history-list">
                     <!-- Past workouts will be listed here -->
                 </div>
