@@ -1303,3 +1303,134 @@ body.offline .main-content {
         display: none;
     }
 }
+
+/* ========== DASHBOARD HERO ========== */
+
+.dashboard-hero {
+    background: linear-gradient(135deg, var(--bg-indigo) 0%, var(--bg-teal) 100%);
+    border: 1px solid var(--border-mint);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+    text-align: center;
+    box-shadow: var(--glow-soft);
+}
+
+.streak-display {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+}
+
+.streak-flame {
+    font-size: 2rem;
+    animation: flame-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes flame-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+.streak-count {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--mint);
+    text-shadow: 0 0 20px rgba(209, 255, 198, 0.5);
+}
+
+.streak-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    text-transform: lowercase;
+}
+
+/* 7-Day Week Calendar */
+.week-calendar {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-sm);
+}
+
+.week-day {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.week-day-label {
+    font-size: 0.625rem;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+}
+
+.week-day-dot {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: var(--card-background);
+    border: 2px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.625rem;
+    color: var(--text-tertiary);
+    transition: all 0.2s ease;
+}
+
+.week-day-dot.today {
+    border-color: var(--mint);
+    color: var(--mint);
+    font-weight: 700;
+}
+
+.week-day-dot.has-workout {
+    background-color: var(--mint);
+    border-color: var(--mint);
+    color: var(--background-color);
+}
+
+.week-day-dot.has-workout.today {
+    box-shadow: 0 0 12px rgba(209, 255, 198, 0.6);
+}
+
+/* Hero Stats Row */
+.hero-stats-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+}
+
+.hero-stat-card {
+    background-color: rgba(35, 44, 51, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: var(--spacing-md);
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.hero-stat-card:hover {
+    border-color: var(--border-mint);
+}
+
+.hero-stat-label {
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: var(--spacing-xs);
+}
+
+.hero-stat-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--mint);
+}
