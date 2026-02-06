@@ -47,6 +47,10 @@ let librarySelectedMuscles = [];
 let librarySelectedEquipment = [];
 let libraryFavorites = JSON.parse(localStorage.getItem('lagomstronk_favorites') || '[]');
 
+// Calendar state
+let calendarDisplayDate = new Date(); // The month being displayed
+let calendarIntensityCache = new Map(); // Cache for intensity calculations
+
 // Day names for week calendar
 const DAY_NAMES = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
@@ -639,6 +643,9 @@ function renderTodayView() {
 
 // Render history view
 function renderHistoryView() {
+    // Render calendar first
+    renderHistoryCalendar();
+
     const workouts = getWorkoutsSorted(appData);
 
     if (workouts.length === 0) {
@@ -667,6 +674,159 @@ function renderHistoryView() {
             </div>
         `;
     }).join('');
+}
+
+// ========== CALENDAR FUNCTIONS ==========
+
+// Get month name
+const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'];
+
+// Render the history calendar for the current display month
+function renderHistoryCalendar() {
+    const calendarGrid = document.getElementById('calendar-grid');
+    const monthYearEl = document.getElementById('calendar-month-year');
+    if (!calendarGrid || !monthYearEl) return;
+
+    const year = calendarDisplayDate.getFullYear();
+    const month = calendarDisplayDate.getMonth();
+
+    // Update month/year display
+    monthYearEl.textContent = `${MONTH_NAMES[month]} ${year}`;
+
+    // Get first day of month and total days
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const daysInMonth = lastDay.getDate();
+
+    // Get day of week for first day (0 = Sunday, adjust to Monday start)
+    let startDayOfWeek = firstDay.getDay();
+    startDayOfWeek = startDayOfWeek === 0 ? 6 : startDayOfWeek - 1; // Convert to Mon=0
+
+    // Calculate max volume for this month for intensity normalization
+    const maxVolume = getMonthMaxVolume(year, month);
+
+    // Build calendar grid (6 weeks x 7 days = 42 cells)
+    const today = getTodayStr();
+    let html = '';
+
+    // Previous month days
+    const prevMonth = new Date(year, month, 0);
+    const prevMonthDays = prevMonth.getDate();
+    for (let i = startDayOfWeek - 1; i >= 0; i--) {
+        const day = prevMonthDays - i;
+        const dateStr = formatDateStr(year, month - 1, day);
+        html += renderCalendarDay(day, dateStr, today, true, maxVolume);
+    }
+
+    // Current month days
+    for (let day = 1; day <= daysInMonth; day++) {
+        const dateStr = formatDateStr(year, month, day);
+        html += renderCalendarDay(day, dateStr, today, false, maxVolume);
+    }
+
+    // Next month days (fill remaining cells)
+    const totalCells = 42;
+    const filledCells = startDayOfWeek + daysInMonth;
+    const remainingCells = totalCells - filledCells;
+    for (let day = 1; day <= remainingCells; day++) {
+        const dateStr = formatDateStr(year, month + 1, day);
+        html += renderCalendarDay(day, dateStr, today, true, maxVolume);
+    }
+
+    calendarGrid.innerHTML = html;
+}
+
+// Format a date as YYYY-MM-DD
+function formatDateStr(year, month, day) {
+    // Handle month overflow
+    const date = new Date(year, month, day);
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+}
+
+// Render a single calendar day cell
+function renderCalendarDay(day, dateStr, today, isOtherMonth, maxVolume) {
+    const intensity = calculateDayIntensity(dateStr, maxVolume);
+    const isToday = dateStr === today;
+    const hasWorkout = intensity > 0;
+
+    const classes = ['calendar-day'];
+    if (isOtherMonth) classes.push('other-month');
+    if (isToday) classes.push('today');
+    if (hasWorkout) {
+        classes.push('has-workout');
+        // Map intensity (0-1) to intensity classes (1-5)
+        const intensityLevel = Math.min(5, Math.max(1, Math.ceil(intensity * 5)));
+        classes.push(`intensity-${intensityLevel}`);
+    }
+
+    return `<div class="${classes.join(' ')}" data-date="${dateStr}" onclick="showCalendarPopup('${dateStr}')">${day}</div>`;
+}
+
+// Calculate day intensity based on volume (0-1)
+function calculateDayIntensity(dateStr, maxVolume) {
+    if (maxVolume === 0) return 0;
+
+    const workout = getWorkoutByDate(appData, dateStr);
+    if (!workout || workout.exercises.length === 0) return 0;
+
+    let dayVolume = 0;
+    for (const exercise of workout.exercises) {
+        for (const set of exercise.sets) {
+            dayVolume += (set.weight || 0) * (set.reps || 0);
+        }
+    }
+
+    return dayVolume / maxVolume;
+}
+
+// Get max volume for a month (for normalization)
+function getMonthMaxVolume(year, month) {
+    const cacheKey = `${year}-${month}`;
+    if (calendarIntensityCache.has(cacheKey)) {
+        return calendarIntensityCache.get(cacheKey);
+    }
+
+    let maxVolume = 0;
+    const startDate = new Date(year, month, 1);
+    const endDate = new Date(year, month + 1, 0);
+
+    for (const workout of appData.workouts) {
+        const workoutDate = new Date(workout.date);
+        if (workoutDate >= startDate && workoutDate <= endDate) {
+            let dayVolume = 0;
+            for (const exercise of workout.exercises) {
+                for (const set of exercise.sets) {
+                    dayVolume += (set.weight || 0) * (set.reps || 0);
+                }
+            }
+            maxVolume = Math.max(maxVolume, dayVolume);
+        }
+    }
+
+    calendarIntensityCache.set(cacheKey, maxVolume);
+    return maxVolume;
+}
+
+// Get intensity color based on intensity value (0-1)
+function getIntensityColor(intensity) {
+    // Mint color with varying opacity
+    const alpha = 0.2 + (intensity * 0.8); // 0.2 to 1.0
+    return `rgba(209, 255, 198, ${alpha})`;
+}
+
+// Navigate calendar month
+function navigateMonth(delta) {
+    calendarDisplayDate.setMonth(calendarDisplayDate.getMonth() + delta);
+    renderHistoryCalendar();
+}
+
+// Clear intensity cache when data changes
+function clearCalendarCache() {
+    calendarIntensityCache.clear();
 }
 
 // Render progress view
