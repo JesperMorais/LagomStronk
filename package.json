@@ -21,7 +21,9 @@
   ],
   "author": "Jeppe Morris",
   "license": "MIT",
-  "dependencies": {},
+  "dependencies": {
+    "idb-keyval": "^6.2.2"
+  },
   "devDependencies": {
     "@capacitor/android": "^8.0.2",
     "@capacitor/cli": "^8.0.2",

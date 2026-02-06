@@ -1,3 +1,185 @@
+// ========== MUSCLE GROUPS ==========
+const MUSCLE_GROUPS = {
+    chest: { id: 'chest', displayName: 'Chest' },
+    back: { id: 'back', displayName: 'Back' },
+    shoulders: { id: 'shoulders', displayName: 'Shoulders' },
+    biceps: { id: 'biceps', displayName: 'Biceps' },
+    triceps: { id: 'triceps', displayName: 'Triceps' },
+    forearms: { id: 'forearms', displayName: 'Forearms' },
+    quads: { id: 'quads', displayName: 'Quadriceps' },
+    hamstrings: { id: 'hamstrings', displayName: 'Hamstrings' },
+    glutes: { id: 'glutes', displayName: 'Glutes' },
+    calves: { id: 'calves', displayName: 'Calves' },
+    abs: { id: 'abs', displayName: 'Abs' },
+    obliques: { id: 'obliques', displayName: 'Obliques' }
+};
+
+// ========== EQUIPMENT TYPES ==========
+const EQUIPMENT_TYPES = {
+    barbell: { id: 'barbell', displayName: 'Barbell' },
+    dumbbell: { id: 'dumbbell', displayName: 'Dumbbell' },
+    ezbar: { id: 'ezbar', displayName: 'EZ Bar' },
+    machine: { id: 'machine', displayName: 'Machine' },
+    cable: { id: 'cable', displayName: 'Cable' },
+    smithMachine: { id: 'smithMachine', displayName: 'Smith Machine' },
+    kettlebell: { id: 'kettlebell', displayName: 'Kettlebell' },
+    resistanceBand: { id: 'resistanceBand', displayName: 'Resistance Band' },
+    bodyweight: { id: 'bodyweight', displayName: 'Bodyweight' },
+    other: { id: 'other', displayName: 'Other' }
+};
+
+// ========== EXERCISE METADATA ==========
+// Maps exercise names to primary/secondary muscles and equipment
+const EXERCISE_METADATA = {
+    'Bench Press': {
+        primaryMuscles: ['chest'],
+        secondaryMuscles: ['triceps', 'shoulders'],
+        equipment: 'barbell'
+    },
+    'Incline Bench Press': {
+        primaryMuscles: ['chest'],
+        secondaryMuscles: ['triceps', 'shoulders'],
+        equipment: 'barbell'
+    },
+    'Dumbbell Bench Press': {
+        primaryMuscles: ['chest'],
+        secondaryMuscles: ['triceps', 'shoulders'],
+        equipment: 'dumbbell'
+    },
+    'Squat': {
+        primaryMuscles: ['quads', 'glutes'],
+        secondaryMuscles: ['hamstrings', 'abs'],
+        equipment: 'barbell'
+    },
+    'Front Squat': {
+        primaryMuscles: ['quads'],
+        secondaryMuscles: ['glutes', 'abs'],
+        equipment: 'barbell'
+    },
+    'Deadlift': {
+        primaryMuscles: ['back', 'glutes', 'hamstrings'],
+        secondaryMuscles: ['quads', 'forearms', 'abs'],
+        equipment: 'barbell'
+    },
+    'Romanian Deadlift': {
+        primaryMuscles: ['hamstrings', 'glutes'],
+        secondaryMuscles: ['back', 'forearms'],
+        equipment: 'barbell'
+    },
+    'Overhead Press': {
+        primaryMuscles: ['shoulders'],
+        secondaryMuscles: ['triceps', 'abs'],
+        equipment: 'barbell'
+    },
+    'Barbell Row': {
+        primaryMuscles: ['back'],
+        secondaryMuscles: ['biceps', 'forearms'],
+        equipment: 'barbell'
+    },
+    'Pull-ups': {
+        primaryMuscles: ['back'],
+        secondaryMuscles: ['biceps', 'forearms'],
+        equipment: 'bodyweight'
+    },
+    'Chin-ups': {
+        primaryMuscles: ['back', 'biceps'],
+        secondaryMuscles: ['forearms'],
+        equipment: 'bodyweight'
+    },
+    'Lat Pulldown': {
+        primaryMuscles: ['back'],
+        secondaryMuscles: ['biceps', 'forearms'],
+        equipment: 'cable'
+    },
+    'Seated Cable Row': {
+        primaryMuscles: ['back'],
+        secondaryMuscles: ['biceps', 'forearms'],
+        equipment: 'cable'
+    },
+    'Leg Press': {
+        primaryMuscles: ['quads', 'glutes'],
+        secondaryMuscles: ['hamstrings'],
+        equipment: 'machine'
+    },
+    'Leg Extension': {
+        primaryMuscles: ['quads'],
+        secondaryMuscles: [],
+        equipment: 'machine'
+    },
+    'Leg Curl': {
+        primaryMuscles: ['hamstrings'],
+        secondaryMuscles: [],
+        equipment: 'machine'
+    },
+    'Lunges': {
+        primaryMuscles: ['quads', 'glutes'],
+        secondaryMuscles: ['hamstrings', 'calves'],
+        equipment: 'bodyweight'
+    },
+    'Bulgarian Split Squat': {
+        primaryMuscles: ['quads', 'glutes'],
+        secondaryMuscles: ['hamstrings'],
+        equipment: 'bodyweight'
+    },
+    'Bicep Curls': {
+        primaryMuscles: ['biceps'],
+        secondaryMuscles: ['forearms'],
+        equipment: 'dumbbell'
+    },
+    'Hammer Curls': {
+        primaryMuscles: ['biceps'],
+        secondaryMuscles: ['forearms'],
+        equipment: 'dumbbell'
+    },
+    'Tricep Extensions': {
+        primaryMuscles: ['triceps'],
+        secondaryMuscles: [],
+        equipment: 'dumbbell'
+    },
+    'Tricep Pushdown': {
+        primaryMuscles: ['triceps'],
+        secondaryMuscles: [],
+        equipment: 'cable'
+    },
+    'Skull Crushers': {
+        primaryMuscles: ['triceps'],
+        secondaryMuscles: [],
+        equipment: 'ezbar'
+    },
+    'Lateral Raises': {
+        primaryMuscles: ['shoulders'],
+        secondaryMuscles: [],
+        equipment: 'dumbbell'
+    },
+    'Face Pulls': {
+        primaryMuscles: ['shoulders', 'back'],
+        secondaryMuscles: [],
+        equipment: 'cable'
+    },
+    'Calf Raises': {
+        primaryMuscles: ['calves'],
+        secondaryMuscles: [],
+        equipment: 'machine'
+    },
+    'Plank': {
+        primaryMuscles: ['abs'],
+        secondaryMuscles: ['obliques', 'shoulders'],
+        equipment: 'bodyweight'
+    },
+    'Ab Wheel Rollout': {
+        primaryMuscles: ['abs'],
+        secondaryMuscles: ['obliques', 'shoulders'],
+        equipment: 'other'
+    }
+};
+
+// Default metadata for unknown exercises
+const DEFAULT_EXERCISE_METADATA = {
+    primaryMuscles: [],
+    secondaryMuscles: [],
+    equipment: 'other'
+};
+
 // Default exercise library
 const DEFAULT_EXERCISES = [
     'Bench Press',
@@ -700,4 +882,55 @@ export function getMostRecentExerciseSets(data, exerciseName, excludeDate) {
         if (exercise) return exercise.sets;
     }
     return [];
+}
+
+// ========== EXERCISE METADATA HELPERS ==========
+
+// Get metadata for an exercise (returns default if unknown)
+export function getExerciseMetadata(exerciseName) {
+    return EXERCISE_METADATA[exerciseName] || DEFAULT_EXERCISE_METADATA;
+}
+
+// Get all muscle groups
+export function getMuscleGroups() {
+    return MUSCLE_GROUPS;
+}
+
+// Get all equipment types
+export function getEquipmentTypes() {
+    return EQUIPMENT_TYPES;
+}
+
+// Filter exercises by muscle group (checks primary and secondary)
+export function filterExercisesByMuscle(muscleGroup, exerciseList = DEFAULT_EXERCISES) {
+    return exerciseList.filter(name => {
+        const meta = getExerciseMetadata(name);
+        return meta.primaryMuscles.includes(muscleGroup) ||
+               meta.secondaryMuscles.includes(muscleGroup);
+    });
+}
+
+// Filter exercises by primary muscle group only
+export function filterExercisesByPrimaryMuscle(muscleGroup, exerciseList = DEFAULT_EXERCISES) {
+    return exerciseList.filter(name => {
+        const meta = getExerciseMetadata(name);
+        return meta.primaryMuscles.includes(muscleGroup);
+    });
+}
+
+// Filter exercises by equipment type
+export function filterExercisesByEquipment(equipment, exerciseList = DEFAULT_EXERCISES) {
+    return exerciseList.filter(name => {
+        const meta = getExerciseMetadata(name);
+        return meta.equipment === equipment;
+    });
+}
+
+// Get all exercises for a specific muscle group with their metadata
+export function getExercisesForMuscle(muscleGroup) {
+    const exercises = filterExercisesByMuscle(muscleGroup);
+    return exercises.map(name => ({
+        name,
+        ...getExerciseMetadata(name)
+    }));
 }
