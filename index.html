@@ -424,6 +424,93 @@
             </div>
         </div>
 
+        <!-- Exercise Wizard Modal -->
+        <div class="modal" id="exercise-wizard-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="wizard-title">Add Custom Exercise</h3>
+                    <button class="modal-close" id="close-exercise-wizard">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <!-- Progress indicator -->
+                    <div class="wizard-progress">
+                        <div class="wizard-step active" data-step="1">1</div>
+                        <div class="wizard-step-line"></div>
+                        <div class="wizard-step" data-step="2">2</div>
+                        <div class="wizard-step-line"></div>
+                        <div class="wizard-step" data-step="3">3</div>
+                        <div class="wizard-step-line"></div>
+                        <div class="wizard-step" data-step="4">4</div>
+                    </div>
+
+                    <!-- Step 1: Exercise Name -->
+                    <div class="wizard-panel active" data-panel="1">
+                        <h4 class="wizard-panel-title">Exercise Name</h4>
+                        <p class="wizard-panel-desc">What's the name of your exercise?</p>
+                        <div class="form-group">
+                            <input type="text" id="wizard-exercise-name" class="text-input" placeholder="e.g., Cable Flyes" autocomplete="off">
+                        </div>
+                        <p class="wizard-error" id="wizard-name-error" style="display: none;">Please enter an exercise name</p>
+                    </div>
+
+                    <!-- Step 2: Muscle Groups -->
+                    <div class="wizard-panel" data-panel="2">
+                        <h4 class="wizard-panel-title">Muscle Groups</h4>
+                        <p class="wizard-panel-desc">Select primary muscle groups (at least one)</p>
+                        <div class="wizard-section">
+                            <label class="wizard-section-label">Primary Muscles</label>
+                            <div class="wizard-chips" id="wizard-primary-muscles">
+                                <!-- Chips rendered by JS -->
+                            </div>
+                        </div>
+                        <div class="wizard-section">
+                            <label class="wizard-section-label">Secondary Muscles (optional)</label>
+                            <div class="wizard-chips" id="wizard-secondary-muscles">
+                                <!-- Chips rendered by JS -->
+                            </div>
+                        </div>
+                        <p class="wizard-error" id="wizard-muscle-error" style="display: none;">Select at least one primary muscle group</p>
+                    </div>
+
+                    <!-- Step 3: Equipment -->
+                    <div class="wizard-panel" data-panel="3">
+                        <h4 class="wizard-panel-title">Equipment</h4>
+                        <p class="wizard-panel-desc">What equipment is needed?</p>
+                        <div class="wizard-chips wizard-chips-single" id="wizard-equipment">
+                            <!-- Chips rendered by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Confirmation -->
+                    <div class="wizard-panel" data-panel="4">
+                        <h4 class="wizard-panel-title">Confirm Exercise</h4>
+                        <div class="wizard-summary">
+                            <div class="wizard-summary-item">
+                                <span class="wizard-summary-label">Name</span>
+                                <span class="wizard-summary-value" id="wizard-summary-name">-</span>
+                            </div>
+                            <div class="wizard-summary-item">
+                                <span class="wizard-summary-label">Primary Muscles</span>
+                                <span class="wizard-summary-value" id="wizard-summary-primary">-</span>
+                            </div>
+                            <div class="wizard-summary-item">
+                                <span class="wizard-summary-label">Secondary Muscles</span>
+                                <span class="wizard-summary-value" id="wizard-summary-secondary">-</span>
+                            </div>
+                            <div class="wizard-summary-item">
+                                <span class="wizard-summary-label">Equipment</span>
+                                <span class="wizard-summary-value" id="wizard-summary-equipment">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer wizard-footer">
+                    <button class="btn btn-secondary" id="wizard-back" style="display: none;">Back</button>
+                    <button class="btn btn-primary" id="wizard-next">Next</button>
+                </div>
+            </div>
+        </div>
+
         <!-- Install Instructions Modal -->
         <div class="modal" id="install-modal">
             <div class="modal-content">
