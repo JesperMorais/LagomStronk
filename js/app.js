@@ -576,6 +576,35 @@ function setupEventListeners() {
     if (applyFiltersBtn) {
         applyFiltersBtn.addEventListener('click', applyFilters);
     }
+
+    // Calendar navigation
+    const calendarPrevBtn = document.getElementById('calendar-prev');
+    if (calendarPrevBtn) {
+        calendarPrevBtn.addEventListener('click', () => navigateMonth(-1));
+    }
+
+    const calendarNextBtn = document.getElementById('calendar-next');
+    if (calendarNextBtn) {
+        calendarNextBtn.addEventListener('click', () => navigateMonth(1));
+    }
+
+    // Calendar popup close
+    const calendarPopupClose = document.getElementById('calendar-popup-close');
+    if (calendarPopupClose) {
+        calendarPopupClose.addEventListener('click', closeCalendarPopup);
+    }
+
+    // Close popup when clicking outside
+    document.addEventListener('click', (e) => {
+        const popup = document.getElementById('calendar-popup');
+        const calendarGrid = document.getElementById('calendar-grid');
+        if (popup && popup.classList.contains('active')) {
+            // Check if click is outside popup and calendar grid
+            if (!popup.contains(e.target) && !calendarGrid.contains(e.target)) {
+                closeCalendarPopup();
+            }
+        }
+    });
 }
 
 // Render today's workout with inline editable sets
@@ -828,6 +857,56 @@ function navigateMonth(delta) {
 function clearCalendarCache() {
     calendarIntensityCache.clear();
 }
+
+// Show calendar popup with workout summary
+function showCalendarPopup(dateStr) {
+    const popup = document.getElementById('calendar-popup');
+    const dateEl = document.getElementById('calendar-popup-date');
+    const bodyEl = document.getElementById('calendar-popup-body');
+    if (!popup || !dateEl || !bodyEl) return;
+
+    // Format the date for display
+    const date = new Date(dateStr);
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    dateEl.textContent = date.toLocaleDateString('en-US', options);
+
+    // Get workout for this date
+    const workout = getWorkoutByDate(appData, dateStr);
+
+    if (!workout || workout.exercises.length === 0) {
+        bodyEl.innerHTML = `<div class="calendar-popup-rest">Rest day</div>`;
+    } else {
+        let totalSets = 0;
+        const exercisesHtml = workout.exercises.map(ex => {
+            totalSets += ex.sets.length;
+            return `
+                <div class="calendar-popup-exercise">
+                    <div class="calendar-popup-exercise-name">${ex.name}</div>
+                    <div class="calendar-popup-exercise-sets">${ex.sets.length} sets</div>
+                </div>
+            `;
+        }).join('');
+
+        bodyEl.innerHTML = exercisesHtml + `
+            <div class="calendar-popup-total">
+                ${workout.exercises.length} exercise${workout.exercises.length !== 1 ? 's' : ''} • ${totalSets} total sets
+            </div>
+        `;
+    }
+
+    popup.classList.add('active');
+}
+
+// Close calendar popup
+function closeCalendarPopup() {
+    const popup = document.getElementById('calendar-popup');
+    if (popup) {
+        popup.classList.remove('active');
+    }
+}
+
+// Make showCalendarPopup available globally for onclick handlers
+window.showCalendarPopup = showCalendarPopup;
 
 // Render progress view
 function renderProgressView() {
