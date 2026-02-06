@@ -13,7 +13,7 @@ This roadmap transforms LagomStronk from a functional workout tracker into an in
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Technical Foundation** - Storage abstraction and event infrastructure
-- [x] **Phase 2: UX Overhaul & Exercise System** - Modern interface and enhanced exercise management
+- [ ] **Phase 2: UX Overhaul & Exercise System** - Modern interface and enhanced exercise management
 - [ ] **Phase 3: Workout Features** - Rest timer, PR tracking, and training programs
 - [ ] **Phase 4: Body Tracking** - Measurements and progress photos
 - [ ] **Phase 5: Health Integration** - Platform sync with Health Connect and HealthKit
@@ -56,7 +56,7 @@ Plans:
   9. User can create custom exercises with muscle group and equipment metadata
   10. User accesses dedicated exercise library view with search and favorites
   11. User sees recently used exercises for quick access
-**Plans**: 9 plans
+**Plans**: 11 plans
 
 Plans:
 - [x] 02-01-PLAN.md — Dashboard hero section (streak, calendar, stat cards)
@@ -68,6 +68,8 @@ Plans:
 - [x] 02-07-PLAN.md — Workout history calendar
 - [x] 02-08-PLAN.md — Mini-player and workout flow
 - [x] 02-09-PLAN.md — Custom exercise wizard
+- [ ] 02-10-PLAN.md — Gap closure: Workout screen architecture (UAT-001, UAT-005)
+- [ ] 02-11-PLAN.md — Gap closure: Numpad fixes and animation polish (UAT-002, UAT-003, UAT-004)
 
 ### Phase 3: Workout Features
 **Goal**: Add table stakes workout capabilities that competitive apps provide
@@ -174,7 +176,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Technical Foundation | 4/4 | Complete | 2026-02-05 |
-| 2. UX Overhaul & Exercise System | 9/9 | Complete | 2026-02-06 |
+| 2. UX Overhaul & Exercise System | 9/11 | In Progress (gap closure) | - |
 | 3. Workout Features | 0/TBD | Not started | - |
 | 4. Body Tracking | 0/TBD | Not started | - |
 | 5. Health Integration | 0/TBD | Not started | - |
