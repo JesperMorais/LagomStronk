@@ -1959,11 +1959,16 @@ function addNewExerciseToWorkout(exerciseName) {
     const isFirstExercise = !existingWorkout || existingWorkout.exercises.length === 0;
 
     const prevSets = getMostRecentExerciseSets(appData, exerciseName, currentDate);
+    const suggestion = getProgressiveOverloadSuggestion(appData, exerciseName);
+
+    // Use suggested weight if available, otherwise previous weight
+    const suggestedWeight = suggestion.suggestedWeight || (prevSets.length > 0 ? prevSets[0].weight : 20);
+
     const exercise = {
         name: exerciseName,
         sets: prevSets.length > 0
-            ? prevSets.map(s => ({ weight: s.weight, reps: s.reps, completed: false }))
-            : [{ weight: 20, reps: 10, completed: false }]
+            ? prevSets.map(s => ({ weight: suggestedWeight, reps: s.reps, completed: false }))
+            : [{ weight: suggestedWeight, reps: 10, completed: false }]
     };
     appData = addExerciseToWorkout(appData, currentDate, exercise);
 
