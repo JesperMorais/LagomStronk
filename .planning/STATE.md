@@ -10,11 +10,11 @@ See: .planning/REQUIREMENTS.md (updated 2026-02-05)
 ## Current Position
 
 Phase: 2 of 7 (UX Overhaul & Exercise System)
-Plan: 4 of 9 (Custom Numpad complete)
+Plan: 5 of 9 (Exercise Library UI complete)
 Status: In progress - Phase 2 re-execution
-Last activity: 2026-02-06 - Completed 02-04-PLAN.md (Custom Numpad)
+Last activity: 2026-02-06 - Completed 02-05-PLAN.md (Exercise Library UI)
 
-Progress: [██████░░░░] 62% (8/13 plans)
+Progress: [███████░░░] 69% (9/13 plans)
 
 ## Performance Metrics
 
@@ -87,6 +87,10 @@ Progress: [██████░░░░] 62% (8/13 plans)
 | 02 | 10 | Browser confirm() for finish workout | Simple yes/no question; no need for custom modal |
 | 02 | 10 | Checkmark icon for finish button | Semantically "complete" rather than X for "close/cancel" |
 | 02 | 10 | "Last: X" format for placeholder hints | Clearer than just showing a number |
+| 02 | 05 | Filter drawer uses chip-based selection | More modern, mobile-friendly interface; chips provide clear visual feedback |
+| 02 | 05 | Recent exercises at top | Muscle memory shortcuts for quick access |
+| 02 | 05 | Filter badge shows active count | Users know when filters are applied without opening drawer |
+| 02 | 05 | Favorites stored separately | Using lagomstronk_favorites key, separate from main app data |
 
 ### Pending Todos
 
@@ -116,6 +120,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-06 (plan execution)
-Stopped at: Completed 02-04-PLAN.md (Custom Numpad)
+Stopped at: Completed 02-05-PLAN.md (Exercise Library UI)
 Resume file: None
-Next: 02-05-PLAN.md
+Next: 02-06-PLAN.md
