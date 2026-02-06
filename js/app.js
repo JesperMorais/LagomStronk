@@ -532,6 +532,46 @@ function setupEventListeners() {
     document.getElementById('close-save-template-modal').addEventListener('click', closeSaveTemplateModal);
     document.getElementById('cancel-save-template').addEventListener('click', closeSaveTemplateModal);
     document.getElementById('confirm-save-template').addEventListener('click', confirmSaveAsTemplate);
+
+    // Library controls
+    const librarySearchInput = document.getElementById('library-search');
+    if (librarySearchInput) {
+        librarySearchInput.addEventListener('input', (e) => {
+            librarySearchQuery = e.target.value;
+            renderLibraryView();
+        });
+    }
+
+    const filterBtn = document.getElementById('library-filter-btn');
+    if (filterBtn) {
+        filterBtn.addEventListener('click', openFilterDrawer);
+    }
+
+    const viewToggleBtn = document.getElementById('library-view-toggle');
+    if (viewToggleBtn) {
+        viewToggleBtn.addEventListener('click', toggleLibraryView);
+    }
+
+    // Filter drawer
+    const closeFilterBtn = document.getElementById('close-filter-drawer');
+    if (closeFilterBtn) {
+        closeFilterBtn.addEventListener('click', closeFilterDrawer);
+    }
+
+    const filterOverlay = document.getElementById('filter-drawer-overlay');
+    if (filterOverlay) {
+        filterOverlay.addEventListener('click', closeFilterDrawer);
+    }
+
+    const clearFiltersBtn = document.getElementById('clear-filters-btn');
+    if (clearFiltersBtn) {
+        clearFiltersBtn.addEventListener('click', clearAllFilters);
+    }
+
+    const applyFiltersBtn = document.getElementById('apply-filters-btn');
+    if (applyFiltersBtn) {
+        applyFiltersBtn.addEventListener('click', applyFilters);
+    }
 }
 
 // Render today's workout with inline editable sets
@@ -879,15 +919,272 @@ function formatVolume(volume) {
     return volume.toString();
 }
 
-// Render library view
+// ========== LIBRARY VIEW FUNCTIONS ==========
+
+// Render library view with search, filters, and recent exercises
 function renderLibraryView() {
-    exerciseLibraryListEl.innerHTML = appData.exerciseLibrary.map(exercise => `
-        <div class="library-item">
-            <span class="library-item-name">${exercise}</span>
-            <button class="btn-icon" onclick="deleteFromLibrary('${exercise}')" title="Remove">🗑️</button>
-        </div>
-    `).join('');
+    // Render filter drawer chips
+    renderFilterDrawerChips();
+
+    // Render recent exercises
+    renderRecentExercises();
+
+    // Update filter badge
+    updateFilterBadge();
+
+    // Apply filters and render exercise list
+    const filteredExercises = filterExercises(librarySearchQuery, librarySelectedMuscles, librarySelectedEquipment);
+
+    // Sort: favorites first, then alphabetically
+    const sortedExercises = [...filteredExercises].sort((a, b) => {
+        const aFav = libraryFavorites.includes(a);
+        const bFav = libraryFavorites.includes(b);
+        if (aFav && !bFav) return -1;
+        if (!aFav && bFav) return 1;
+        return a.localeCompare(b);
+    });
+
+    // Apply view mode class
+    exerciseLibraryListEl.className = `library-list ${libraryViewMode === 'grid' ? 'grid-view' : ''}`;
+
+    if (sortedExercises.length === 0) {
+        exerciseLibraryListEl.innerHTML = `
+            <div class="empty-state">
+                <p>No exercises match your filters.</p>
+                <button class="btn btn-secondary" onclick="clearAllFilters()">Clear Filters</button>
+            </div>
+        `;
+        return;
+    }
+
+    exerciseLibraryListEl.innerHTML = sortedExercises.map(exercise => {
+        const meta = getExerciseMetadata(exercise);
+        const isFavorite = libraryFavorites.includes(exercise);
+        const muscleDisplay = meta.primaryMuscles.length > 0
+            ? meta.primaryMuscles.map(m => getMuscleGroups()[m]?.displayName || m).join(', ')
+            : '';
+        const equipmentDisplay = getEquipmentTypes()[meta.equipment]?.displayName || '';
+
+        return `
+            <div class="library-card">
+                <div class="library-card-info">
+                    <div class="library-card-name">${exercise}${isFavorite ? '<span class="library-item-favorite">★</span>' : ''}</div>
+                    ${muscleDisplay ? `<div class="library-card-muscles">${muscleDisplay}</div>` : ''}
+                    ${equipmentDisplay ? `<div class="library-card-equipment">${equipmentDisplay}</div>` : ''}
+                </div>
+                <div class="library-card-actions">
+                    <button class="favorite-btn ${isFavorite ? 'active' : ''}" onclick="handleFavoriteToggle('${exercise}')" title="${isFavorite ? 'Remove from favorites' : 'Add to favorites'}">★</button>
+                    <button class="btn-icon" onclick="deleteFromLibrary('${exercise}')" title="Remove">🗑️</button>
+                </div>
+            </div>
+        `;
+    }).join('');
 }
+
+// Filter exercises based on query, muscle groups, and equipment
+function filterExercises(query, muscleGroups, equipment) {
+    let filtered = [...appData.exerciseLibrary];
+
+    // Filter by search query
+    if (query) {
+        const q = query.toLowerCase().trim();
+        filtered = filtered.filter(ex => ex.toLowerCase().includes(q));
+    }
+
+    // Filter by muscle groups
+    if (muscleGroups.length > 0) {
+        filtered = filtered.filter(ex => {
+            const meta = getExerciseMetadata(ex);
+            return muscleGroups.some(mg =>
+                meta.primaryMuscles.includes(mg) || meta.secondaryMuscles.includes(mg)
+            );
+        });
+    }
+
+    // Filter by equipment
+    if (equipment.length > 0) {
+        filtered = filtered.filter(ex => {
+            const meta = getExerciseMetadata(ex);
+            return equipment.includes(meta.equipment);
+        });
+    }
+
+    return filtered;
+}
+
+// Toggle favorite status for an exercise
+function toggleFavorite(exerciseName) {
+    const index = libraryFavorites.indexOf(exerciseName);
+    if (index >= 0) {
+        libraryFavorites.splice(index, 1);
+    } else {
+        libraryFavorites.push(exerciseName);
+    }
+    localStorage.setItem('lagomstronk_favorites', JSON.stringify(libraryFavorites));
+    renderLibraryView();
+}
+
+// Get recent exercises (last 5 used)
+function getRecentExercisesForLibrary() {
+    const recentSet = new Set();
+    const sortedWorkouts = getWorkoutsSorted(appData);
+
+    for (const workout of sortedWorkouts) {
+        for (const exercise of workout.exercises) {
+            recentSet.add(exercise.name);
+            if (recentSet.size >= 5) break;
+        }
+        if (recentSet.size >= 5) break;
+    }
+
+    return Array.from(recentSet);
+}
+
+// Toggle library view between list and grid
+function toggleLibraryView() {
+    libraryViewMode = libraryViewMode === 'list' ? 'grid' : 'list';
+    const icon = document.getElementById('view-toggle-icon');
+    if (icon) {
+        icon.textContent = libraryViewMode === 'list' ? '☰' : '▦';
+    }
+    renderLibraryView();
+}
+
+// Render recent exercises chips
+function renderRecentExercises() {
+    const recentChipsEl = document.getElementById('library-recent-chips');
+    const recentContainerEl = document.getElementById('library-recent');
+    const recent = getRecentExercisesForLibrary();
+
+    if (recent.length === 0) {
+        if (recentContainerEl) recentContainerEl.style.display = 'none';
+        return;
+    }
+
+    if (recentContainerEl) recentContainerEl.style.display = '';
+
+    if (recentChipsEl) {
+        recentChipsEl.innerHTML = recent.map(ex =>
+            `<span class="recent-chip" onclick="addRecentToWorkout('${ex}')">${ex}</span>`
+        ).join('');
+    }
+}
+
+// Render filter drawer chips
+function renderFilterDrawerChips() {
+    const muscleChipsEl = document.getElementById('muscle-filter-chips');
+    const equipmentChipsEl = document.getElementById('equipment-filter-chips');
+
+    // Muscle group chips
+    if (muscleChipsEl) {
+        const muscleGroups = getMuscleGroups();
+        muscleChipsEl.innerHTML = Object.keys(muscleGroups).map(key => {
+            const mg = muscleGroups[key];
+            const isActive = librarySelectedMuscles.includes(key);
+            return `<span class="filter-chip ${isActive ? 'active' : ''}" data-muscle="${key}" onclick="toggleMuscleFilter('${key}')">${mg.displayName}</span>`;
+        }).join('');
+    }
+
+    // Equipment chips
+    if (equipmentChipsEl) {
+        const equipmentTypes = getEquipmentTypes();
+        equipmentChipsEl.innerHTML = Object.keys(equipmentTypes).map(key => {
+            const eq = equipmentTypes[key];
+            const isActive = librarySelectedEquipment.includes(key);
+            return `<span class="filter-chip ${isActive ? 'active' : ''}" data-equipment="${key}" onclick="toggleEquipmentFilter('${key}')">${eq.displayName}</span>`;
+        }).join('');
+    }
+}
+
+// Toggle muscle group filter
+function toggleMuscleFilter(muscleKey) {
+    const index = librarySelectedMuscles.indexOf(muscleKey);
+    if (index >= 0) {
+        librarySelectedMuscles.splice(index, 1);
+    } else {
+        librarySelectedMuscles.push(muscleKey);
+    }
+    renderFilterDrawerChips();
+}
+
+// Toggle equipment filter
+function toggleEquipmentFilter(equipmentKey) {
+    const index = librarySelectedEquipment.indexOf(equipmentKey);
+    if (index >= 0) {
+        librarySelectedEquipment.splice(index, 1);
+    } else {
+        librarySelectedEquipment.push(equipmentKey);
+    }
+    renderFilterDrawerChips();
+}
+
+// Update filter badge count
+function updateFilterBadge() {
+    const badge = document.getElementById('filter-badge');
+    const count = librarySelectedMuscles.length + librarySelectedEquipment.length;
+    if (badge) {
+        badge.textContent = count;
+        badge.style.display = count > 0 ? '' : 'none';
+    }
+}
+
+// Clear all filters
+function clearAllFilters() {
+    librarySearchQuery = '';
+    librarySelectedMuscles = [];
+    librarySelectedEquipment = [];
+    const searchInput = document.getElementById('library-search');
+    if (searchInput) searchInput.value = '';
+    renderFilterDrawerChips();
+    renderLibraryView();
+}
+
+// Apply filters (close drawer and refresh)
+function applyFilters() {
+    closeFilterDrawer();
+    renderLibraryView();
+}
+
+// Open filter drawer
+function openFilterDrawer() {
+    const overlay = document.getElementById('filter-drawer-overlay');
+    const drawer = document.getElementById('filter-drawer');
+    if (overlay) overlay.classList.add('active');
+    if (drawer) drawer.classList.add('active');
+    renderFilterDrawerChips();
+}
+
+// Close filter drawer
+function closeFilterDrawer() {
+    const overlay = document.getElementById('filter-drawer-overlay');
+    const drawer = document.getElementById('filter-drawer');
+    if (overlay) overlay.classList.remove('active');
+    if (drawer) drawer.classList.remove('active');
+}
+
+// Add recent exercise to today's workout
+window.addRecentToWorkout = function(exerciseName) {
+    addNewExerciseToWorkout(exerciseName);
+    switchView('today');
+};
+
+// Handle favorite toggle from card
+window.handleFavoriteToggle = function(exerciseName) {
+    toggleFavorite(exerciseName);
+};
+
+// Window functions for filter chips
+window.toggleMuscleFilter = function(muscleKey) {
+    toggleMuscleFilter(muscleKey);
+};
+
+window.toggleEquipmentFilter = function(equipmentKey) {
+    toggleEquipmentFilter(equipmentKey);
+};
+
+window.clearAllFilters = function() {
+    clearAllFilters();
+};
 
 // ========== EXERCISE SEARCH MODAL ==========
 
