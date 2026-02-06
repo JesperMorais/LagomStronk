@@ -10,11 +10,11 @@ See: .planning/REQUIREMENTS.md (updated 2026-02-05)
 ## Current Position
 
 Phase: 2 of 7 (UX Overhaul & Exercise System)
-Plan: 5 of 9 (Exercise Library UI complete)
+Plan: 6 of 9 (Workout Logging UX complete)
 Status: In progress - Phase 2 re-execution
-Last activity: 2026-02-06 - Completed 02-05-PLAN.md (Exercise Library UI)
+Last activity: 2026-02-06 - Completed 02-06-PLAN.md (Workout Logging UX)
 
-Progress: [███████░░░] 69% (9/13 plans)
+Progress: [████████░░] 77% (10/13 plans)
 
 ## Performance Metrics
 
@@ -91,6 +91,10 @@ Progress: [███████░░░] 69% (9/13 plans)
 | 02 | 05 | Recent exercises at top | Muscle memory shortcuts for quick access |
 | 02 | 05 | Filter badge shows active count | Users know when filters are applied without opening drawer |
 | 02 | 05 | Favorites stored separately | Using lagomstronk_favorites key, separate from main app data |
+| 02 | 06 | Confetti particles: 20 mint-colored | Zero build overhead with CDN; particles fire from button position |
+| 02 | 06 | Animation timing 0.3s ease-out | Snappy but visible pop animation for checkmark |
+| 02 | 06 | In-place DOM updates for animations | toggleSetCompletion updates classes directly without re-render to preserve animation state |
+| 02 | 06 | Haptic feedback via navigator.vibrate | 30ms pulse if supported for tactile confirmation |
 
 ### Pending Todos
 
@@ -120,6 +124,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-06 (plan execution)
-Stopped at: Completed 02-05-PLAN.md (Exercise Library UI)
+Stopped at: Completed 02-06-PLAN.md (Workout Logging UX)
 Resume file: None
-Next: 02-06-PLAN.md
+Next: 02-07-PLAN.md
