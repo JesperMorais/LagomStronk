@@ -36,6 +36,9 @@ let appData = loadData();
 let currentView = 'today';
 let currentDate = getTodayStr();
 
+// Day names for week calendar
+const DAY_NAMES = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+
 // DOM Elements
 const views = {
     today: document.getElementById('today-view'),
@@ -63,6 +66,106 @@ const saveTemplateModal = document.getElementById('save-template-modal');
 // Workout templates state
 let editingTemplateId = null;
 let viewingTemplateId = null;
+
+// ========== HERO SECTION FUNCTIONS ==========
+
+// Calculate current workout streak (consecutive days)
+function calculateStreak() {
+    if (appData.workouts.length === 0) return 0;
+
+    const dates = appData.workouts.map(w => w.date).sort().reverse();
+    const uniqueDates = [...new Set(dates)];
+
+    const today = getTodayStr();
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+    // Streak only counts if last workout was today or yesterday
+    const lastWorkoutDate = uniqueDates[0];
+    if (lastWorkoutDate !== today && lastWorkoutDate !== yesterdayStr) {
+        return 0;
+    }
+
+    let streak = 1;
+    for (let i = 0; i < uniqueDates.length - 1; i++) {
+        const currDate = new Date(uniqueDates[i]);
+        const nextDate = new Date(uniqueDates[i + 1]);
+        const diffDays = Math.round((currDate - nextDate) / (1000 * 60 * 60 * 24));
+
+        if (diffDays === 1) {
+            streak++;
+        } else {
+            break;
+        }
+    }
+
+    return streak;
+}
+
+// Get which days this week have workouts
+function getWeekWorkoutDays() {
+    const today = new Date();
+    const dayOfWeek = today.getDay(); // 0 = Sunday
+
+    // Get start of week (Sunday)
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - dayOfWeek);
+    startOfWeek.setHours(0, 0, 0, 0);
+
+    const weekDays = [];
+    for (let i = 0; i < 7; i++) {
+        const date = new Date(startOfWeek);
+        date.setDate(startOfWeek.getDate() + i);
+        const dateStr = date.toISOString().split('T')[0];
+
+        weekDays.push({
+            dayIndex: i,
+            dateStr,
+            dayLabel: DAY_NAMES[i],
+            dayNum: date.getDate(),
+            isToday: dateStr === getTodayStr(),
+            hasWorkout: appData.workouts.some(w => w.date === dateStr)
+        });
+    }
+
+    return weekDays;
+}
+
+// Render the hero section
+function renderHero() {
+    const streakCount = calculateStreak();
+    const weekDays = getWeekWorkoutDays();
+
+    // Update streak display
+    const streakEl = document.getElementById('streak-count');
+    if (streakEl) {
+        streakEl.textContent = streakCount;
+    }
+
+    // Update streak label for singular/plural
+    const streakLabel = document.querySelector('.streak-label');
+    if (streakLabel) {
+        streakLabel.textContent = streakCount === 1 ? 'day streak' : 'day streak';
+    }
+
+    // Render week calendar
+    const weekCalendarEl = document.getElementById('week-calendar');
+    if (weekCalendarEl) {
+        weekCalendarEl.innerHTML = weekDays.map(day => {
+            const classes = ['week-day-dot'];
+            if (day.isToday) classes.push('today');
+            if (day.hasWorkout) classes.push('has-workout');
+
+            return `
+                <div class="week-day">
+                    <span class="week-day-label">${day.dayLabel}</span>
+                    <span class="${classes.join(' ')}">${day.dayNum}</span>
+                </div>
+            `;
+        }).join('');
+    }
+}
 
 // Initialize app
 function init() {
@@ -195,6 +298,10 @@ function setupEventListeners() {
 
 // Render today's workout with inline editable sets
 function renderTodayView() {
+    // Render hero section first
+    renderHero();
+    renderHeroStats();
+
     const workout = getWorkoutByDate(appData, currentDate);
 
     if (!workout || workout.exercises.length === 0) {
