@@ -24,3 +24,25 @@ Different users have different progress visualization preferences. Some prefer w
 - Consider making stats cards configurable too
 
 ---
+
+## ISS-002: Customizable Body Tracking Visualizations
+
+**Phase:** 4 | **Task:** UAT Feedback
+**Priority:** Enhancement
+**Status:** Open
+
+**Description:**
+User wants better, more customizable visualizations for body tracking charts. Current charts use a standard mint gradient line chart pattern.
+
+**Rationale:**
+Different users may want different chart styles, time ranges, comparison views, or data overlays for their body tracking data.
+
+**Implementation Notes:**
+- Chart time range selector (1 month, 3 months, 6 months, all time)
+- Goal lines / target weight overlay
+- Comparison overlays (e.g., weight vs body fat on same chart)
+- Different chart types (line vs bar vs area)
+- Custom color themes per metric
+- Consider alongside ISS-001 (hero customization)
+
+---
