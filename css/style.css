@@ -2827,6 +2827,28 @@ body.workout-active .bottom-nav {
     opacity: 0.7;
 }
 
+/* ========== COACH HINTS ========== */
+
+.coach-hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(209, 255, 198, 0.15);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 0.75rem;
+    margin-top: var(--spacing-xs);
+    margin-bottom: var(--spacing-sm);
+}
+
+.coach-hint__icon {
+    font-size: 0.875rem;
+}
+
+.coach-hint__text {
+    color: var(--text-secondary);
+}
+
 /* ========== TRAINING PROGRAMS SECTION ========== */
 
 .programs-section {

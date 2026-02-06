@@ -26,7 +26,16 @@ import {
     getMostRecentExerciseSets,
     getMuscleGroups,
     getEquipmentTypes,
-    getExerciseMetadata
+    getExerciseMetadata,
+    getProgressiveOverloadSuggestion,
+    getMissedMuscleGroups,
+    getPrograms,
+    getProgramById,
+    getActiveProgram,
+    setActiveProgram,
+    endActiveProgram,
+    getProgramProgress,
+    getTodaysProgrammedWorkout
 } from './data.js';
 
 import {
@@ -583,6 +592,49 @@ function expandWorkout() {
     openWorkoutScreen();
 }
 
+// Render coach hint for progressive overload
+function renderCoachHint(exerciseName) {
+    const suggestion = getProgressiveOverloadSuggestion(appData, exerciseName);
+
+    // Don't show hint if no history
+    if (!suggestion.lastWeight) {
+        return '';
+    }
+
+    // Build message based on trend
+    let message = '';
+    let icon = '';
+
+    switch (suggestion.trend) {
+        case 'increase':
+            icon = '💪';
+            if (suggestion.suggestedWeight) {
+                message = `Nice progress! Try ${suggestion.suggestedWeight}kg today`;
+            } else {
+                message = `Last: ${suggestion.lastWeight}kg - Keep pushing!`;
+            }
+            break;
+        case 'maintain':
+            icon = '🎯';
+            message = `Solid! ${suggestion.lastWeight}kg - focus on form`;
+            break;
+        case 'decrease':
+            icon = '🔄';
+            message = `Recovery mode - lighter is fine`;
+            break;
+        default:
+            icon = '📊';
+            message = `Last: ${suggestion.lastWeight}kg`;
+    }
+
+    return `
+        <div class="coach-hint">
+            <span class="coach-hint__icon">${icon}</span>
+            <span class="coach-hint__text">${message}</span>
+        </div>
+    `;
+}
+
 // Render exercises in workout screen
 function renderWorkoutExercises() {
     if (!workoutExerciseContainer) return;
@@ -602,6 +654,7 @@ function renderWorkoutExercises() {
 
     workoutExerciseContainer.innerHTML = workout.exercises.map((exercise, exIdx) => {
         const prevSets = getMostRecentExerciseSets(appData, exercise.name, currentDate);
+        const coachHint = renderCoachHint(exercise.name);
         return `
             <div class="exercise-card" data-exercise-index="${exIdx}">
                 <div class="exercise-card-header">
@@ -610,6 +663,7 @@ function renderWorkoutExercises() {
                         <button class="btn-icon delete-exercise-btn" data-index="${exIdx}" title="Delete">🗑️</button>
                     </div>
                 </div>
+                ${coachHint}
                 <table class="inline-sets">
                     <thead>
                         <tr>
