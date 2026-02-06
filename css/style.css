@@ -1246,6 +1246,53 @@ body.offline .main-content {
     color: #0f1419;
 }
 
+/* Checkmark pop animation */
+.set-check-btn.animate-pop {
+    animation: checkmark-pop 0.3s ease-out;
+}
+
+@keyframes checkmark-pop {
+    0% {
+        transform: scale(0);
+    }
+    60% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Row highlight animation on completion */
+.inline-set-row.highlight-complete td {
+    background-color: rgba(209, 255, 198, 0.15);
+    transition: background-color 0.3s ease-out;
+}
+
+.inline-set-row.highlight-complete td:first-child {
+    border-radius: var(--radius) 0 0 var(--radius);
+}
+
+.inline-set-row.highlight-complete td:last-child {
+    border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+/* SVG Checkmark stroke animation for potential future use */
+.set-check-btn svg.checkmark-animated {
+    animation: checkmark-stroke 0.3s ease-out forwards;
+}
+
+@keyframes checkmark-stroke {
+    0% {
+        stroke-dasharray: 0, 100;
+        stroke-dashoffset: 100;
+    }
+    100% {
+        stroke-dasharray: 100, 0;
+        stroke-dashoffset: 0;
+    }
+}
+
 .btn-add-inline-set {
     width: 100%;
     padding: var(--spacing-sm);
