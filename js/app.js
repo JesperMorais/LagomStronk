@@ -57,6 +57,7 @@ const DAY_NAMES = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 // DOM Elements
 const views = {
     today: document.getElementById('today-view'),
+    workout: document.getElementById('workout-view'),
     history: document.getElementById('history-view'),
     progress: document.getElementById('progress-view'),
     library: document.getElementById('library-view'),
@@ -97,6 +98,15 @@ const miniPlayerTimer = document.getElementById('mini-player-timer');
 const miniPlayerExpand = document.getElementById('mini-player-expand');
 const miniPlayerFinish = document.getElementById('mini-player-finish');
 const fabStartWorkout = document.getElementById('fab-start-workout');
+
+// Workout view DOM elements
+const workoutView = document.getElementById('workout-view');
+const workoutMinimizeBtn = document.getElementById('workout-minimize-btn');
+const workoutFinishBtn = document.getElementById('workout-finish-btn');
+const workoutNameInput = document.getElementById('workout-name-input');
+const workoutTimerValue = document.getElementById('workout-timer-value');
+const workoutExerciseContainer = document.getElementById('workout-exercise-container');
+const workoutAddExerciseBtn = document.getElementById('workout-add-exercise-btn');
 
 // Exercise Wizard state
 let wizardState = {
@@ -439,7 +449,7 @@ function renderHero() {
 
 // ========== WORKOUT FLOW (MINI-PLAYER) ==========
 
-// Start a workout session
+// Start a workout session - opens workout screen
 function startWorkout(workoutName = null) {
     const workout = getWorkoutByDate(appData, currentDate);
 
@@ -462,11 +472,13 @@ function startWorkout(workoutName = null) {
     activeWorkout.startTime = Date.now();
 
     // Start timer
-    updateMiniPlayerTimer();
-    activeWorkout.timerInterval = setInterval(updateMiniPlayerTimer, 1000);
+    updateWorkoutTimer();
+    activeWorkout.timerInterval = setInterval(updateWorkoutTimer, 1000);
+
+    // Open workout screen
+    openWorkoutScreen();
 
     // Update UI
-    updateMiniPlayerVisibility();
     updateFABVisibility();
 
     // Add body class for padding adjustment
@@ -493,6 +505,11 @@ function finishWorkout() {
     activeWorkout.name = '';
     activeWorkout.startTime = null;
 
+    // Close workout screen
+    if (workoutView) {
+        workoutView.classList.remove('active');
+    }
+
     // Update UI
     updateMiniPlayerVisibility();
     updateFABVisibility();
@@ -507,8 +524,148 @@ function finishWorkout() {
     clearCalendarCache();
 }
 
-// Update mini-player timer display
+// Open workout screen (fullscreen takeover)
+function openWorkoutScreen() {
+    if (!workoutView) return;
+
+    // Show workout view
+    workoutView.classList.add('active');
+
+    // Set workout name
+    if (workoutNameInput) {
+        workoutNameInput.value = activeWorkout.name;
+    }
+
+    // Render exercises in workout view
+    renderWorkoutExercises();
+
+    // Hide other views
+    Object.keys(views).forEach(key => {
+        if (key !== 'workout') {
+            views[key].classList.remove('active');
+        }
+    });
+
+    // Update nav to show no selection (workout screen is separate)
+    navButtons.forEach(btn => {
+        btn.classList.remove('active');
+    });
+
+    // Hide mini-player when on workout screen
+    updateMiniPlayerVisibility();
+}
+
+// Minimize workout (collapse to mini-player)
+function minimizeWorkout() {
+    if (!workoutView) return;
+
+    // Hide workout view
+    workoutView.classList.remove('active');
+
+    // Return to today view
+    switchView('today');
+
+    // Show mini-player
+    updateMiniPlayerVisibility();
+}
+
+// Expand workout (return from mini-player to workout screen)
+function expandWorkout() {
+    openWorkoutScreen();
+}
+
+// Render exercises in workout screen
+function renderWorkoutExercises() {
+    if (!workoutExerciseContainer) return;
+
+    const workout = getWorkoutByDate(appData, currentDate);
+
+    if (!workout || workout.exercises.length === 0) {
+        workoutExerciseContainer.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">💪</div>
+                <p>No exercises added yet.</p>
+                <p>Tap "Add Exercise" below to get started!</p>
+            </div>
+        `;
+        return;
+    }
+
+    workoutExerciseContainer.innerHTML = workout.exercises.map((exercise, exIdx) => {
+        const prevSets = getMostRecentExerciseSets(appData, exercise.name, currentDate);
+        return `
+            <div class="exercise-card" data-exercise-index="${exIdx}">
+                <div class="exercise-card-header">
+                    <span class="exercise-card-title">${exercise.name}</span>
+                    <div class="exercise-card-actions">
+                        <button class="btn-icon delete-exercise-btn" data-index="${exIdx}" title="Delete">🗑️</button>
+                    </div>
+                </div>
+                <table class="inline-sets">
+                    <thead>
+                        <tr>
+                            <th>SET</th>
+                            <th>PREVIOUS</th>
+                            <th>KG</th>
+                            <th>REPS</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${exercise.sets.map((set, setIdx) => {
+                            const prev = prevSets[setIdx];
+                            const isCompleted = set.completed !== false;
+                            const weightPlaceholder = prev ? `Last: ${prev.weight}` : '';
+                            const repsPlaceholder = prev ? `Last: ${prev.reps}` : '';
+                            return `
+                                <tr class="inline-set-row ${isCompleted ? 'completed' : ''}" data-exercise="${exIdx}" data-set="${setIdx}">
+                                    <td class="set-num">${setIdx + 1}</td>
+                                    <td class="set-prev">${prev ? `${prev.weight} x ${prev.reps}` : '-'}</td>
+                                    <td><input type="number" class="inline-input set-kg" value="${set.weight}" step="2.5" min="0" readonly data-numpad-type="weight" placeholder="${weightPlaceholder}"></td>
+                                    <td><input type="number" class="inline-input set-reps-input" value="${set.reps}" min="0" readonly data-numpad-type="reps" placeholder="${repsPlaceholder}"></td>
+                                    <td><button class="set-check-btn ${isCompleted ? 'checked' : ''}">✓</button></td>
+                                </tr>
+                            `;
+                        }).join('')}
+                    </tbody>
+                </table>
+                <button class="btn-add-inline-set" data-exercise="${exIdx}">+ Add Set</button>
+            </div>
+        `;
+    }).join('');
+}
+
+// Update workout timer (both mini-player and workout screen)
+function updateWorkoutTimer() {
+    if (!activeWorkout.startTime) return;
+
+    const elapsed = Date.now() - activeWorkout.startTime;
+    const seconds = Math.floor(elapsed / 1000) % 60;
+    const minutes = Math.floor(elapsed / 60000) % 60;
+    const hours = Math.floor(elapsed / 3600000);
+
+    let timeStr;
+    if (hours > 0) {
+        timeStr = `${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    } else {
+        timeStr = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+
+    // Update workout screen timer
+    if (workoutTimerValue) {
+        workoutTimerValue.textContent = timeStr;
+    }
+
+    // Update mini-player timer
+    if (miniPlayerTimer) {
+        miniPlayerTimer.textContent = timeStr;
+    }
+}
+
+// Update mini-player timer display (deprecated, keeping for compatibility)
 function updateMiniPlayerTimer() {
+    updateWorkoutTimer();
+}
     if (!activeWorkout.startTime) return;
 
     const elapsed = Date.now() - activeWorkout.startTime;
@@ -532,8 +689,9 @@ function updateMiniPlayerTimer() {
 function updateMiniPlayerVisibility() {
     if (!miniPlayer) return;
 
-    // Show mini-player when workout is active AND not on Today view
-    const shouldShow = activeWorkout.isActive && currentView !== 'today';
+    // Show mini-player when workout is active AND not on workout screen
+    const isOnWorkoutScreen = workoutView && workoutView.classList.contains('active');
+    const shouldShow = activeWorkout.isActive && !isOnWorkoutScreen;
 
     if (shouldShow) {
         miniPlayer.classList.add('active');
@@ -559,12 +717,12 @@ function updateFABVisibility() {
 
 // Setup mini-player event listeners
 function setupMiniPlayerListeners() {
-    // Expand (tap mini-player content) - return to Today
+    // Expand (tap mini-player content) - return to workout screen
     if (miniPlayerExpand) {
         miniPlayerExpand.addEventListener('click', (e) => {
             // Don't trigger if clicking the finish button
             if (e.target.closest('.mini-player-finish-btn')) return;
-            switchView('today');
+            expandWorkout();
         });
     }
 
@@ -582,13 +740,11 @@ function setupMiniPlayerListeners() {
             // Check if there are exercises for today
             const workout = getWorkoutByDate(appData, currentDate);
             if (!workout || workout.exercises.length === 0) {
-                // Navigate to Today and open exercise modal
-                switchView('today');
+                // Open exercise modal to add first exercise
                 openExerciseModal();
             } else {
-                // Start the workout
+                // Start the workout (opens workout screen)
                 startWorkout();
-                switchView('today');
             }
         });
     }
@@ -660,6 +816,31 @@ function updateTodayDate() {
 
 // Setup event listeners
 function setupEventListeners() {
+    // Workout screen buttons
+    if (workoutMinimizeBtn) {
+        workoutMinimizeBtn.addEventListener('click', minimizeWorkout);
+    }
+    if (workoutFinishBtn) {
+        workoutFinishBtn.addEventListener('click', finishWorkout);
+    }
+    if (workoutAddExerciseBtn) {
+        workoutAddExerciseBtn.addEventListener('click', openExerciseModal);
+    }
+    if (workoutNameInput) {
+        workoutNameInput.addEventListener('change', (e) => {
+            activeWorkout.name = e.target.value;
+            if (miniPlayerName) {
+                miniPlayerName.textContent = activeWorkout.name;
+            }
+        });
+    }
+
+    // Workout exercise container events (delegation)
+    if (workoutExerciseContainer) {
+        workoutExerciseContainer.addEventListener('click', handleTodayClick);
+        workoutExerciseContainer.addEventListener('change', handleTodayInputChange);
+    }
+
     // Add exercise button
     document.getElementById('add-exercise-btn').addEventListener('click', openExerciseModal);
 
@@ -1707,6 +1888,11 @@ function addNewExerciseToWorkout(exerciseName) {
     }
 
     renderTodayView();
+
+    // If workout screen is active, render exercises there too
+    if (workoutView && workoutView.classList.contains('active')) {
+        renderWorkoutExercises();
+    }
 }
 
 // ========== INLINE TODAY VIEW EVENT HANDLERS ==========
@@ -1738,6 +1924,10 @@ function handleTodayClick(e) {
         if (confirm('Delete this exercise?')) {
             appData = removeExerciseFromWorkout(appData, currentDate, idx);
             renderTodayView();
+            // If workout screen is active, render exercises there too
+            if (workoutView && workoutView.classList.contains('active')) {
+                renderWorkoutExercises();
+            }
         }
         return;
     }
@@ -1848,6 +2038,10 @@ function addInlineSet(exIdx) {
     });
     saveData(appData);
     renderTodayView();
+    // If workout screen is active, render exercises there too
+    if (workoutView && workoutView.classList.contains('active')) {
+        renderWorkoutExercises();
+    }
 }
 
 // Open custom exercise modal
