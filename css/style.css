@@ -2826,3 +2826,152 @@ body.workout-active .bottom-nav {
     font-size: 0.75rem;
     opacity: 0.7;
 }
+
+/* ========== TRAINING PROGRAMS SECTION ========== */
+
+.programs-section {
+    margin-bottom: var(--spacing-lg);
+}
+
+.programs-section .section-header {
+    margin-bottom: var(--spacing-md);
+}
+
+.programs-section .section-header h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.programs-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-sm);
+}
+
+.program-card {
+    background-color: rgba(35, 44, 51, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-md);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    min-height: 100px;
+}
+
+.program-card:hover {
+    border-color: var(--border-mint);
+    box-shadow: var(--glow-soft);
+}
+
+.program-card:active {
+    transform: scale(0.98);
+}
+
+.program-card.active {
+    border-color: var(--mint);
+    background-color: rgba(209, 255, 198, 0.08);
+    box-shadow: 0 0 16px rgba(209, 255, 198, 0.2);
+}
+
+.program-card-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.program-card.active .program-card-name {
+    color: var(--mint);
+}
+
+.program-card-days {
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+    margin-bottom: var(--spacing-sm);
+}
+
+.program-card-progress {
+    margin-top: auto;
+}
+
+.program-progress-bar {
+    width: 100%;
+    height: 4px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 4px;
+}
+
+.program-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--mint), var(--mint-dark));
+    border-radius: 2px;
+    transition: width 0.3s ease;
+}
+
+.program-progress-text {
+    font-size: 0.65rem;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ========== TODAY'S WORKOUT CARD ========== */
+
+.todays-workout {
+    background: linear-gradient(135deg, rgba(26, 31, 53, 0.95) 0%, rgba(24, 32, 37, 0.95) 100%);
+    border: 1px solid var(--border-mint);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+    box-shadow: var(--glow-soft);
+}
+
+.todays-workout__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-sm);
+}
+
+.todays-workout__label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--mint);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.todays-workout__program {
+    font-size: 0.7rem;
+    color: var(--text-tertiary);
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 4px 8px;
+    border-radius: 12px;
+}
+
+.todays-workout__name {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-sm);
+}
+
+.todays-workout__preview {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-md);
+    line-height: 1.5;
+}
+
+.btn-full {
+    width: 100%;
+}
