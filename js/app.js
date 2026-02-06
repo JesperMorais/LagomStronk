@@ -98,6 +98,18 @@ const miniPlayerExpand = document.getElementById('mini-player-expand');
 const miniPlayerFinish = document.getElementById('mini-player-finish');
 const fabStartWorkout = document.getElementById('fab-start-workout');
 
+// Exercise Wizard state
+let wizardState = {
+    currentStep: 1,
+    exerciseName: '',
+    primaryMuscles: [],
+    secondaryMuscles: [],
+    equipment: 'other'
+};
+
+// Exercise Wizard DOM elements
+const exerciseWizardModal = document.getElementById('exercise-wizard-modal');
+
 // ========== HERO SECTION FUNCTIONS ==========
 
 // Calculate current workout streak (consecutive days)
@@ -672,7 +684,7 @@ function setupEventListeners() {
     todayExercisesEl.addEventListener('change', handleTodayInputChange);
 
     // Custom exercise modal
-    document.getElementById('add-custom-exercise-btn').addEventListener('click', openCustomExerciseModal);
+    document.getElementById('add-custom-exercise-btn').addEventListener('click', openExerciseWizard);
     document.getElementById('close-custom-modal').addEventListener('click', closeCustomExerciseModal);
     document.getElementById('cancel-custom').addEventListener('click', closeCustomExerciseModal);
     document.getElementById('save-custom').addEventListener('click', saveCustomExercise);
@@ -2276,8 +2288,279 @@ function setupNumpadListeners() {
     });
 }
 
+// ========== EXERCISE WIZARD ==========
+
+// Open exercise wizard modal
+function openExerciseWizard() {
+    // Reset wizard state
+    wizardState = {
+        currentStep: 1,
+        exerciseName: '',
+        primaryMuscles: [],
+        secondaryMuscles: [],
+        equipment: 'other'
+    };
+
+    // Reset UI
+    document.getElementById('wizard-exercise-name').value = '';
+    document.getElementById('wizard-name-error').style.display = 'none';
+    document.getElementById('wizard-muscle-error').style.display = 'none';
+
+    // Render wizard chips
+    renderWizardChips();
+
+    // Reset to step 1
+    goToWizardStep(1);
+
+    // Show modal
+    exerciseWizardModal.classList.add('active');
+
+    // Focus name input
+    setTimeout(() => document.getElementById('wizard-exercise-name').focus(), 100);
+}
+
+// Close exercise wizard modal
+function closeExerciseWizard() {
+    exerciseWizardModal.classList.remove('active');
+}
+
+// Go to a specific wizard step
+function goToWizardStep(step) {
+    wizardState.currentStep = step;
+
+    // Update progress indicator
+    document.querySelectorAll('.wizard-step').forEach((el, idx) => {
+        const stepNum = idx + 1;
+        el.classList.remove('active', 'completed');
+        if (stepNum === step) {
+            el.classList.add('active');
+        } else if (stepNum < step) {
+            el.classList.add('completed');
+        }
+    });
+
+    // Update step lines
+    document.querySelectorAll('.wizard-step-line').forEach((el, idx) => {
+        el.classList.toggle('active', idx < step - 1);
+    });
+
+    // Show current panel
+    document.querySelectorAll('.wizard-panel').forEach(panel => {
+        panel.classList.toggle('active', panel.dataset.panel === String(step));
+    });
+
+    // Update buttons
+    const backBtn = document.getElementById('wizard-back');
+    const nextBtn = document.getElementById('wizard-next');
+
+    backBtn.style.display = step === 1 ? 'none' : '';
+    nextBtn.textContent = step === 4 ? 'Add Exercise' : 'Next';
+
+    // If step 4, populate summary
+    if (step === 4) {
+        populateWizardSummary();
+    }
+}
+
+// Render wizard muscle and equipment chips
+function renderWizardChips() {
+    const muscleGroups = getMuscleGroups();
+    const equipmentTypes = getEquipmentTypes();
+
+    // Primary muscles
+    const primaryEl = document.getElementById('wizard-primary-muscles');
+    primaryEl.innerHTML = Object.keys(muscleGroups).map(key => {
+        const mg = muscleGroups[key];
+        const isSelected = wizardState.primaryMuscles.includes(key);
+        return `<span class="wizard-chip ${isSelected ? 'selected' : ''}" data-muscle="${key}" data-type="primary">${mg.displayName}</span>`;
+    }).join('');
+
+    // Secondary muscles
+    const secondaryEl = document.getElementById('wizard-secondary-muscles');
+    secondaryEl.innerHTML = Object.keys(muscleGroups).map(key => {
+        const mg = muscleGroups[key];
+        const isSelected = wizardState.secondaryMuscles.includes(key);
+        return `<span class="wizard-chip ${isSelected ? 'selected' : ''}" data-muscle="${key}" data-type="secondary">${mg.displayName}</span>`;
+    }).join('');
+
+    // Equipment
+    const equipmentEl = document.getElementById('wizard-equipment');
+    equipmentEl.innerHTML = Object.keys(equipmentTypes).map(key => {
+        const eq = equipmentTypes[key];
+        const isSelected = wizardState.equipment === key;
+        return `<span class="wizard-chip ${isSelected ? 'selected' : ''}" data-equipment="${key}">${eq.displayName}</span>`;
+    }).join('');
+}
+
+// Handle wizard chip click
+function handleWizardChipClick(e) {
+    const chip = e.target.closest('.wizard-chip');
+    if (!chip) return;
+
+    if (chip.dataset.muscle) {
+        // Muscle chip
+        const muscle = chip.dataset.muscle;
+        const type = chip.dataset.type;
+
+        if (type === 'primary') {
+            const idx = wizardState.primaryMuscles.indexOf(muscle);
+            if (idx >= 0) {
+                wizardState.primaryMuscles.splice(idx, 1);
+            } else {
+                wizardState.primaryMuscles.push(muscle);
+            }
+        } else {
+            const idx = wizardState.secondaryMuscles.indexOf(muscle);
+            if (idx >= 0) {
+                wizardState.secondaryMuscles.splice(idx, 1);
+            } else {
+                wizardState.secondaryMuscles.push(muscle);
+            }
+        }
+        renderWizardChips();
+    } else if (chip.dataset.equipment) {
+        // Equipment chip (single select)
+        wizardState.equipment = chip.dataset.equipment;
+        renderWizardChips();
+    }
+}
+
+// Validate current wizard step
+function validateWizardStep() {
+    const step = wizardState.currentStep;
+
+    if (step === 1) {
+        const name = document.getElementById('wizard-exercise-name').value.trim();
+        if (!name) {
+            document.getElementById('wizard-name-error').style.display = 'block';
+            return false;
+        }
+        document.getElementById('wizard-name-error').style.display = 'none';
+        wizardState.exerciseName = name;
+    }
+
+    if (step === 2) {
+        if (wizardState.primaryMuscles.length === 0) {
+            document.getElementById('wizard-muscle-error').style.display = 'block';
+            return false;
+        }
+        document.getElementById('wizard-muscle-error').style.display = 'none';
+    }
+
+    return true;
+}
+
+// Handle wizard next button
+function handleWizardNext() {
+    if (!validateWizardStep()) return;
+
+    if (wizardState.currentStep === 4) {
+        // Save the exercise
+        saveWizardExercise();
+    } else {
+        goToWizardStep(wizardState.currentStep + 1);
+    }
+}
+
+// Handle wizard back button
+function handleWizardBack() {
+    if (wizardState.currentStep > 1) {
+        goToWizardStep(wizardState.currentStep - 1);
+    }
+}
+
+// Populate wizard summary on step 4
+function populateWizardSummary() {
+    const muscleGroups = getMuscleGroups();
+    const equipmentTypes = getEquipmentTypes();
+
+    document.getElementById('wizard-summary-name').textContent = wizardState.exerciseName;
+
+    const primaryNames = wizardState.primaryMuscles.map(m => muscleGroups[m]?.displayName || m).join(', ');
+    document.getElementById('wizard-summary-primary').textContent = primaryNames || 'None';
+
+    const secondaryNames = wizardState.secondaryMuscles.map(m => muscleGroups[m]?.displayName || m).join(', ');
+    document.getElementById('wizard-summary-secondary').textContent = secondaryNames || 'None';
+
+    const equipmentName = equipmentTypes[wizardState.equipment]?.displayName || 'Other';
+    document.getElementById('wizard-summary-equipment').textContent = equipmentName;
+}
+
+// Save exercise from wizard
+function saveWizardExercise() {
+    const name = wizardState.exerciseName.trim();
+
+    // Check if exercise already exists
+    if (appData.exerciseLibrary.includes(name)) {
+        alert('An exercise with this name already exists.');
+        goToWizardStep(1);
+        return;
+    }
+
+    // Add to exercise library
+    appData = addCustomExercise(appData, name);
+
+    // Store custom exercise metadata in localStorage
+    const customExercisesKey = 'lagomstronk_custom_exercises';
+    let customExercises = {};
+    try {
+        customExercises = JSON.parse(localStorage.getItem(customExercisesKey) || '{}');
+    } catch (e) {
+        customExercises = {};
+    }
+
+    customExercises[name] = {
+        primaryMuscles: wizardState.primaryMuscles,
+        secondaryMuscles: wizardState.secondaryMuscles,
+        equipment: wizardState.equipment,
+        isCustom: true
+    };
+
+    localStorage.setItem(customExercisesKey, JSON.stringify(customExercises));
+
+    // Close wizard and refresh library
+    closeExerciseWizard();
+    renderLibraryView();
+}
+
+// Setup wizard event listeners
+function setupWizardListeners() {
+    // Close button
+    document.getElementById('close-exercise-wizard')?.addEventListener('click', closeExerciseWizard);
+
+    // Next/Back buttons
+    document.getElementById('wizard-next')?.addEventListener('click', handleWizardNext);
+    document.getElementById('wizard-back')?.addEventListener('click', handleWizardBack);
+
+    // Chip clicks (delegation)
+    document.getElementById('wizard-primary-muscles')?.addEventListener('click', handleWizardChipClick);
+    document.getElementById('wizard-secondary-muscles')?.addEventListener('click', handleWizardChipClick);
+    document.getElementById('wizard-equipment')?.addEventListener('click', handleWizardChipClick);
+
+    // Close on background click
+    exerciseWizardModal?.addEventListener('click', (e) => {
+        if (e.target === exerciseWizardModal) {
+            closeExerciseWizard();
+        }
+    });
+
+    // Enter key on name input moves to next step
+    document.getElementById('wizard-exercise-name')?.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            handleWizardNext();
+        }
+    });
+}
+
+// Make openExerciseWizard available globally
+window.openExerciseWizard = openExerciseWizard;
+
 // Initialize the app
 init();
 
 // Setup numpad after DOM is ready
 setupNumpadListeners();
+
+// Setup wizard listeners
+setupWizardListeners();
