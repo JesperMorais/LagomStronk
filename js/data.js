@@ -934,3 +934,299 @@ export function getExercisesForMuscle(muscleGroup) {
         ...getExerciseMetadata(name)
     }));
 }
+
+// ========== TRAINING PROGRAM TEMPLATES ==========
+
+// Program templates for multi-week structured training
+const PROGRAM_TEMPLATES = [
+    {
+        id: 'ppl',
+        name: 'Push Pull Legs',
+        description: 'Classic 6-day hypertrophy split targeting each muscle group twice per week',
+        daysPerWeek: 6,
+        schedule: [
+            { day: 1, workout: 'push-day', label: 'Push' },
+            { day: 2, workout: 'pull-day', label: 'Pull' },
+            { day: 3, workout: 'leg-day', label: 'Legs' },
+            { day: 4, workout: 'push-day', label: 'Push' },
+            { day: 5, workout: 'pull-day', label: 'Pull' },
+            { day: 6, workout: 'leg-day', label: 'Legs' }
+        ],
+        workouts: {
+            'push-day': {
+                name: 'Push',
+                exercises: [
+                    { name: 'Bench Press', sets: 4, reps: 8 },
+                    { name: 'Overhead Press', sets: 3, reps: 10 },
+                    { name: 'Incline Bench Press', sets: 3, reps: 10 },
+                    { name: 'Lateral Raises', sets: 3, reps: 15 },
+                    { name: 'Tricep Pushdown', sets: 3, reps: 12 }
+                ]
+            },
+            'pull-day': {
+                name: 'Pull',
+                exercises: [
+                    { name: 'Deadlift', sets: 4, reps: 5 },
+                    { name: 'Barbell Row', sets: 4, reps: 8 },
+                    { name: 'Lat Pulldown', sets: 3, reps: 10 },
+                    { name: 'Face Pulls', sets: 3, reps: 15 },
+                    { name: 'Bicep Curls', sets: 3, reps: 12 }
+                ]
+            },
+            'leg-day': {
+                name: 'Legs',
+                exercises: [
+                    { name: 'Squat', sets: 4, reps: 6 },
+                    { name: 'Romanian Deadlift', sets: 3, reps: 10 },
+                    { name: 'Leg Press', sets: 3, reps: 12 },
+                    { name: 'Leg Curl', sets: 3, reps: 12 },
+                    { name: 'Calf Raises', sets: 4, reps: 15 }
+                ]
+            }
+        },
+        tips: 'Rest on day 7, then repeat cycle. Great for intermediate to advanced lifters.'
+    },
+    {
+        id: '5x5',
+        name: 'StrongLifts 5x5',
+        description: 'Simple A/B alternating program focused on progressive overload with compound lifts',
+        daysPerWeek: 3,
+        schedule: [
+            { day: 1, workout: 'workout-a', label: 'Workout A' },
+            { day: 2, workout: 'workout-b', label: 'Workout B' },
+            { day: 3, workout: 'workout-a', label: 'Workout A' }
+        ],
+        workouts: {
+            'workout-a': {
+                name: 'Workout A',
+                exercises: [
+                    { name: 'Squat', sets: 5, reps: 5 },
+                    { name: 'Bench Press', sets: 5, reps: 5 },
+                    { name: 'Barbell Row', sets: 5, reps: 5 }
+                ]
+            },
+            'workout-b': {
+                name: 'Workout B',
+                exercises: [
+                    { name: 'Squat', sets: 5, reps: 5 },
+                    { name: 'Overhead Press', sets: 5, reps: 5 },
+                    { name: 'Deadlift', sets: 1, reps: 5 }
+                ]
+            }
+        },
+        tips: 'Train 3x/week with rest days between. Add 2.5kg each workout. Best for beginners.'
+    },
+    {
+        id: 'upper-lower',
+        name: 'Upper/Lower Split',
+        description: '4-day split alternating upper and lower body for balanced development',
+        daysPerWeek: 4,
+        schedule: [
+            { day: 1, workout: 'upper-day', label: 'Upper' },
+            { day: 2, workout: 'lower-day', label: 'Lower' },
+            { day: 3, workout: 'upper-day', label: 'Upper' },
+            { day: 4, workout: 'lower-day', label: 'Lower' }
+        ],
+        workouts: {
+            'upper-day': {
+                name: 'Upper Body',
+                exercises: [
+                    { name: 'Bench Press', sets: 4, reps: 8 },
+                    { name: 'Barbell Row', sets: 4, reps: 8 },
+                    { name: 'Overhead Press', sets: 3, reps: 10 },
+                    { name: 'Lat Pulldown', sets: 3, reps: 10 },
+                    { name: 'Bicep Curls', sets: 2, reps: 12 },
+                    { name: 'Tricep Extensions', sets: 2, reps: 12 }
+                ]
+            },
+            'lower-day': {
+                name: 'Lower Body',
+                exercises: [
+                    { name: 'Squat', sets: 4, reps: 6 },
+                    { name: 'Romanian Deadlift', sets: 3, reps: 10 },
+                    { name: 'Leg Press', sets: 3, reps: 12 },
+                    { name: 'Leg Curl', sets: 3, reps: 12 },
+                    { name: 'Calf Raises', sets: 4, reps: 15 }
+                ]
+            }
+        },
+        tips: 'Rest 1-2 days between sessions. Versatile for all levels.'
+    },
+    {
+        id: 'bro-split',
+        name: 'Bro Split',
+        description: '5-day bodybuilding split with one muscle group per day',
+        daysPerWeek: 5,
+        schedule: [
+            { day: 1, workout: 'chest-day', label: 'Chest' },
+            { day: 2, workout: 'back-day', label: 'Back' },
+            { day: 3, workout: 'shoulders-day', label: 'Shoulders' },
+            { day: 4, workout: 'arms-day', label: 'Arms' },
+            { day: 5, workout: 'legs-day', label: 'Legs' }
+        ],
+        workouts: {
+            'chest-day': {
+                name: 'Chest',
+                exercises: [
+                    { name: 'Bench Press', sets: 4, reps: 8 },
+                    { name: 'Incline Bench Press', sets: 4, reps: 10 },
+                    { name: 'Dumbbell Bench Press', sets: 3, reps: 12 }
+                ]
+            },
+            'back-day': {
+                name: 'Back',
+                exercises: [
+                    { name: 'Deadlift', sets: 4, reps: 5 },
+                    { name: 'Barbell Row', sets: 4, reps: 8 },
+                    { name: 'Lat Pulldown', sets: 3, reps: 10 },
+                    { name: 'Seated Cable Row', sets: 3, reps: 10 }
+                ]
+            },
+            'shoulders-day': {
+                name: 'Shoulders',
+                exercises: [
+                    { name: 'Overhead Press', sets: 4, reps: 8 },
+                    { name: 'Lateral Raises', sets: 4, reps: 15 },
+                    { name: 'Face Pulls', sets: 3, reps: 15 }
+                ]
+            },
+            'arms-day': {
+                name: 'Arms',
+                exercises: [
+                    { name: 'Bicep Curls', sets: 4, reps: 10 },
+                    { name: 'Hammer Curls', sets: 3, reps: 12 },
+                    { name: 'Tricep Pushdown', sets: 4, reps: 10 },
+                    { name: 'Skull Crushers', sets: 3, reps: 12 }
+                ]
+            },
+            'legs-day': {
+                name: 'Legs',
+                exercises: [
+                    { name: 'Squat', sets: 4, reps: 8 },
+                    { name: 'Leg Press', sets: 4, reps: 12 },
+                    { name: 'Romanian Deadlift', sets: 3, reps: 10 },
+                    { name: 'Leg Extension', sets: 3, reps: 15 },
+                    { name: 'Leg Curl', sets: 3, reps: 12 },
+                    { name: 'Calf Raises', sets: 4, reps: 15 }
+                ]
+            }
+        },
+        tips: 'Rest weekends. High volume per muscle group for hypertrophy.'
+    },
+    {
+        id: 'full-body-3x',
+        name: 'Full Body 3x',
+        description: 'Full body training 3 days per week, ideal for beginners or busy schedules',
+        daysPerWeek: 3,
+        schedule: [
+            { day: 1, workout: 'full-body-a', label: 'Full Body A' },
+            { day: 2, workout: 'full-body-b', label: 'Full Body B' },
+            { day: 3, workout: 'full-body-c', label: 'Full Body C' }
+        ],
+        workouts: {
+            'full-body-a': {
+                name: 'Full Body A',
+                exercises: [
+                    { name: 'Squat', sets: 3, reps: 8 },
+                    { name: 'Bench Press', sets: 3, reps: 8 },
+                    { name: 'Barbell Row', sets: 3, reps: 8 },
+                    { name: 'Overhead Press', sets: 2, reps: 10 },
+                    { name: 'Bicep Curls', sets: 2, reps: 12 }
+                ]
+            },
+            'full-body-b': {
+                name: 'Full Body B',
+                exercises: [
+                    { name: 'Deadlift', sets: 3, reps: 5 },
+                    { name: 'Incline Bench Press', sets: 3, reps: 10 },
+                    { name: 'Lat Pulldown', sets: 3, reps: 10 },
+                    { name: 'Lateral Raises', sets: 3, reps: 15 },
+                    { name: 'Tricep Pushdown', sets: 2, reps: 12 }
+                ]
+            },
+            'full-body-c': {
+                name: 'Full Body C',
+                exercises: [
+                    { name: 'Front Squat', sets: 3, reps: 8 },
+                    { name: 'Dumbbell Bench Press', sets: 3, reps: 10 },
+                    { name: 'Seated Cable Row', sets: 3, reps: 10 },
+                    { name: 'Face Pulls', sets: 3, reps: 15 },
+                    { name: 'Hammer Curls', sets: 2, reps: 12 }
+                ]
+            }
+        },
+        tips: 'Train Mon/Wed/Fri or similar. Rest at least 1 day between sessions.'
+    },
+    {
+        id: 'phul',
+        name: 'PHUL',
+        description: 'Power Hypertrophy Upper Lower - combines strength and size training',
+        daysPerWeek: 4,
+        schedule: [
+            { day: 1, workout: 'upper-power', label: 'Upper Power' },
+            { day: 2, workout: 'lower-power', label: 'Lower Power' },
+            { day: 3, workout: 'upper-hypertrophy', label: 'Upper Hypertrophy' },
+            { day: 4, workout: 'lower-hypertrophy', label: 'Lower Hypertrophy' }
+        ],
+        workouts: {
+            'upper-power': {
+                name: 'Upper Power',
+                exercises: [
+                    { name: 'Bench Press', sets: 4, reps: 5 },
+                    { name: 'Barbell Row', sets: 4, reps: 5 },
+                    { name: 'Overhead Press', sets: 3, reps: 6 },
+                    { name: 'Lat Pulldown', sets: 3, reps: 8 },
+                    { name: 'Bicep Curls', sets: 2, reps: 8 },
+                    { name: 'Skull Crushers', sets: 2, reps: 8 }
+                ]
+            },
+            'lower-power': {
+                name: 'Lower Power',
+                exercises: [
+                    { name: 'Squat', sets: 4, reps: 5 },
+                    { name: 'Deadlift', sets: 3, reps: 5 },
+                    { name: 'Leg Press', sets: 3, reps: 8 },
+                    { name: 'Leg Curl', sets: 3, reps: 8 },
+                    { name: 'Calf Raises', sets: 4, reps: 10 }
+                ]
+            },
+            'upper-hypertrophy': {
+                name: 'Upper Hypertrophy',
+                exercises: [
+                    { name: 'Incline Bench Press', sets: 4, reps: 12 },
+                    { name: 'Seated Cable Row', sets: 4, reps: 12 },
+                    { name: 'Lateral Raises', sets: 4, reps: 15 },
+                    { name: 'Face Pulls', sets: 3, reps: 15 },
+                    { name: 'Hammer Curls', sets: 3, reps: 12 },
+                    { name: 'Tricep Pushdown', sets: 3, reps: 12 }
+                ]
+            },
+            'lower-hypertrophy': {
+                name: 'Lower Hypertrophy',
+                exercises: [
+                    { name: 'Front Squat', sets: 4, reps: 10 },
+                    { name: 'Romanian Deadlift', sets: 4, reps: 10 },
+                    { name: 'Leg Extension', sets: 3, reps: 15 },
+                    { name: 'Leg Curl', sets: 3, reps: 15 },
+                    { name: 'Calf Raises', sets: 4, reps: 15 }
+                ]
+            }
+        },
+        tips: 'Rest 1-2 days between upper/lower pairs. Combines powerlifting and bodybuilding.'
+    }
+];
+
+// Default active program state (null = no active program)
+const DEFAULT_ACTIVE_PROGRAM = null;
+
+/*
+ * Active program state structure:
+ * {
+ *   programId: 'ppl',              // ID of the program template
+ *   startDate: '2026-02-01',       // When user started the program
+ *   currentDay: 4,                  // Current day in the program cycle (1-indexed)
+ *   completedDays: ['2026-02-01', '2026-02-02', '2026-02-03'],  // Dates workouts completed
+ *   lastWorkoutDate: '2026-02-03', // Most recent workout date
+ *   customizations: {}             // Exercise swaps, weight adjustments (future use)
+ * }
+ */
