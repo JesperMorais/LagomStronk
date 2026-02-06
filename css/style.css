@@ -1463,3 +1463,133 @@ body.offline .main-content {
     position: relative;
     height: 120px;
 }
+
+/* ========== CUSTOM NUMPAD ========== */
+
+.numpad-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1001;
+    justify-content: center;
+    align-items: flex-end;
+}
+
+.numpad-overlay.active {
+    display: flex;
+}
+
+.numpad {
+    width: 100%;
+    max-width: 480px;
+    background-color: #1a1f2e;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    padding: var(--spacing-md);
+    animation: numpad-slide-up 0.25s ease-out;
+}
+
+@keyframes numpad-slide-up {
+    from {
+        transform: translateY(100%);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+.numpad-display {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-sm) var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius);
+}
+
+.numpad-label {
+    font-size: 0.875rem;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.numpad-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.numpad-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-sm);
+}
+
+.numpad-btn {
+    min-height: 56px;
+    border: none;
+    border-radius: var(--radius);
+    background-color: rgba(255, 255, 255, 0.08);
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.1s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.numpad-btn:active {
+    background-color: rgba(255, 255, 255, 0.15);
+    transform: scale(0.95);
+}
+
+.numpad-btn svg {
+    width: 24px;
+    height: 24px;
+}
+
+.numpad-btn-action {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--text-secondary);
+}
+
+.numpad-btn-action:active {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.numpad-btn-stepper {
+    font-size: 2rem;
+    font-weight: 300;
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.numpad-btn-stepper:active {
+    background-color: rgba(209, 255, 198, 0.2);
+    color: var(--mint);
+}
+
+.numpad-btn-next {
+    background: linear-gradient(135deg, var(--mint), var(--mint-dark));
+    color: #0f1419;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.numpad-btn-next:active {
+    background: linear-gradient(135deg, var(--mint-dark), var(--mint));
+    transform: scale(0.95);
+}
+
+/* Ensure inputs using numpad don't show system keyboard */
+.numpad-input {
+    caret-color: var(--mint);
+}
