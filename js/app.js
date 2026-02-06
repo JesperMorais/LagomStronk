@@ -1291,5 +1291,192 @@ function confirmSaveAsTemplate() {
     alert('Workout saved as template!');
 }
 
+// ========== CUSTOM NUMPAD ==========
+
+// Numpad state
+let numpadState = {
+    currentInput: null,
+    inputType: 'weight', // 'weight' or 'reps'
+    value: '',
+    step: 2.5,
+    useSystemKeyboard: false
+};
+
+// Numpad DOM elements
+const numpadOverlay = document.getElementById('numpad-overlay');
+const numpadValueEl = document.getElementById('numpad-value');
+const numpadLabelEl = document.getElementById('numpad-label');
+
+// Show numpad for an input element
+function showNumpad(inputElement, options = {}) {
+    if (numpadState.useSystemKeyboard) {
+        // If user prefers system keyboard, just focus the input
+        inputElement.removeAttribute('readonly');
+        inputElement.focus();
+        return;
+    }
+
+    numpadState.currentInput = inputElement;
+    numpadState.inputType = options.type || 'weight';
+    numpadState.step = options.step || (numpadState.inputType === 'weight' ? 2.5 : 1);
+    numpadState.value = inputElement.value || '';
+
+    // Update display
+    numpadLabelEl.textContent = numpadState.inputType === 'weight' ? 'Weight (kg)' : 'Reps';
+    numpadValueEl.textContent = numpadState.value || '0';
+
+    // Show numpad
+    numpadOverlay.classList.add('active');
+
+    // Highlight current input
+    inputElement.classList.add('numpad-active');
+}
+
+// Hide numpad
+function hideNumpad() {
+    numpadOverlay.classList.remove('active');
+
+    if (numpadState.currentInput) {
+        numpadState.currentInput.classList.remove('numpad-active');
+
+        // Trigger change event to save value
+        numpadState.currentInput.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+
+    numpadState.currentInput = null;
+    numpadState.value = '';
+}
+
+// Handle numpad digit input
+function handleNumpadDigit(digit) {
+    if (!numpadState.currentInput) return;
+
+    // Prevent multiple decimals
+    if (digit === '.' && numpadState.value.includes('.')) return;
+
+    // Prevent leading zeros (except for decimals like 0.5)
+    if (numpadState.value === '0' && digit !== '.') {
+        numpadState.value = digit;
+    } else {
+        numpadState.value += digit;
+    }
+
+    updateNumpadDisplay();
+}
+
+// Handle backspace
+function handleNumpadBackspace() {
+    if (!numpadState.currentInput) return;
+
+    numpadState.value = numpadState.value.slice(0, -1);
+    updateNumpadDisplay();
+}
+
+// Handle stepper (+/-)
+function handleNumpadStepper(direction) {
+    if (!numpadState.currentInput) return;
+
+    const currentValue = parseFloat(numpadState.value) || 0;
+    const newValue = direction === 'plus'
+        ? currentValue + numpadState.step
+        : Math.max(0, currentValue - numpadState.step);
+
+    // Format value (remove trailing zeros for whole numbers)
+    numpadState.value = newValue % 1 === 0 ? newValue.toString() : newValue.toFixed(1);
+    updateNumpadDisplay();
+}
+
+// Update numpad display and input
+function updateNumpadDisplay() {
+    numpadValueEl.textContent = numpadState.value || '0';
+
+    if (numpadState.currentInput) {
+        numpadState.currentInput.value = numpadState.value;
+    }
+}
+
+// Handle NEXT button - advance to next input or close
+function handleNumpadNext() {
+    if (!numpadState.currentInput) {
+        hideNumpad();
+        return;
+    }
+
+    // Find all numpad-enabled inputs in the workout
+    const allInputs = Array.from(document.querySelectorAll('.inline-input'));
+    const currentIndex = allInputs.indexOf(numpadState.currentInput);
+
+    if (currentIndex === -1 || currentIndex === allInputs.length - 1) {
+        // Last input or not found, close numpad
+        hideNumpad();
+        return;
+    }
+
+    // Move to next input
+    const nextInput = allInputs[currentIndex + 1];
+    const isWeightInput = nextInput.classList.contains('set-kg');
+
+    // Hide current, show for next
+    numpadState.currentInput.classList.remove('numpad-active');
+    showNumpad(nextInput, {
+        type: isWeightInput ? 'weight' : 'reps',
+        step: isWeightInput ? 2.5 : 1
+    });
+}
+
+// Toggle between custom numpad and system keyboard
+function toggleKeyboardMode() {
+    numpadState.useSystemKeyboard = !numpadState.useSystemKeyboard;
+
+    if (numpadState.useSystemKeyboard && numpadState.currentInput) {
+        // Switch to system keyboard
+        hideNumpad();
+        numpadState.currentInput.removeAttribute('readonly');
+        numpadState.currentInput.focus();
+    }
+
+    // Update all inputs readonly state
+    document.querySelectorAll('.inline-input').forEach(input => {
+        if (numpadState.useSystemKeyboard) {
+            input.removeAttribute('readonly');
+        } else {
+            input.setAttribute('readonly', 'readonly');
+        }
+    });
+}
+
+// Setup numpad event listeners
+function setupNumpadListeners() {
+    // Digit buttons
+    document.querySelectorAll('.numpad-btn[data-value]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            handleNumpadDigit(btn.dataset.value);
+        });
+    });
+
+    // Backspace
+    document.getElementById('numpad-backspace')?.addEventListener('click', handleNumpadBackspace);
+
+    // Steppers
+    document.getElementById('numpad-plus')?.addEventListener('click', () => handleNumpadStepper('plus'));
+    document.getElementById('numpad-minus')?.addEventListener('click', () => handleNumpadStepper('minus'));
+
+    // NEXT button
+    document.getElementById('numpad-next')?.addEventListener('click', handleNumpadNext);
+
+    // Keyboard toggle
+    document.getElementById('numpad-keyboard')?.addEventListener('click', toggleKeyboardMode);
+
+    // Close on overlay tap (outside numpad)
+    numpadOverlay?.addEventListener('click', (e) => {
+        if (e.target === numpadOverlay) {
+            hideNumpad();
+        }
+    });
+}
+
 // Initialize the app
 init();
+
+// Setup numpad after DOM is ready
+setupNumpadListeners();
