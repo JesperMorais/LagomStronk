@@ -66,6 +66,13 @@
                     </div>
                 </div>
 
+                <!-- Muscle Group Alert -->
+                <div id="muscle-alert" class="muscle-alert" style="display: none;">
+                    <span class="muscle-alert__icon">🎯</span>
+                    <span class="muscle-alert__text" id="muscle-alert-text"></span>
+                    <button class="muscle-alert__dismiss" id="muscle-alert-dismiss" title="Dismiss">&times;</button>
+                </div>
+
                 <!-- Weekly Volume Chart -->
                 <div class="hero-volume-chart" id="hero-volume-chart-container">
                     <div class="hero-chart-header">
@@ -109,6 +116,25 @@
                 </div>
                 <div class="workout-timer-hero" id="workout-timer-hero">
                     <span class="workout-timer-value" id="workout-timer-value">00:00</span>
+                </div>
+                <!-- Rest Timer -->
+                <div id="rest-timer" class="rest-timer" style="display: none;">
+                    <div class="rest-timer__display">
+                        <span class="rest-timer__time" id="rest-timer-time">1:30</span>
+                    </div>
+                    <div class="rest-timer__controls">
+                        <button class="rest-timer__btn rest-timer__btn--adjust" data-adjust="-15">-15s</button>
+                        <button class="rest-timer__btn rest-timer__btn--toggle" id="rest-timer-toggle">
+                            <span class="rest-timer__pause-icon">⏸</span>
+                        </button>
+                        <button class="rest-timer__btn rest-timer__btn--adjust" data-adjust="+15">+15s</button>
+                    </div>
+                    <div class="rest-timer__presets">
+                        <button class="rest-timer__preset" data-seconds="60">1:00</button>
+                        <button class="rest-timer__preset active" data-seconds="90">1:30</button>
+                        <button class="rest-timer__preset" data-seconds="120">2:00</button>
+                        <button class="rest-timer__preset" data-seconds="180">3:00</button>
+                    </div>
                 </div>
                 <div class="workout-exercise-container" id="workout-exercise-container">
                     <!-- Exercise cards will be rendered here -->
@@ -676,6 +702,18 @@
                 </button>
                 <button class="numpad-btn numpad-btn-next" id="numpad-next">NEXT</button>
             </div>
+        </div>
+    </div>
+
+    <!-- PR Celebration Overlay -->
+    <div class="pr-celebration" id="pr-celebration">
+        <div class="pr-celebration-content">
+            <div class="pr-celebration-trophy">🏆</div>
+            <div class="pr-celebration-title">NEW PR!</div>
+            <div class="pr-celebration-exercise" id="pr-celebration-exercise">Exercise Name</div>
+            <div class="pr-celebration-value" id="pr-celebration-value">100 kg</div>
+            <div class="pr-celebration-type" id="pr-celebration-type">Weight PR</div>
+            <div class="pr-celebration-hint">Tap anywhere to dismiss</div>
         </div>
     </div>
 
