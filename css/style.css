@@ -2216,3 +2216,155 @@ body.offline .main-content {
     color: var(--text-secondary);
     text-align: center;
 }
+
+/* ========== MINI-PLAYER ========== */
+
+.mini-player {
+    display: none;
+    position: fixed;
+    bottom: var(--nav-height);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 480px;
+    height: 56px;
+    background-color: rgba(26, 31, 46, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid var(--border-mint);
+    z-index: 100;
+    animation: mini-player-slide-up 0.25s ease-out;
+}
+
+.mini-player.active {
+    display: block;
+}
+
+@keyframes mini-player-slide-up {
+    from {
+        transform: translateX(-50%) translateY(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+    }
+}
+
+.mini-player-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+    padding: 0 var(--spacing-md);
+    cursor: pointer;
+}
+
+.mini-player-info {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    flex: 1;
+}
+
+.mini-player-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--mint);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+}
+
+.mini-player-timer {
+    font-family: 'SF Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    background-color: rgba(255, 255, 255, 0.08);
+    padding: 4px 8px;
+    border-radius: var(--radius);
+}
+
+.mini-player-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.mini-player-finish-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: linear-gradient(135deg, var(--mint), var(--mint-dark));
+    color: var(--background-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(209, 255, 198, 0.3);
+}
+
+.mini-player-finish-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(209, 255, 198, 0.4);
+}
+
+.mini-player-finish-btn:active {
+    transform: scale(0.95);
+}
+
+/* Adjust main content padding when mini-player is shown */
+body.workout-active .main-content {
+    padding-bottom: calc(var(--nav-height) + 56px + var(--spacing-lg));
+}
+
+/* ========== FAB (Floating Action Button) ========== */
+
+.fab {
+    display: flex;
+    position: fixed;
+    bottom: calc(var(--nav-height) + var(--spacing-md));
+    right: var(--spacing-md);
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: none;
+    background: linear-gradient(135deg, var(--mint), var(--mint-dark));
+    color: var(--background-color);
+    font-size: 2rem;
+    font-weight: 300;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: var(--glow), var(--shadow-lg);
+    z-index: 99;
+    transition: all 0.2s ease;
+}
+
+.fab:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 30px rgba(209, 255, 198, 0.5), var(--shadow-lg);
+}
+
+.fab:active {
+    transform: scale(0.95);
+}
+
+.fab.hidden {
+    display: none;
+}
+
+.fab-icon {
+    line-height: 1;
+}
+
+/* Constrain FAB within app container on larger screens */
+@media (min-width: 481px) {
+    .fab {
+        right: calc(50% - 240px + var(--spacing-md));
+    }
+}
