@@ -285,7 +285,12 @@ function getDefaultData() {
         workouts: [],
         exerciseLibrary: [...DEFAULT_EXERCISES],
         workoutTemplates: [...DEFAULT_WORKOUT_TEMPLATES],
-        activeProgram: DEFAULT_ACTIVE_PROGRAM
+        activeProgram: DEFAULT_ACTIVE_PROGRAM,
+        bodyTracking: {
+            weight: [],        // [{date: "2026-02-06", value: 85.5, unit: "kg"}]
+            measurements: [],  // [{date: "2026-02-06", bicep: 38, chest: 105, waist: 82, thigh: 60, unit: "cm"}]
+            bodyFat: []        // [{date: "2026-02-06", value: 15.2}]
+        }
     };
 }
 
@@ -310,6 +315,10 @@ export function loadData() {
             // Ensure activeProgram exists (defaults to null if missing)
             if (data.activeProgram === undefined) {
                 data.activeProgram = null;
+            }
+            // Ensure bodyTracking exists (migration for pre-Phase 4 data)
+            if (!data.bodyTracking) {
+                data.bodyTracking = { weight: [], measurements: [], bodyFat: [] };
             }
             return data;
         }
@@ -1676,4 +1685,93 @@ export function getProgramAdherence(data) {
         expectedWorkouts: expectedWorkouts,
         daysSinceStart: daysSinceStart
     };
+}
+
+// ========== BODY TRACKING HELPERS ==========
+
+// Add or update a weight entry for a given date
+export function addWeightEntry(data, date, value, unit) {
+    if (!data.bodyTracking) {
+        data.bodyTracking = { weight: [], measurements: [], bodyFat: [] };
+    }
+    const existing = data.bodyTracking.weight.findIndex(e => e.date === date);
+    if (existing >= 0) {
+        data.bodyTracking.weight[existing].value = value;
+        data.bodyTracking.weight[existing].unit = unit;
+    } else {
+        data.bodyTracking.weight.push({ date, value, unit });
+    }
+    // Sort descending by date (newest first)
+    data.bodyTracking.weight.sort((a, b) => b.date.localeCompare(a.date));
+    return data;
+}
+
+// Get weight history sorted ascending by date (for charts). Optional limit.
+export function getWeightHistory(data, limit) {
+    if (!data.bodyTracking || !data.bodyTracking.weight) return [];
+    const sorted = [...data.bodyTracking.weight].sort((a, b) => a.date.localeCompare(b.date));
+    if (limit && limit > 0) {
+        return sorted.slice(-limit);
+    }
+    return sorted;
+}
+
+// Get the most recent weight entry or null
+export function getLatestWeight(data) {
+    if (!data.bodyTracking || !data.bodyTracking.weight || data.bodyTracking.weight.length === 0) return null;
+    // Weight is stored descending, so first element is most recent
+    return data.bodyTracking.weight[0];
+}
+
+// Add or update a measurement entry for a given date
+export function addMeasurementEntry(data, date, measurements, unit) {
+    if (!data.bodyTracking) {
+        data.bodyTracking = { weight: [], measurements: [], bodyFat: [] };
+    }
+    const entry = {
+        date,
+        bicep: measurements.bicep != null ? measurements.bicep : null,
+        chest: measurements.chest != null ? measurements.chest : null,
+        waist: measurements.waist != null ? measurements.waist : null,
+        thigh: measurements.thigh != null ? measurements.thigh : null,
+        unit
+    };
+    const existing = data.bodyTracking.measurements.findIndex(e => e.date === date);
+    if (existing >= 0) {
+        data.bodyTracking.measurements[existing] = entry;
+    } else {
+        data.bodyTracking.measurements.push(entry);
+    }
+    data.bodyTracking.measurements.sort((a, b) => b.date.localeCompare(a.date));
+    return data;
+}
+
+// Get measurement history for a specific type (e.g. 'bicep'), filtered to non-null, sorted ascending
+export function getMeasurementHistory(data, type) {
+    if (!data.bodyTracking || !data.bodyTracking.measurements) return [];
+    return data.bodyTracking.measurements
+        .filter(e => e[type] != null)
+        .sort((a, b) => a.date.localeCompare(b.date))
+        .map(e => ({ date: e.date, value: e[type], unit: e.unit }));
+}
+
+// Add or update a body fat entry for a given date
+export function addBodyFatEntry(data, date, value) {
+    if (!data.bodyTracking) {
+        data.bodyTracking = { weight: [], measurements: [], bodyFat: [] };
+    }
+    const existing = data.bodyTracking.bodyFat.findIndex(e => e.date === date);
+    if (existing >= 0) {
+        data.bodyTracking.bodyFat[existing].value = value;
+    } else {
+        data.bodyTracking.bodyFat.push({ date, value });
+    }
+    data.bodyTracking.bodyFat.sort((a, b) => b.date.localeCompare(a.date));
+    return data;
+}
+
+// Get body fat history sorted ascending by date
+export function getBodyFatHistory(data) {
+    if (!data.bodyTracking || !data.bodyTracking.bodyFat) return [];
+    return [...data.bodyTracking.bodyFat].sort((a, b) => a.date.localeCompare(b.date));
 }
