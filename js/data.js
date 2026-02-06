@@ -1387,3 +1387,232 @@ export function getProgramProgress(data) {
         startDate: activeProgram.startDate
     };
 }
+
+// ========== PROGRESSIVE OVERLOAD & COACHING HELPERS ==========
+
+// Get progressive overload suggestion for an exercise based on history
+export function getProgressiveOverloadSuggestion(data, exerciseName) {
+    const history = getExerciseHistory(data, exerciseName);
+
+    if (history.length === 0) {
+        return {
+            suggestedWeight: null,
+            reason: 'No workout history for this exercise',
+            lastWeight: null,
+            trend: 'unknown'
+        };
+    }
+
+    // Look at last 3 workouts for this exercise
+    const recentWorkouts = history.slice(-3);
+    const lastWorkout = recentWorkouts[recentWorkouts.length - 1];
+    const lastWeight = lastWorkout.maxWeight;
+
+    // Check if user completed all sets successfully in last workout
+    // "Success" = completed sets with target reps (no failed reps)
+    const lastSets = lastWorkout.sets;
+    const completedSetsSuccessfully = lastSets.every(s =>
+        s.completed !== false && s.reps >= (s.targetReps || s.reps)
+    );
+
+    // Analyze trend across recent workouts
+    let trend = 'maintain';
+    if (recentWorkouts.length >= 2) {
+        const weights = recentWorkouts.map(w => w.maxWeight);
+        const firstWeight = weights[0];
+        const latestWeight = weights[weights.length - 1];
+
+        if (latestWeight > firstWeight) {
+            trend = 'increase';
+        } else if (latestWeight < firstWeight) {
+            trend = 'decrease';
+        }
+    }
+
+    // Check consistency - did user hit all reps in last 2+ workouts?
+    const consistentSuccess = recentWorkouts.length >= 2 &&
+        recentWorkouts.slice(-2).every(w =>
+            w.sets.every(s => s.completed !== false)
+        );
+
+    let suggestedWeight = lastWeight;
+    let reason = '';
+
+    if (consistentSuccess && completedSetsSuccessfully) {
+        // Progressive overload: increase by 2.5kg
+        suggestedWeight = lastWeight + 2.5;
+        reason = 'You completed all sets successfully in your last workouts. Time to increase!';
+        trend = 'increase';
+    } else if (!completedSetsSuccessfully) {
+        // Stay at same weight
+        reason = 'Some sets were challenging last time. Stay at this weight to build strength.';
+        trend = 'maintain';
+    } else {
+        // Need more data
+        reason = 'Building consistency at this weight. Keep it up!';
+        trend = 'maintain';
+    }
+
+    return {
+        suggestedWeight: Math.round(suggestedWeight * 2) / 2, // Round to nearest 0.5kg
+        reason: reason,
+        lastWeight: lastWeight,
+        trend: trend,
+        recentWorkouts: recentWorkouts.length
+    };
+}
+
+// Get muscle groups not trained recently
+export function getMissedMuscleGroups(data, daysBack = 7) {
+    const today = new Date();
+    const cutoffDate = new Date(today);
+    cutoffDate.setDate(today.getDate() - daysBack);
+    const cutoffStr = cutoffDate.toISOString().split('T')[0];
+
+    // Track when each muscle group was last trained
+    const muscleLastTrained = {};
+
+    // Initialize all muscle groups
+    for (const muscleId of Object.keys(MUSCLE_GROUPS)) {
+        muscleLastTrained[muscleId] = null;
+    }
+
+    // Scan workout history
+    for (const workout of data.workouts) {
+        const workoutDate = workout.date;
+
+        for (const exercise of workout.exercises) {
+            const metadata = getExerciseMetadata(exercise.name);
+
+            // Mark primary muscles as trained
+            for (const muscle of metadata.primaryMuscles) {
+                if (!muscleLastTrained[muscle] || workoutDate > muscleLastTrained[muscle]) {
+                    muscleLastTrained[muscle] = workoutDate;
+                }
+            }
+        }
+    }
+
+    // Find muscle groups not trained recently
+    const missed = [];
+    for (const [muscleId, lastDate] of Object.entries(muscleLastTrained)) {
+        if (!lastDate || lastDate < cutoffStr) {
+            const muscle = MUSCLE_GROUPS[muscleId];
+            if (!muscle) continue;
+
+            const daysSinceTrained = lastDate
+                ? Math.floor((today - new Date(lastDate)) / (1000 * 60 * 60 * 24))
+                : null;
+
+            // Generate suggestion based on muscle group
+            let suggestion = `Consider adding ${muscle.displayName.toLowerCase()} exercises`;
+            const muscleExercises = filterExercisesByPrimaryMuscle(muscleId);
+            if (muscleExercises.length > 0) {
+                suggestion = `Try: ${muscleExercises.slice(0, 2).join(', ')}`;
+            }
+
+            missed.push({
+                muscleGroup: muscleId,
+                displayName: muscle.displayName,
+                daysSinceTrained: daysSinceTrained,
+                lastTrainedDate: lastDate,
+                suggestion: suggestion
+            });
+        }
+    }
+
+    // Sort by days since trained (null/never first, then longest)
+    missed.sort((a, b) => {
+        if (a.daysSinceTrained === null && b.daysSinceTrained === null) return 0;
+        if (a.daysSinceTrained === null) return -1;
+        if (b.daysSinceTrained === null) return 1;
+        return b.daysSinceTrained - a.daysSinceTrained;
+    });
+
+    return missed;
+}
+
+// Calculate program adherence - how well user is following program
+export function getProgramAdherence(data) {
+    const activeProgram = getActiveProgram(data);
+
+    if (!activeProgram) {
+        return {
+            adherencePercent: 0,
+            missedDays: 0,
+            extraWorkouts: 0,
+            streak: 0,
+            isActive: false
+        };
+    }
+
+    const program = getProgramById(activeProgram.programId);
+    if (!program) {
+        return {
+            adherencePercent: 0,
+            missedDays: 0,
+            extraWorkouts: 0,
+            streak: 0,
+            isActive: false
+        };
+    }
+
+    const startDate = new Date(activeProgram.startDate);
+    const today = new Date();
+    const daysSinceStart = Math.floor((today - startDate) / (1000 * 60 * 60 * 24)) + 1;
+
+    // Calculate expected workouts based on days per week
+    const weeksActive = Math.max(1, daysSinceStart / 7);
+    const expectedWorkouts = Math.floor(weeksActive * program.daysPerWeek);
+
+    // Actual completed workouts
+    const completedWorkouts = activeProgram.completedDays.length;
+
+    // Calculate adherence percentage
+    const adherencePercent = expectedWorkouts > 0
+        ? Math.min(100, Math.round((completedWorkouts / expectedWorkouts) * 100))
+        : 100;
+
+    // Calculate missed days (expected - actual, clamped to 0)
+    const missedDays = Math.max(0, expectedWorkouts - completedWorkouts);
+
+    // Extra workouts (if user did more than expected)
+    const extraWorkouts = Math.max(0, completedWorkouts - expectedWorkouts);
+
+    // Calculate current streak
+    let streak = 0;
+    if (activeProgram.completedDays.length > 0) {
+        const sortedDays = [...activeProgram.completedDays].sort().reverse();
+        const todayStr = getTodayStr();
+        const yesterdayDate = new Date(today);
+        yesterdayDate.setDate(today.getDate() - 1);
+        const yesterdayStr = yesterdayDate.toISOString().split('T')[0];
+
+        // Check if user worked out today or yesterday (streak is active)
+        if (sortedDays[0] === todayStr || sortedDays[0] === yesterdayStr) {
+            streak = 1;
+            for (let i = 1; i < sortedDays.length; i++) {
+                const current = new Date(sortedDays[i - 1]);
+                const prev = new Date(sortedDays[i]);
+                const diffDays = Math.round((current - prev) / (1000 * 60 * 60 * 24));
+
+                if (diffDays <= 2) { // Allow 1 rest day between workouts
+                    streak++;
+                } else {
+                    break;
+                }
+            }
+        }
+    }
+
+    return {
+        adherencePercent: adherencePercent,
+        missedDays: missedDays,
+        extraWorkouts: extraWorkouts,
+        streak: streak,
+        isActive: true,
+        completedWorkouts: completedWorkouts,
+        expectedWorkouts: expectedWorkouts,
+        daysSinceStart: daysSinceStart
+    };
+}
