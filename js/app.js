@@ -41,13 +41,18 @@ import {
     calculateEstimated1RM,
     addWeightEntry,
     getWeightHistory,
-    getLatestWeight
+    getLatestWeight,
+    addMeasurementEntry,
+    getMeasurementHistory,
+    addBodyFatEntry,
+    getBodyFatHistory
 } from './data.js';
 
 import {
     updateProgressChart,
     updateVolumeChart,
-    updateWeightChart
+    updateWeightChart,
+    updateMeasurementChart
 } from './charts.js';
 
 // App state
@@ -3700,6 +3705,7 @@ function renderBodyView() {
     renderCurrentWeight();
     updateWeightChart(appData);
     renderWeightHistory();
+    renderMeasurements();
 }
 
 function renderCurrentWeight() {
@@ -3844,6 +3850,122 @@ document.getElementById('weight-history')?.addEventListener('click', (e) => {
         }
     }
 });
+
+// ========== MEASUREMENTS TRACKING ==========
+
+const MEASUREMENT_TYPES = ['bicep', 'chest', 'waist', 'thigh'];
+
+function renderMeasurements() {
+    // Update charts and latest values for each measurement type
+    for (const type of MEASUREMENT_TYPES) {
+        updateMeasurementChart(appData, type);
+
+        // Show latest value with delta
+        const latestEl = document.getElementById(`${type}-latest`);
+        if (!latestEl) continue;
+
+        const history = getMeasurementHistory(appData, type);
+        if (history.length === 0) {
+            latestEl.innerHTML = '';
+            continue;
+        }
+
+        const latest = history[history.length - 1];
+        let deltaHtml = '';
+        if (history.length >= 2) {
+            const prev = history[history.length - 2];
+            const delta = latest.value - prev.value;
+            const deltaSign = delta > 0 ? '+' : '';
+            const deltaClass = delta > 0 ? 'body-delta-up' : delta < 0 ? 'body-delta-down' : 'body-delta-neutral';
+            deltaHtml = `<span class="measurement-delta ${deltaClass}">${deltaSign}${delta.toFixed(1)}</span>`;
+        }
+
+        latestEl.innerHTML = `
+            <span class="measurement-latest-value">${latest.value.toFixed(1)} cm</span>
+            ${deltaHtml}
+        `;
+    }
+}
+
+function handleLogMeasurements() {
+    const measurements = {};
+    let hasAny = false;
+    let hasInvalid = false;
+
+    for (const type of MEASUREMENT_TYPES) {
+        const input = document.getElementById(`meas-${type}`);
+        if (!input) continue;
+
+        const raw = input.value.trim();
+        if (raw === '') {
+            measurements[type] = null;
+            continue;
+        }
+
+        const value = parseFloat(raw);
+        if (isNaN(value) || value <= 0 || value >= 300) {
+            input.classList.add('input-error');
+            setTimeout(() => input.classList.remove('input-error'), 1000);
+            hasInvalid = true;
+            continue;
+        }
+
+        measurements[type] = value;
+        hasAny = true;
+    }
+
+    if (hasInvalid) return;
+
+    if (!hasAny) {
+        // Flash all inputs briefly to indicate at least one is needed
+        for (const type of MEASUREMENT_TYPES) {
+            const input = document.getElementById(`meas-${type}`);
+            if (input) {
+                input.classList.add('input-error');
+                setTimeout(() => input.classList.remove('input-error'), 1000);
+            }
+        }
+        return;
+    }
+
+    const todayStr = getTodayStr();
+    addMeasurementEntry(appData, todayStr, measurements, 'cm');
+    saveData(appData);
+
+    // Clear inputs
+    for (const type of MEASUREMENT_TYPES) {
+        const input = document.getElementById(`meas-${type}`);
+        if (input) input.value = '';
+    }
+
+    renderBodyView();
+    showMeasurementLoggedFeedback();
+}
+
+function showMeasurementLoggedFeedback() {
+    const btn = document.getElementById('log-measurements-btn');
+    if (!btn) return;
+    const originalText = btn.textContent;
+    btn.textContent = 'Logged!';
+    btn.classList.add('btn-success-flash');
+    setTimeout(() => {
+        btn.textContent = originalText;
+        btn.classList.remove('btn-success-flash');
+    }, 1500);
+}
+
+// Measurement event listeners
+document.getElementById('log-measurements-btn')?.addEventListener('click', handleLogMeasurements);
+
+// Enter key on measurement inputs
+for (const type of MEASUREMENT_TYPES) {
+    document.getElementById(`meas-${type}`)?.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            handleLogMeasurements();
+        }
+    });
+}
 
 // Initialize the app
 init();

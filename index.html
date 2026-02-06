@@ -327,8 +327,80 @@
                     </div>
                 </div>
 
-                <!-- Measurements Section (placeholder for 04-02) -->
-                <div id="measurements-section"></div>
+                <!-- Measurements Section -->
+                <div id="measurements-section">
+                <div class="stats-section">
+                    <h3 class="stats-section-title">Measurements</h3>
+
+                    <!-- Measurement Entry Form -->
+                    <div class="measurement-form card">
+                        <div class="measurement-inputs">
+                            <div class="body-input-row">
+                                <label>Bicep</label>
+                                <div class="body-input-group">
+                                    <input type="number" id="meas-bicep" step="0.1" placeholder="—" class="body-number-input measurement-input">
+                                    <span class="body-unit">cm</span>
+                                </div>
+                            </div>
+                            <div class="body-input-row">
+                                <label>Chest</label>
+                                <div class="body-input-group">
+                                    <input type="number" id="meas-chest" step="0.1" placeholder="—" class="body-number-input measurement-input">
+                                    <span class="body-unit">cm</span>
+                                </div>
+                            </div>
+                            <div class="body-input-row">
+                                <label>Waist</label>
+                                <div class="body-input-group">
+                                    <input type="number" id="meas-waist" step="0.1" placeholder="—" class="body-number-input measurement-input">
+                                    <span class="body-unit">cm</span>
+                                </div>
+                            </div>
+                            <div class="body-input-row">
+                                <label>Thigh</label>
+                                <div class="body-input-group">
+                                    <input type="number" id="meas-thigh" step="0.1" placeholder="—" class="body-number-input measurement-input">
+                                    <span class="body-unit">cm</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button id="log-measurements-btn" class="btn-primary body-log-btn">Log Measurements</button>
+                        <p class="measurement-hint">Fill in any or all measurements</p>
+                    </div>
+
+                    <!-- Individual Measurement Charts -->
+                    <div class="measurement-charts">
+                        <div class="measurement-chart-card">
+                            <h4 class="measurement-chart-title">Bicep</h4>
+                            <div class="measurement-chart-latest" id="bicep-latest"></div>
+                            <div class="chart-container chart-container-sm">
+                                <canvas id="bicep-chart"></canvas>
+                            </div>
+                        </div>
+                        <div class="measurement-chart-card">
+                            <h4 class="measurement-chart-title">Chest</h4>
+                            <div class="measurement-chart-latest" id="chest-latest"></div>
+                            <div class="chart-container chart-container-sm">
+                                <canvas id="chest-chart"></canvas>
+                            </div>
+                        </div>
+                        <div class="measurement-chart-card">
+                            <h4 class="measurement-chart-title">Waist</h4>
+                            <div class="measurement-chart-latest" id="waist-latest"></div>
+                            <div class="chart-container chart-container-sm">
+                                <canvas id="waist-chart"></canvas>
+                            </div>
+                        </div>
+                        <div class="measurement-chart-card">
+                            <h4 class="measurement-chart-title">Thigh</h4>
+                            <div class="measurement-chart-latest" id="thigh-latest"></div>
+                            <div class="chart-container chart-container-sm">
+                                <canvas id="thigh-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </div>
 
                 <!-- Body Fat Section (placeholder for 04-02) -->
                 <div id="bodyfat-section"></div>

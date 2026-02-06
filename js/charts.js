@@ -1,8 +1,10 @@
-import { getExerciseHistory, getVolumeHistory, getWeightHistory, formatDate } from './data.js';
+import { getExerciseHistory, getVolumeHistory, getWeightHistory, getMeasurementHistory, getBodyFatHistory, formatDate } from './data.js';
 
 let progressChart = null;
 let volumeChart = null;
 let weightChart = null;
+const measurementCharts = {};
+let bodyFatChart = null;
 
 // Initialize or update the progress chart for a specific exercise
 export function updateProgressChart(data, exerciseName) {
@@ -271,6 +273,129 @@ export function updateWeightChart(data) {
     });
 }
 
+// Initialize or update a measurement chart for a specific type (bicep, chest, waist, thigh)
+export function updateMeasurementChart(data, type) {
+    const ctx = document.getElementById(`${type}-chart`);
+    if (!ctx) return;
+
+    const history = getMeasurementHistory(data, type);
+
+    // Destroy existing chart for this type if exists
+    if (measurementCharts[type]) {
+        measurementCharts[type].destroy();
+        measurementCharts[type] = null;
+    }
+
+    if (history.length < 2) {
+        const emptyMsg = history.length === 0
+            ? 'No data yet'
+            : 'Log one more entry to see the trend';
+        measurementCharts[type] = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: history.map(h => formatDate(h.date)),
+                datasets: [{
+                    label: `${type} (cm)`,
+                    data: history.map(h => h.value),
+                    borderColor: '#D1FFC6',
+                    backgroundColor: 'rgba(209, 255, 198, 0.15)',
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: '#D1FFC6',
+                    pointBorderColor: '#0f1419',
+                    pointBorderWidth: 2,
+                    pointRadius: 6,
+                    pointHoverRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { display: false },
+                    title: {
+                        display: true,
+                        text: emptyMsg,
+                        font: { size: 12, weight: '500' },
+                        color: '#9ca3af',
+                        padding: { bottom: 8 }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { size: 10 }, color: '#9ca3af' },
+                        border: { display: false }
+                    },
+                    y: {
+                        beginAtZero: false,
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: { color: '#9ca3af' },
+                        border: { display: false }
+                    }
+                }
+            }
+        });
+        return;
+    }
+
+    const labels = history.map(h => formatDate(h.date));
+    const values = history.map(h => h.value);
+
+    const minVal = Math.min(...values);
+    const maxVal = Math.max(...values);
+    const padding = Math.max(2, (maxVal - minVal) * 0.3);
+
+    measurementCharts[type] = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels,
+            datasets: [{
+                label: `${type} (cm)`,
+                data: values,
+                borderColor: '#D1FFC6',
+                backgroundColor: 'rgba(209, 255, 198, 0.15)',
+                tension: 0.4,
+                fill: true,
+                pointBackgroundColor: '#D1FFC6',
+                pointBorderColor: '#0f1419',
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                borderWidth: 2.5
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: { display: false },
+                title: { display: false }
+            },
+            scales: {
+                x: {
+                    grid: { display: false },
+                    ticks: {
+                        maxRotation: 45,
+                        minRotation: 45,
+                        font: { size: 9 },
+                        color: '#9ca3af'
+                    },
+                    border: { display: false }
+                },
+                y: {
+                    beginAtZero: false,
+                    suggestedMin: Math.floor(minVal - padding),
+                    suggestedMax: Math.ceil(maxVal + padding),
+                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                    ticks: { color: '#9ca3af' },
+                    border: { display: false }
+                }
+            }
+        }
+    });
+}
+
 // Destroy all charts (cleanup)
 export function destroyCharts() {
     if (progressChart) {
@@ -284,5 +409,15 @@ export function destroyCharts() {
     if (weightChart) {
         weightChart.destroy();
         weightChart = null;
+    }
+    for (const type of Object.keys(measurementCharts)) {
+        if (measurementCharts[type]) {
+            measurementCharts[type].destroy();
+            measurementCharts[type] = null;
+        }
+    }
+    if (bodyFatChart) {
+        bodyFatChart.destroy();
+        bodyFatChart = null;
     }
 }
