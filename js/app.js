@@ -770,15 +770,9 @@ function setupMiniPlayerListeners() {
     // FAB - start workout
     if (fabStartWorkout) {
         fabStartWorkout.addEventListener('click', () => {
-            // Check if there are exercises for today
-            const workout = getWorkoutByDate(appData, currentDate);
-            if (!workout || workout.exercises.length === 0) {
-                // Open exercise modal to add first exercise
-                openExerciseModal();
-            } else {
-                // Start the workout (opens workout screen)
-                startWorkout();
-            }
+            // Always start workout directly (opens empty workout screen)
+            // User can add exercises from within the workout screen
+            startWorkout();
         });
     }
 }
@@ -1025,67 +1019,18 @@ function setupEventListeners() {
     });
 }
 
-// Render today's workout with inline editable sets
+// Render today's dashboard (stats only, no exercise list)
 function renderTodayView() {
-    // Render hero section first
+    // Render hero section with streak and calendar
     renderHero();
+    // Render stats cards (volume chart, PRs)
     renderHeroStats();
 
-    const workout = getWorkoutByDate(appData, currentDate);
-
-    if (!workout || workout.exercises.length === 0) {
-        todayExercisesEl.innerHTML = `
-            <div class="empty-state">
-                <div class="empty-state-icon">💪</div>
-                <p>No exercises logged today.</p>
-                <p>Tap the button below to add your first exercise!</p>
-            </div>
-        `;
-        return;
+    // Dashboard shows stats only - exercise logging is in workout screen
+    // Hide the exercises container on dashboard
+    if (todayExercisesEl) {
+        todayExercisesEl.style.display = 'none';
     }
-
-    todayExercisesEl.innerHTML = workout.exercises.map((exercise, exIdx) => {
-        const prevSets = getMostRecentExerciseSets(appData, exercise.name, currentDate);
-        return `
-            <div class="exercise-card" data-exercise-index="${exIdx}">
-                <div class="exercise-card-header">
-                    <span class="exercise-card-title">${exercise.name}</span>
-                    <div class="exercise-card-actions">
-                        <button class="btn-icon delete-exercise-btn" data-index="${exIdx}" title="Delete">🗑️</button>
-                    </div>
-                </div>
-                <table class="inline-sets">
-                    <thead>
-                        <tr>
-                            <th>SET</th>
-                            <th>PREVIOUS</th>
-                            <th>KG</th>
-                            <th>REPS</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${exercise.sets.map((set, setIdx) => {
-                            const prev = prevSets[setIdx];
-                            const isCompleted = set.completed !== false;
-                            const weightPlaceholder = prev ? `Last: ${prev.weight}` : '';
-                            const repsPlaceholder = prev ? `Last: ${prev.reps}` : '';
-                            return `
-                                <tr class="inline-set-row ${isCompleted ? 'completed' : ''}" data-exercise="${exIdx}" data-set="${setIdx}">
-                                    <td class="set-num">${setIdx + 1}</td>
-                                    <td class="set-prev">${prev ? `${prev.weight} x ${prev.reps}` : '-'}</td>
-                                    <td><input type="number" class="inline-input set-kg" value="${set.weight}" step="2.5" min="0" readonly data-numpad-type="weight" placeholder="${weightPlaceholder}"></td>
-                                    <td><input type="number" class="inline-input set-reps-input" value="${set.reps}" min="0" readonly data-numpad-type="reps" placeholder="${repsPlaceholder}"></td>
-                                    <td><button class="set-check-btn ${isCompleted ? 'checked' : ''}">✓</button></td>
-                                </tr>
-                            `;
-                        }).join('')}
-                    </tbody>
-                </table>
-                <button class="btn-add-inline-set" data-exercise="${exIdx}">+ Add Set</button>
-            </div>
-        `;
-    }).join('');
 }
 
 // Render history view
