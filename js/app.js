@@ -870,8 +870,8 @@ function setupEventListeners() {
         workoutExerciseContainer.addEventListener('focus', handleNumpadFocus, true);
     }
 
-    // Add exercise button
-    document.getElementById('add-exercise-btn').addEventListener('click', openExerciseModal);
+    // Add exercise button removed from landing page
+    // The workout-add-exercise-btn is handled above in this function
 
     // Exercise search modal
     document.getElementById('close-exercise-modal').addEventListener('click', closeExerciseModal);
@@ -1029,12 +1029,61 @@ function renderTodayView() {
     renderHero();
     // Render stats cards (volume chart, PRs)
     renderHeroStats();
+    // Render last workout summary
+    renderLastWorkout();
 
     // Dashboard shows stats only - exercise logging is in workout screen
     // Hide the exercises container on dashboard
     if (todayExercisesEl) {
         todayExercisesEl.style.display = 'none';
     }
+}
+
+// Render last workout summary card
+function renderLastWorkout() {
+    const dateEl = document.getElementById('last-workout-date');
+    const summaryEl = document.getElementById('last-workout-summary');
+    if (!dateEl || !summaryEl) return;
+
+    const workouts = getWorkoutsSorted(appData);
+
+    if (workouts.length === 0) {
+        dateEl.textContent = '-';
+        summaryEl.innerHTML = '<p class="empty-hint">No workouts yet. Tap + to start!</p>';
+        return;
+    }
+
+    // Get most recent workout
+    const lastWorkout = workouts[0];
+    dateEl.textContent = formatDate(lastWorkout.date);
+
+    // Calculate summary stats
+    const totalSets = lastWorkout.exercises.reduce((sum, ex) => sum + ex.sets.length, 0);
+    const totalVolume = lastWorkout.exercises.reduce((sum, ex) => {
+        return sum + ex.sets.reduce((setSum, set) => setSum + (set.weight * set.reps), 0);
+    }, 0);
+
+    // Render exercise list
+    const exercisesHtml = lastWorkout.exercises.slice(0, 4).map(ex => {
+        const sets = ex.sets.length;
+        const maxWeight = Math.max(...ex.sets.map(s => s.weight));
+        return `
+            <div class="last-workout-exercise">
+                <span class="last-workout-exercise-name">${ex.name}</span>
+                <span class="last-workout-exercise-sets">${sets} sets • ${maxWeight}kg</span>
+            </div>
+        `;
+    }).join('');
+
+    const moreCount = lastWorkout.exercises.length - 4;
+    const moreHtml = moreCount > 0 ? `<div class="last-workout-exercise"><span class="empty-hint">+${moreCount} more exercises</span></div>` : '';
+
+    summaryEl.innerHTML = `
+        <div class="last-workout-exercises">
+            ${exercisesHtml}
+            ${moreHtml}
+        </div>
+    `;
 }
 
 // Render history view

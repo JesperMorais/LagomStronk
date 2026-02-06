@@ -519,7 +519,7 @@ body {
     background-color: rgba(0, 0, 0, 0.8);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
-    z-index: 200;
+    z-index: 600;
     justify-content: center;
     align-items: flex-end;
 }
@@ -1521,6 +1521,72 @@ body.offline .main-content {
 .hero-chart-wrapper {
     position: relative;
     height: 120px;
+}
+
+/* Last Workout Card */
+.last-workout-card {
+    background-color: rgba(35, 44, 51, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.last-workout-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-sm);
+}
+
+.last-workout-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.last-workout-date {
+    font-size: 0.75rem;
+    color: var(--mint);
+}
+
+.last-workout-summary {
+    font-size: 0.875rem;
+    color: var(--text-primary);
+}
+
+.last-workout-summary .empty-hint {
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+.last-workout-exercises {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.last-workout-exercise {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-xs) 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.last-workout-exercise:last-child {
+    border-bottom: none;
+}
+
+.last-workout-exercise-name {
+    font-weight: 500;
+}
+
+.last-workout-exercise-sets {
+    color: var(--text-secondary);
+    font-size: 0.75rem;
 }
 
 /* ========== CUSTOM NUMPAD ========== */

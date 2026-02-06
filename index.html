@@ -76,12 +76,20 @@
                     </div>
                 </div>
 
-                <div id="today-exercises" class="exercise-list">
-                    <!-- Exercises will be added here -->
+                <div id="today-exercises" class="exercise-list" style="display: none;">
+                    <!-- Hidden - exercises are logged in workout screen -->
                 </div>
-                <button class="btn btn-primary btn-add-exercise" id="add-exercise-btn">
-                    + Add Exercise
-                </button>
+
+                <!-- Last Workout Summary -->
+                <div class="last-workout-card" id="last-workout-card">
+                    <div class="last-workout-header">
+                        <span class="last-workout-title">Last Workout</span>
+                        <span class="last-workout-date" id="last-workout-date">-</span>
+                    </div>
+                    <div class="last-workout-summary" id="last-workout-summary">
+                        <p class="empty-hint">No workouts yet. Tap + to start!</p>
+                    </div>
+                </div>
             </section>
 
             <!-- Workout View (Full-screen) -->
