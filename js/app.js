@@ -919,8 +919,16 @@ function setupMiniPlayerListeners() {
     // FAB - start workout
     if (fabStartWorkout) {
         fabStartWorkout.addEventListener('click', () => {
-            // Always start workout directly (opens empty workout screen)
-            // User can add exercises from within the workout screen
+            // Clear any existing exercises for today - FAB starts fresh workout
+            const today = getTodayStr();
+            const existingWorkout = getWorkoutByDate(appData, today);
+            if (existingWorkout && existingWorkout.exercises.length > 0) {
+                // Clear all exercises for a fresh start
+                while (existingWorkout.exercises.length > 0) {
+                    appData = removeExerciseFromWorkout(appData, today, 0);
+                }
+                saveData(appData);
+            }
             startWorkout();
         });
     }
@@ -2378,6 +2386,10 @@ function toggleSetCompletion(exIdx, setIdx, buttonElement) {
 
         // Add row highlight
         row.classList.add('completed', 'highlight-complete');
+
+        // Mark inputs as user-entered (turn white instead of gray placeholder)
+        const inputs = row.querySelectorAll('.inline-input');
+        inputs.forEach(input => input.classList.add('user-entered'));
 
         // Check for PR before normal confetti
         const exercise = workout.exercises[exIdx];
