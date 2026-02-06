@@ -2368,3 +2368,199 @@ body.workout-active .main-content {
         right: calc(50% - 240px + var(--spacing-md));
     }
 }
+
+/* ========== EXERCISE WIZARD ========== */
+
+.wizard-progress {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    margin-bottom: var(--spacing-lg);
+    padding: var(--spacing-sm) 0;
+}
+
+.wizard-step {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: var(--background-color);
+    border: 2px solid var(--border-color);
+    color: var(--text-tertiary);
+    font-size: 0.875rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.wizard-step.active {
+    background-color: var(--mint);
+    border-color: var(--mint);
+    color: var(--background-color);
+    box-shadow: 0 0 12px rgba(209, 255, 198, 0.4);
+}
+
+.wizard-step.completed {
+    background-color: rgba(209, 255, 198, 0.2);
+    border-color: var(--mint);
+    color: var(--mint);
+}
+
+.wizard-step-line {
+    width: 40px;
+    height: 2px;
+    background-color: var(--border-color);
+    transition: background-color 0.3s ease;
+}
+
+.wizard-step-line.active {
+    background-color: var(--mint);
+}
+
+/* Wizard Panels */
+.wizard-panel {
+    display: none;
+    animation: wizard-panel-fade 0.3s ease;
+}
+
+.wizard-panel.active {
+    display: block;
+}
+
+@keyframes wizard-panel-fade {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.wizard-panel-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.wizard-panel-desc {
+    font-size: 0.875rem;
+    color: var(--text-tertiary);
+    margin-bottom: var(--spacing-md);
+}
+
+/* Wizard Sections */
+.wizard-section {
+    margin-bottom: var(--spacing-md);
+}
+
+.wizard-section-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: var(--spacing-sm);
+}
+
+/* Wizard Chips */
+.wizard-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+}
+
+.wizard-chip {
+    background-color: var(--background-color);
+    color: var(--text-secondary);
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid var(--border-color);
+    user-select: none;
+}
+
+.wizard-chip:hover {
+    border-color: var(--border-mint);
+    color: var(--text-primary);
+}
+
+.wizard-chip.selected {
+    background-color: var(--mint);
+    color: var(--background-color);
+    border-color: var(--mint);
+}
+
+/* Wizard Error */
+.wizard-error {
+    color: var(--danger-color);
+    font-size: 0.8rem;
+    margin-top: var(--spacing-sm);
+}
+
+/* Wizard Summary */
+.wizard-summary {
+    background-color: var(--background-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: var(--spacing-md);
+}
+
+.wizard-summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: var(--spacing-sm) 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.wizard-summary-item:last-child {
+    border-bottom: none;
+}
+
+.wizard-summary-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.wizard-summary-value {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--mint);
+    text-align: right;
+    max-width: 60%;
+}
+
+/* Wizard Footer */
+.wizard-footer {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.wizard-footer .btn {
+    flex: 1;
+}
+
+/* Custom exercise indicator */
+.custom-exercise-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    margin-left: var(--spacing-xs);
+    color: var(--text-tertiary);
+    font-size: 0.75rem;
+    opacity: 0.7;
+}
