@@ -866,6 +866,8 @@ function setupEventListeners() {
     if (workoutExerciseContainer) {
         workoutExerciseContainer.addEventListener('click', handleTodayClick);
         workoutExerciseContainer.addEventListener('change', handleTodayInputChange);
+        // Also listen for focus events for better input reliability
+        workoutExerciseContainer.addEventListener('focus', handleNumpadFocus, true);
     }
 
     // Add exercise button
@@ -904,6 +906,8 @@ function setupEventListeners() {
     // Inline today view events (delegation)
     todayExercisesEl.addEventListener('click', handleTodayClick);
     todayExercisesEl.addEventListener('change', handleTodayInputChange);
+    // Also listen for focus events for better input reliability
+    todayExercisesEl.addEventListener('focus', handleNumpadFocus, true);
 
     // Custom exercise modal
     document.getElementById('add-custom-exercise-btn').addEventListener('click', openExerciseWizard);
@@ -1880,6 +1884,18 @@ function addNewExerciseToWorkout(exerciseName) {
 
 // ========== INLINE TODAY VIEW EVENT HANDLERS ==========
 
+// Handle focus events on numpad-enabled inputs (for better reliability)
+function handleNumpadFocus(e) {
+    // Check if the focused element is a numpad-enabled input
+    if (e.target && e.target.classList && e.target.classList.contains('inline-input')) {
+        const isWeightInput = e.target.classList.contains('set-kg');
+        showNumpad(e.target, {
+            type: isWeightInput ? 'weight' : 'reps',
+            step: isWeightInput ? 2.5 : 1
+        });
+    }
+}
+
 // Handle clicks on today's exercise cards (delegation)
 function handleTodayClick(e) {
     // Input focus - show numpad
@@ -2345,6 +2361,12 @@ const numpadLabelEl = document.getElementById('numpad-label');
 
 // Show numpad for an input element
 function showNumpad(inputElement, options = {}) {
+    // Defensive check: ensure input element exists and is valid
+    if (!inputElement || !inputElement.classList) {
+        console.warn('showNumpad: Invalid input element');
+        return;
+    }
+
     if (numpadState.useSystemKeyboard) {
         // If user prefers system keyboard, just focus the input
         inputElement.removeAttribute('readonly');
@@ -2358,10 +2380,14 @@ function showNumpad(inputElement, options = {}) {
     numpadState.value = inputElement.value || '';
 
     // Update display
-    numpadLabelEl.textContent = numpadState.inputType === 'weight' ? 'Weight (kg)' : 'Reps';
-    numpadValueEl.textContent = numpadState.value || '0';
+    if (numpadLabelEl) numpadLabelEl.textContent = numpadState.inputType === 'weight' ? 'Weight (kg)' : 'Reps';
+    if (numpadValueEl) numpadValueEl.textContent = numpadState.value || '0';
 
-    // Show numpad
+    // Show numpad (defensive check)
+    if (!numpadOverlay) {
+        console.warn('showNumpad: Numpad overlay element not found');
+        return;
+    }
     numpadOverlay.classList.add('active');
 
     // Highlight current input

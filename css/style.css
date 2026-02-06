@@ -1526,20 +1526,30 @@ body.offline .main-content {
 /* ========== CUSTOM NUMPAD ========== */
 
 .numpad-overlay {
-    display: none;
+    display: flex;
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0);
     z-index: 1001;
     justify-content: center;
     align-items: flex-end;
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                visibility 0s linear 0.3s,
+                opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .numpad-overlay.active {
-    display: flex;
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+    transition-delay: 0s;
 }
 
 .numpad {
@@ -1548,15 +1558,27 @@ body.offline .main-content {
     background-color: #1a1f2e;
     border-radius: var(--radius-lg) var(--radius-lg) 0 0;
     padding: var(--spacing-md);
-    animation: numpad-slide-up 0.25s ease-out;
+    transform: translateY(100%);
+    opacity: 0;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
 }
 
+.numpad-overlay.active .numpad {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* Legacy animation for fallback */
 @keyframes numpad-slide-up {
     from {
         transform: translateY(100%);
+        opacity: 0;
     }
     to {
         transform: translateY(0);
+        opacity: 1;
     }
 }
 
@@ -2227,11 +2249,11 @@ body.offline .main-content {
 /* ========== MINI-PLAYER ========== */
 
 .mini-player {
-    display: none;
+    display: block;
     position: fixed;
     bottom: var(--nav-height);
     left: 50%;
-    transform: translateX(-50%);
+    transform: translateX(-50%) translateY(100%);
     width: 100%;
     max-width: 480px;
     height: 64px;
@@ -2241,13 +2263,26 @@ body.offline .main-content {
     border-top: 1px solid var(--border-mint);
     box-shadow: 0 -2px 12px rgba(209, 255, 198, 0.1);
     z-index: 150;
-    animation: mini-player-slide-up 0.25s ease-out;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: transform 0.25s ease-out,
+                opacity 0.25s ease-out,
+                box-shadow 0.25s ease-out,
+                visibility 0s linear 0.25s;
+    will-change: transform;
 }
 
 .mini-player.active {
-    display: block;
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    box-shadow: 0 -4px 16px rgba(209, 255, 198, 0.15);
+    transition-delay: 0s;
 }
 
+/* Legacy animation for fallback */
 @keyframes mini-player-slide-up {
     from {
         transform: translateX(-50%) translateY(100%);
