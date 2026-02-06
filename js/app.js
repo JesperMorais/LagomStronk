@@ -1161,6 +1161,8 @@ function setupEventListeners() {
 function renderTodayView() {
     // Render hero section with streak and calendar
     renderHero();
+    // Render Today's Workout card (if program active)
+    renderTodaysWorkout();
     // Render stats cards (volume chart, PRs)
     renderHeroStats();
     // Render last workout summary
@@ -1171,6 +1173,83 @@ function renderTodayView() {
     if (todayExercisesEl) {
         todayExercisesEl.style.display = 'none';
     }
+}
+
+// Render Today's Workout card when a program is active
+function renderTodaysWorkout() {
+    const card = document.getElementById('todays-workout-card');
+    const programEl = document.getElementById('todays-workout-program');
+    const nameEl = document.getElementById('todays-workout-name');
+    const previewEl = document.getElementById('todays-workout-preview');
+    const startBtn = document.getElementById('start-programmed-workout');
+
+    if (!card) return;
+
+    const todaysWorkout = getTodaysProgrammedWorkout(appData);
+
+    // Hide card if no active program or no workout today
+    if (!todaysWorkout) {
+        card.style.display = 'none';
+        return;
+    }
+
+    // Show the card
+    card.style.display = '';
+
+    // Populate content
+    if (programEl) programEl.textContent = todaysWorkout.programName;
+    if (nameEl) nameEl.textContent = todaysWorkout.workout.name;
+
+    // Show preview of first 3-4 exercises
+    if (previewEl && todaysWorkout.workout.exercises) {
+        const exercisePreview = todaysWorkout.workout.exercises
+            .slice(0, 4)
+            .map(ex => ex.name)
+            .join(', ');
+        const moreCount = todaysWorkout.workout.exercises.length - 4;
+        previewEl.textContent = moreCount > 0
+            ? `${exercisePreview} +${moreCount} more`
+            : exercisePreview;
+    }
+
+    // Setup start button
+    if (startBtn) {
+        startBtn.onclick = () => startProgrammedWorkout(todaysWorkout);
+    }
+}
+
+// Start a programmed workout - apply template and start timer
+function startProgrammedWorkout(todaysWorkout) {
+    if (!todaysWorkout || !todaysWorkout.workout) return;
+
+    const today = getTodayStr();
+
+    // Add each exercise from the program workout
+    for (const templateEx of todaysWorkout.workout.exercises) {
+        // Get previous sets and progressive overload suggestion
+        const prevSets = getMostRecentExerciseSets(appData, templateEx.name, today);
+        const suggestion = getProgressiveOverloadSuggestion(appData, templateEx.name);
+
+        // Use suggested weight, or previous weight, or default 20kg
+        const suggestedWeight = suggestion.suggestedWeight || (prevSets.length > 0 ? prevSets[0].weight : 20);
+
+        const exercise = {
+            name: templateEx.name,
+            sets: Array(templateEx.sets).fill(null).map(() => ({
+                weight: suggestedWeight,
+                reps: templateEx.reps,
+                completed: false
+            }))
+        };
+
+        appData = addExerciseToWorkout(appData, today, exercise);
+    }
+
+    // Start the workout with program workout name
+    startWorkout(todaysWorkout.workout.name);
+
+    // Render updates
+    renderTodayView();
 }
 
 // Render last workout summary card
