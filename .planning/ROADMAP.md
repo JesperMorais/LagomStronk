@@ -68,8 +68,8 @@ Plans:
 - [x] 02-07-PLAN.md — Workout history calendar
 - [x] 02-08-PLAN.md — Mini-player and workout flow
 - [x] 02-09-PLAN.md — Custom exercise wizard
-- [ ] 02-10-PLAN.md — Gap closure: Workout screen architecture (UAT-001, UAT-005)
-- [ ] 02-11-PLAN.md — Gap closure: Numpad fixes and animation polish (UAT-002, UAT-003, UAT-004)
+- [x] 02-10-PLAN.md — Gap closure: Workout screen architecture (UAT-001, UAT-005)
+- [x] 02-11-PLAN.md — Gap closure: Numpad fixes and animation polish (UAT-002, UAT-003, UAT-004)
 
 ### Phase 3: Workout Features
 **Goal**: Add table stakes workout capabilities that competitive apps provide
@@ -176,7 +176,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Technical Foundation | 4/4 | Complete | 2026-02-05 |
-| 2. UX Overhaul & Exercise System | 9/11 | In Progress (gap closure) | - |
+| 2. UX Overhaul & Exercise System | 11/11 | Complete | 2026-02-06 |
 | 3. Workout Features | 0/TBD | Not started | - |
 | 4. Body Tracking | 0/TBD | Not started | - |
 | 5. Health Integration | 0/TBD | Not started | - |
