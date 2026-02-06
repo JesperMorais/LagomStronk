@@ -2397,16 +2397,17 @@ function toggleSetCompletion(exIdx, setIdx, buttonElement) {
         const prTypes = checkForPR(appData, exercise.name, set, currentDate);
 
         // Filter out PRs we've already celebrated this session (avoid repeats)
+        const setWeight = Number(set.weight) || 0;
+        const setReps = Number(set.reps) || 0;
+        const setE1RM = calculateEstimated1RM(setWeight, setReps);
+
         const newPRTypes = prTypes.filter(prType => {
             const sessionPR = sessionPRs[exercise.name] || {};
-            if (prType === 'weight' && sessionPR.weight >= set.weight) {
+            if (prType === 'weight' && sessionPR.weight && sessionPR.weight >= setWeight) {
                 return false; // Already celebrated a weight PR at this weight or higher
             }
-            if (prType === 'e1rm') {
-                const e1rm = calculateEstimated1RM(set.weight, set.reps);
-                if (sessionPR.e1rm >= e1rm) {
-                    return false; // Already celebrated an e1rm PR at this value or higher
-                }
+            if (prType === 'e1rm' && sessionPR.e1rm && sessionPR.e1rm >= setE1RM) {
+                return false; // Already celebrated an e1rm PR at this value or higher
             }
             return true;
         });
@@ -2415,10 +2416,10 @@ function toggleSetCompletion(exIdx, setIdx, buttonElement) {
             // Track ALL new PRs in session to prevent repeat celebrations
             sessionPRs[exercise.name] = sessionPRs[exercise.name] || {};
             if (newPRTypes.includes('weight')) {
-                sessionPRs[exercise.name].weight = set.weight;
+                sessionPRs[exercise.name].weight = setWeight;
             }
             if (newPRTypes.includes('e1rm')) {
-                sessionPRs[exercise.name].e1rm = calculateEstimated1RM(set.weight, set.reps);
+                sessionPRs[exercise.name].e1rm = setE1RM;
             }
 
             // Store PR info in set data so it persists on re-render
