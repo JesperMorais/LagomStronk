@@ -2526,7 +2526,7 @@ body.workout-active .main-content {
 }
 
 /* Hide bottom nav when workout fullscreen is active */
-.workout-fullscreen.active ~ .bottom-nav {
+body.workout-active .bottom-nav {
     display: none;
 }
 

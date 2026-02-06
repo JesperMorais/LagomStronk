@@ -534,6 +534,9 @@ function openWorkoutScreen() {
     // Show workout view
     workoutView.classList.add('active');
 
+    // Hide bottom nav
+    document.body.classList.add('workout-active');
+
     // Set workout name
     if (workoutNameInput) {
         workoutNameInput.value = activeWorkout.name;
@@ -564,6 +567,9 @@ function minimizeWorkout() {
 
     // Hide workout view
     workoutView.classList.remove('active');
+
+    // Show bottom nav
+    document.body.classList.remove('workout-active');
 
     // Return to today view
     switchView('today');
