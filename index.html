@@ -84,6 +84,32 @@
                 </button>
             </section>
 
+            <!-- Workout View (Full-screen) -->
+            <section id="workout-view" class="view workout-fullscreen">
+                <div class="workout-header">
+                    <button class="workout-minimize-btn" id="workout-minimize-btn" title="Minimize">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"/>
+                        </svg>
+                    </button>
+                    <input type="text" class="workout-name-input" id="workout-name-input" placeholder="Workout Name">
+                    <button class="workout-finish-btn" id="workout-finish-btn" title="Finish workout">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="workout-timer-hero" id="workout-timer-hero">
+                    <span class="workout-timer-value" id="workout-timer-value">00:00</span>
+                </div>
+                <div class="workout-exercise-container" id="workout-exercise-container">
+                    <!-- Exercise cards will be rendered here -->
+                </div>
+                <div class="workout-actions">
+                    <button class="btn btn-secondary" id="workout-add-exercise-btn">+ Add Exercise</button>
+                </div>
+            </section>
+
             <!-- History View -->
             <section id="history-view" class="view">
                 <div class="view-header">
