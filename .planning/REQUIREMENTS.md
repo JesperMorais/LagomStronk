@@ -37,21 +37,21 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Workout Features (WORK)
 
-- [ ] **WORK-01**: Configurable rest timer with lock screen controls
-- [ ] **WORK-02**: Inline exercise history showing previous workout values ("Last: 225 x 8")
-- [ ] **WORK-03**: Automatic PR detection (weight, reps, volume, 1RM)
-- [ ] **WORK-04**: PR celebration with animations
-- [ ] **WORK-05**: Plate calculator showing which plates to load
-- [ ] **WORK-06**: Multi-week training programs (PPL, 5x5, custom)
+- [x] **WORK-01**: Configurable rest timer with lock screen controls
+- [x] **WORK-02**: Inline exercise history showing previous workout values ("Last: 225 x 8")
+- [x] **WORK-03**: Automatic PR detection (weight, reps, volume, 1RM)
+- [x] **WORK-04**: PR celebration with animations
+- [x] **WORK-05**: Plate calculator showing which plates to load
+- [x] **WORK-06**: Multi-week training programs (PPL, 5x5, custom)
 
 ### Body Tracking (BODY)
 
-- [ ] **BODY-01**: Body weight tracking with chart
-- [ ] **BODY-02**: Muscle measurements (bicep, chest, waist, thigh, etc.) with history
-- [ ] **BODY-03**: Measurement trend charts
-- [ ] **BODY-04**: Progress photos with timeline view
-- [ ] **BODY-05**: Photo comparison view (side-by-side, overlay)
-- [ ] **BODY-06**: Body composition tracking (body fat %, muscle mass - manual entry)
+- [x] **BODY-01**: Body weight tracking with chart
+- [x] **BODY-02**: Muscle measurements (bicep, chest, waist, thigh, etc.) with history
+- [x] **BODY-03**: Measurement trend charts
+- [ ] **BODY-04**: Progress photos with timeline view *(deferred - out of scope per CONTEXT)*
+- [ ] **BODY-05**: Photo comparison view (side-by-side, overlay) *(deferred - out of scope per CONTEXT)*
+- [x] **BODY-06**: Body composition tracking (body fat %, muscle mass - manual entry)
 
 ### Health Integration (HLTH)
 
@@ -140,34 +140,34 @@ Which phases cover which requirements. Updated during roadmap creation.
 | FNDN-01 | Phase 1 | Complete |
 | FNDN-02 | Phase 1 | Complete |
 | FNDN-03 | Phase 1 | Complete |
-| UX-01 | Phase 2 | Pending |
-| UX-02 | Phase 2 | Pending |
-| UX-03 | Phase 2 | Pending |
-| UX-04 | Phase 2 | Pending |
-| UX-05 | Phase 2 | Pending |
-| UX-06 | Phase 2 | Pending |
-| UX-07 | Phase 2 | Pending |
-| UX-08 | Phase 2 | Pending |
-| UX-09 | Phase 2 | Pending |
-| EXER-01 | Phase 2 | Pending |
-| EXER-02 | Phase 2 | Pending |
-| EXER-03 | Phase 2 | Pending |
-| EXER-04 | Phase 2 | Pending |
-| EXER-05 | Phase 2 | Pending |
-| EXER-06 | Phase 2 | Pending |
-| EXER-07 | Phase 2 | Pending |
-| WORK-01 | Phase 3 | Pending |
-| WORK-02 | Phase 3 | Pending |
-| WORK-03 | Phase 3 | Pending |
-| WORK-04 | Phase 3 | Pending |
-| WORK-05 | Phase 3 | Pending |
-| WORK-06 | Phase 3 | Pending |
-| BODY-01 | Phase 4 | Pending |
-| BODY-02 | Phase 4 | Pending |
-| BODY-03 | Phase 4 | Pending |
-| BODY-04 | Phase 4 | Pending |
-| BODY-05 | Phase 4 | Pending |
-| BODY-06 | Phase 4 | Pending |
+| UX-01 | Phase 2 | Complete |
+| UX-02 | Phase 2 | Complete |
+| UX-03 | Phase 2 | Complete |
+| UX-04 | Phase 2 | Complete |
+| UX-05 | Phase 2 | Complete |
+| UX-06 | Phase 2 | Complete |
+| UX-07 | Phase 2 | Complete |
+| UX-08 | Phase 2 | Complete |
+| UX-09 | Phase 2 | Complete |
+| EXER-01 | Phase 2 | Complete |
+| EXER-02 | Phase 2 | Complete |
+| EXER-03 | Phase 2 | Complete |
+| EXER-04 | Phase 2 | Complete |
+| EXER-05 | Phase 2 | Complete |
+| EXER-06 | Phase 2 | Complete |
+| EXER-07 | Phase 2 | Complete |
+| WORK-01 | Phase 3 | Complete |
+| WORK-02 | Phase 3 | Complete |
+| WORK-03 | Phase 3 | Complete |
+| WORK-04 | Phase 3 | Complete |
+| WORK-05 | Phase 3 | Complete |
+| WORK-06 | Phase 3 | Complete |
+| BODY-01 | Phase 4 | Complete |
+| BODY-02 | Phase 4 | Complete |
+| BODY-03 | Phase 4 | Complete |
+| BODY-04 | Phase 4 | Deferred |
+| BODY-05 | Phase 4 | Deferred |
+| BODY-06 | Phase 4 | Complete |
 | HLTH-01 | Phase 5 | Pending |
 | HLTH-02 | Phase 5 | Pending |
 | HLTH-03 | Phase 5 | Pending |

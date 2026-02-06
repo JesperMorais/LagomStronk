@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Technical Foundation** - Storage abstraction and event infrastructure
 - [x] **Phase 2: UX Overhaul & Exercise System** - Modern interface and enhanced exercise management
 - [x] **Phase 3: Workout Features** - Rest timer, PR tracking, and training programs
-- [ ] **Phase 4: Body Tracking** - Measurements and progress photos
+- [x] **Phase 4: Body Tracking** - Measurements and progress photos
 - [ ] **Phase 5: Health Integration** - Platform sync with Health Connect and HealthKit
 - [ ] **Phase 6: Gamification & Intelligence** - Engagement systems and adaptive recommendations
 - [ ] **Phase 7: Documentation** - Polish and release preparation
@@ -103,11 +103,11 @@ Plans:
   5. User can view progress photos in timeline format
   6. User can compare photos side-by-side or with overlay view
   7. User can manually track body composition data including body fat percentage and muscle mass
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 04-01: TBD
-- [ ] 04-02: TBD
+- [x] 04-01-PLAN.md — Body tracking data model + weight tracking UI (hero)
+- [x] 04-02-PLAN.md — Muscle measurements + body fat % tracking
 
 ### Phase 5: Health Integration
 **Goal**: Sync workout and body data with native health platforms on Android and iOS
@@ -181,7 +181,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 | 1. Technical Foundation | 4/4 | Complete | 2026-02-05 |
 | 2. UX Overhaul & Exercise System | 11/11 | Complete | 2026-02-06 |
 | 3. Workout Features | 5/5 | Complete | 2026-02-06 |
-| 4. Body Tracking | 0/TBD | Not started | - |
+| 4. Body Tracking | 2/2 | Complete | 2026-02-06 |
 | 5. Health Integration | 0/TBD | Not started | - |
 | 6. Gamification & Intelligence | 0/TBD | Not started | - |
 | 7. Documentation | 0/TBD | Not started | - |
