@@ -1,3 +1,19 @@
+// ========== MUSCLE GROUPS ==========
+const MUSCLE_GROUPS = {
+    chest: { id: 'chest', displayName: 'Chest' },
+    back: { id: 'back', displayName: 'Back' },
+    shoulders: { id: 'shoulders', displayName: 'Shoulders' },
+    biceps: { id: 'biceps', displayName: 'Biceps' },
+    triceps: { id: 'triceps', displayName: 'Triceps' },
+    forearms: { id: 'forearms', displayName: 'Forearms' },
+    quads: { id: 'quads', displayName: 'Quadriceps' },
+    hamstrings: { id: 'hamstrings', displayName: 'Hamstrings' },
+    glutes: { id: 'glutes', displayName: 'Glutes' },
+    calves: { id: 'calves', displayName: 'Calves' },
+    abs: { id: 'abs', displayName: 'Abs' },
+    obliques: { id: 'obliques', displayName: 'Obliques' }
+};
+
 // Default exercise library
 const DEFAULT_EXERCISES = [
     'Bench Press',
