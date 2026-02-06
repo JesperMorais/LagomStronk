@@ -22,6 +22,30 @@
 - Mini-player only appears when navigating away from Today
 **Impact:** Major UX deviation from user's mental model
 
+**Confirmed Architecture (from discussion):**
+
+1. **Start Flow:**
+   - Tap FAB/Start Workout → Full-screen workout takeover (hides bottom nav)
+
+2. **Workout Screen Layout (top to bottom):**
+   - Header: Minimize button (↓) + Workout name + Finish button
+   - Timer: Large elapsed time display (hero)
+   - Exercise list: Exercises with inline set logging (numpad, checkmarks, confetti)
+   - Action buttons: Add Set, Add Exercise, Finish Workout (scrolls with content)
+
+3. **Minimize Flow:**
+   - Tap minimize button → Collapses to floating mini-player
+   - Bottom nav reappears
+   - Mini-player floats above everything (Spotify-style)
+
+4. **Mini-Player Content:**
+   - Timer + Current exercise + Progress (sets) + Workout name (compact)
+   - Tap to expand back to full workout screen
+
+5. **Finish Flow:**
+   - Finish button in header AND at bottom of workout content
+   - Confirmation dialog before ending
+
 ### UAT-002: Numpad doesn't always appear on input tap
 
 **Discovered:** 2026-02-06
