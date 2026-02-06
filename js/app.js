@@ -35,6 +35,7 @@ import {
 let appData = loadData();
 let currentView = 'today';
 let currentDate = getTodayStr();
+let heroVolumeChart = null;
 
 // Day names for week calendar
 const DAY_NAMES = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
@@ -201,6 +202,88 @@ function formatVolumeDisplay(volume) {
         return (volume / 1000).toFixed(1) + 'K kg';
     }
     return volume + ' kg';
+}
+
+// Initialize hero volume chart with gradient bars
+function initHeroVolumeChart(weekData) {
+    const canvas = document.getElementById('hero-volume-chart');
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+
+    // Create gradient (mint to transparent)
+    const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+    gradient.addColorStop(0, '#D1FFC6');
+    gradient.addColorStop(1, 'rgba(209, 255, 198, 0.1)');
+
+    // Destroy existing chart if it exists
+    if (heroVolumeChart) {
+        heroVolumeChart.destroy();
+    }
+
+    heroVolumeChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            datasets: [{
+                data: weekData,
+                backgroundColor: gradient,
+                borderColor: '#D1FFC6',
+                borderWidth: 0,
+                borderRadius: 8,
+                borderSkipped: false,
+                hoverBackgroundColor: '#D1FFC6'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(35, 44, 51, 0.95)',
+                    titleColor: '#D1FFC6',
+                    bodyColor: '#e5e7eb',
+                    borderColor: 'rgba(209, 255, 198, 0.2)',
+                    borderWidth: 1,
+                    cornerRadius: 8,
+                    padding: 10,
+                    callbacks: {
+                        label: function(context) {
+                            const value = context.raw;
+                            if (value >= 1000) {
+                                return (value / 1000).toFixed(1) + 'K kg';
+                            }
+                            return value + ' kg';
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        color: '#9ca3af',
+                        font: {
+                            size: 10,
+                            weight: '500'
+                        }
+                    },
+                    border: {
+                        display: false
+                    }
+                },
+                y: {
+                    display: false,
+                    beginAtZero: true
+                }
+            }
+        }
+    });
 }
 
 // Render hero stat cards
