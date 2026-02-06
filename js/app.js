@@ -1193,6 +1193,7 @@ function renderTodayView() {
 // Render Today's Workout card when a program is active
 function renderTodaysWorkout() {
     const card = document.getElementById('todays-workout-card');
+    const labelEl = document.querySelector('.todays-workout__label');
     const programEl = document.getElementById('todays-workout-program');
     const nameEl = document.getElementById('todays-workout-name');
     const previewEl = document.getElementById('todays-workout-preview');
@@ -1211,8 +1212,28 @@ function renderTodaysWorkout() {
     // Show the card
     card.style.display = '';
 
+    // Check if today's workout is already completed
+    const activeProgram = getActiveProgram(appData);
+    const today = getTodayStr();
+    const todayCompleted = activeProgram && activeProgram.completedDays &&
+                          activeProgram.completedDays.includes(today);
+
+    // Update label based on whether today is done
+    if (labelEl) {
+        if (todayCompleted) {
+            labelEl.textContent = 'Next Workout';
+        } else {
+            labelEl.textContent = "Today's Workout";
+        }
+    }
+
     // Populate content
-    if (programEl) programEl.textContent = todaysWorkout.programName;
+    if (programEl) {
+        const dayInfo = todayCompleted
+            ? `Day ${todaysWorkout.dayNumber}`
+            : `Day ${todaysWorkout.dayNumber} • ${todaysWorkout.programName}`;
+        programEl.textContent = dayInfo;
+    }
     if (nameEl) nameEl.textContent = todaysWorkout.workout.name;
 
     // Show preview of first 3-4 exercises
@@ -1229,6 +1250,7 @@ function renderTodaysWorkout() {
 
     // Setup start button
     if (startBtn) {
+        startBtn.textContent = todayCompleted ? 'Start Next Workout' : 'Start Workout';
         startBtn.onclick = () => startProgrammedWorkout(todaysWorkout);
     }
 }
@@ -3151,9 +3173,12 @@ function showNumpad(inputElement, options = {}) {
     numpadState.value = '';
     numpadState.previousValue = inputElement.value || ''; // Store for reference
 
-    // Update display - show previous value as faded hint
+    // Update display - show previous value with "selected" styling
     if (numpadLabelEl) numpadLabelEl.textContent = numpadState.inputType === 'weight' ? 'Weight (kg)' : 'Reps';
-    if (numpadValueEl) numpadValueEl.textContent = numpadState.previousValue || '0';
+    if (numpadValueEl) {
+        numpadValueEl.textContent = numpadState.previousValue || '0';
+        numpadValueEl.classList.add('showing-previous'); // Show gray/selected style
+    }
 
     // Show numpad (defensive check)
     if (!numpadOverlay) {
@@ -3224,6 +3249,8 @@ function handleNumpadStepper(direction) {
 // Update numpad display and input
 function updateNumpadDisplay() {
     numpadValueEl.textContent = numpadState.value || '0';
+    // Remove "selected" styling when user starts typing
+    numpadValueEl.classList.remove('showing-previous');
 
     if (numpadState.currentInput) {
         numpadState.currentInput.value = numpadState.value;

@@ -1669,6 +1669,15 @@ body.offline .main-content {
     font-size: 1.5rem;
     font-weight: 700;
     color: var(--text-primary);
+    transition: color 0.15s ease;
+}
+
+/* Show previous value in gray with selection-like styling */
+.numpad-value.showing-previous {
+    color: var(--text-tertiary);
+    background: rgba(209, 255, 198, 0.2);
+    padding: 2px 8px;
+    border-radius: 4px;
 }
 
 .numpad-grid {
@@ -3189,27 +3198,30 @@ body.workout-active .bottom-nav {
 
 .rest-timer__close-btn,
 .rest-timer__settings-btn {
-    background: transparent;
+    background: rgba(255, 255, 255, 0.08);
     border: none;
-    color: var(--text-tertiary);
+    color: var(--text-secondary);
     cursor: pointer;
-    padding: 4px;
-    border-radius: 6px;
+    padding: 8px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.2s ease;
+    min-width: 36px;
+    min-height: 36px;
 }
 
 .rest-timer__close-btn:hover,
 .rest-timer__settings-btn:hover {
     color: var(--text-primary);
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.15);
 }
 
 .rest-timer__close-btn:active,
 .rest-timer__settings-btn:active {
     transform: scale(0.95);
+    background: rgba(255, 255, 255, 0.2);
 }
 
 .rest-timer__display {
