@@ -617,12 +617,14 @@ function renderTodayView() {
                         ${exercise.sets.map((set, setIdx) => {
                             const prev = prevSets[setIdx];
                             const isCompleted = set.completed !== false;
+                            const weightPlaceholder = prev ? `Last: ${prev.weight}` : '';
+                            const repsPlaceholder = prev ? `Last: ${prev.reps}` : '';
                             return `
                                 <tr class="inline-set-row ${isCompleted ? 'completed' : ''}" data-exercise="${exIdx}" data-set="${setIdx}">
                                     <td class="set-num">${setIdx + 1}</td>
                                     <td class="set-prev">${prev ? `${prev.weight} x ${prev.reps}` : '-'}</td>
-                                    <td><input type="number" class="inline-input set-kg" value="${set.weight}" step="2.5" min="0" readonly data-numpad-type="weight"></td>
-                                    <td><input type="number" class="inline-input set-reps-input" value="${set.reps}" min="0" readonly data-numpad-type="reps"></td>
+                                    <td><input type="number" class="inline-input set-kg" value="${set.weight}" step="2.5" min="0" readonly data-numpad-type="weight" placeholder="${weightPlaceholder}"></td>
+                                    <td><input type="number" class="inline-input set-reps-input" value="${set.reps}" min="0" readonly data-numpad-type="reps" placeholder="${repsPlaceholder}"></td>
                                     <td><button class="set-check-btn ${isCompleted ? 'checked' : ''}">✓</button></td>
                                 </tr>
                             `;

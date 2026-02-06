@@ -1208,6 +1208,13 @@ body.offline .main-content {
     box-shadow: 0 0 0 2px rgba(209, 255, 198, 0.15);
 }
 
+.inline-input::placeholder {
+    color: var(--text-muted);
+    font-size: 0.7rem;
+    font-weight: 400;
+    opacity: 0.6;
+}
+
 .inline-set-row.completed .inline-input {
     background-color: rgba(209, 255, 198, 0.06);
     border-color: rgba(209, 255, 198, 0.15);
