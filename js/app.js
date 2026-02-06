@@ -34,6 +34,7 @@ import {
     getActiveProgram,
     setActiveProgram,
     endActiveProgram,
+    advanceProgramDay,
     getProgramProgress,
     getTodaysProgrammedWorkout,
     checkForPR,
@@ -107,7 +108,8 @@ let restTimer = {
     isRunning: false,
     remainingSeconds: 90,
     defaultSeconds: 90,
-    intervalId: null
+    intervalId: null,
+    autoStart: true // Auto-start after completing a set
 };
 
 // Rest timer DOM elements
@@ -585,6 +587,16 @@ function finishWorkout() {
         activeWorkout.timerInterval = null;
     }
 
+    // Hide rest timer if showing
+    hideRestTimer();
+
+    // Advance program day if a program is active
+    const activeProgram = getActiveProgram(appData);
+    if (activeProgram) {
+        appData = advanceProgramDay(appData);
+        saveData(appData);
+    }
+
     // Reset state
     activeWorkout.isActive = false;
     activeWorkout.name = '';
@@ -607,6 +619,9 @@ function finishWorkout() {
 
     // Clear calendar cache since workout data changed
     clearCalendarCache();
+
+    // Render dashboard to update "Today's Workout" card
+    renderTodaysWorkout();
 }
 
 // Open workout screen (fullscreen takeover)
@@ -2349,8 +2364,8 @@ function toggleSetCompletion(exIdx, setIdx, buttonElement) {
             }
         }
 
-        // Auto-start rest timer when completing a set (only during active workout)
-        if (activeWorkout.isActive) {
+        // Auto-start rest timer when completing a set (only during active workout and if enabled)
+        if (activeWorkout.isActive && restTimer.autoStart) {
             startRestTimer(restTimer.defaultSeconds);
         }
     } else if (wasCompleted && row && btn) {
@@ -2637,6 +2652,18 @@ function setupRestTimerListeners() {
         restTimerToggleBtn.addEventListener('click', toggleRestTimer);
     }
 
+    // Close button
+    const closeBtn = document.getElementById('rest-timer-close');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', hideRestTimer);
+    }
+
+    // Settings button (toggle auto-start)
+    const settingsBtn = document.getElementById('rest-timer-settings');
+    if (settingsBtn) {
+        settingsBtn.addEventListener('click', toggleRestTimerSettings);
+    }
+
     // Adjust buttons (+/- 15s)
     document.querySelectorAll('.rest-timer__btn--adjust').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -2652,6 +2679,16 @@ function setupRestTimerListeners() {
             setRestTimerPreset(seconds);
         });
     });
+}
+
+// Toggle rest timer auto-start setting
+function toggleRestTimerSettings() {
+    restTimer.autoStart = !restTimer.autoStart;
+    const settingsBtn = document.getElementById('rest-timer-settings');
+    if (settingsBtn) {
+        settingsBtn.style.color = restTimer.autoStart ? 'var(--mint)' : 'var(--text-tertiary)';
+        settingsBtn.title = restTimer.autoStart ? 'Auto-start enabled (click to disable)' : 'Auto-start disabled (click to enable)';
+    }
 }
 
 // PR Celebration state
@@ -3110,11 +3147,13 @@ function showNumpad(inputElement, options = {}) {
     numpadState.currentInput = inputElement;
     numpadState.inputType = options.type || 'weight';
     numpadState.step = options.step || (numpadState.inputType === 'weight' ? 2.5 : 1);
-    numpadState.value = inputElement.value || '';
+    // Clear value on open so first digit replaces existing (like calculator behavior)
+    numpadState.value = '';
+    numpadState.previousValue = inputElement.value || ''; // Store for reference
 
-    // Update display
+    // Update display - show previous value as faded hint
     if (numpadLabelEl) numpadLabelEl.textContent = numpadState.inputType === 'weight' ? 'Weight (kg)' : 'Reps';
-    if (numpadValueEl) numpadValueEl.textContent = numpadState.value || '0';
+    if (numpadValueEl) numpadValueEl.textContent = numpadState.previousValue || '0';
 
     // Show numpad (defensive check)
     if (!numpadOverlay) {
@@ -3171,7 +3210,8 @@ function handleNumpadBackspace() {
 function handleNumpadStepper(direction) {
     if (!numpadState.currentInput) return;
 
-    const currentValue = parseFloat(numpadState.value) || 0;
+    // Use previous value if current is empty (user hasn't typed anything yet)
+    const currentValue = numpadState.value ? parseFloat(numpadState.value) : (parseFloat(numpadState.previousValue) || 0);
     const newValue = direction === 'plus'
         ? currentValue + numpadState.step
         : Math.max(0, currentValue - numpadState.step);

@@ -1209,10 +1209,10 @@ body.offline .main-content {
 }
 
 .inline-input::placeholder {
-    color: var(--text-muted);
-    font-size: 0.7rem;
+    color: #4b5563;
+    font-size: 0.65rem;
     font-weight: 400;
-    opacity: 0.6;
+    opacity: 0.7;
 }
 
 .inline-set-row.completed .inline-input {
@@ -1678,24 +1678,31 @@ body.offline .main-content {
 }
 
 .numpad-btn {
-    min-height: 56px;
-    border: none;
+    min-height: 60px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: var(--radius);
-    background-color: rgba(255, 255, 255, 0.08);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.06) 100%);
     color: var(--text-primary);
     font-size: 1.5rem;
-    font-weight: 500;
+    font-weight: 600;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.1s ease;
+    transition: all 0.15s ease;
     -webkit-tap-highlight-color: transparent;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.numpad-btn:hover {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.1) 100%);
+    border-color: rgba(255, 255, 255, 0.15);
 }
 
 .numpad-btn:active {
-    background-color: rgba(255, 255, 255, 0.15);
-    transform: scale(0.95);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%);
+    transform: scale(0.97);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .numpad-btn svg {
@@ -3159,10 +3166,50 @@ body.workout-active .bottom-nav {
     background: linear-gradient(135deg, rgba(26, 31, 53, 0.95) 0%, rgba(24, 32, 37, 0.95) 100%);
     border: 1px solid var(--border-mint);
     border-radius: var(--radius-lg);
-    padding: var(--spacing-lg);
+    padding: var(--spacing-md) var(--spacing-lg) var(--spacing-lg);
     margin: var(--spacing-md);
     text-align: center;
     box-shadow: var(--glow-soft);
+}
+
+.rest-timer__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-sm);
+}
+
+.rest-timer__title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-secondary);
+}
+
+.rest-timer__close-btn,
+.rest-timer__settings-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-tertiary);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.rest-timer__close-btn:hover,
+.rest-timer__settings-btn:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.rest-timer__close-btn:active,
+.rest-timer__settings-btn:active {
+    transform: scale(0.95);
 }
 
 .rest-timer__display {

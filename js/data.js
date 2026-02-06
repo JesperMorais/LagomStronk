@@ -1472,27 +1472,55 @@ export function checkForPR(data, exerciseName, newSet, todayDate) {
         return prTypes;
     }
 
-    // Get current PRs for this exercise
-    const prs = getPersonalRecords(data);
-    const e1rms = getEstimated1RMs(data);
-
-    const exercisePR = prs[exerciseName];
-    const exerciseE1RM = e1rms[exerciseName];
+    // Get PRs EXCLUDING today's workout (so we compare against historical data only)
+    const historicalPRs = getHistoricalPRs(data, exerciseName, todayDate);
 
     // Calculate new set's estimated 1RM
     const newE1RM = calculateEstimated1RM(newSet.weight, newSet.reps);
 
-    // Check weight PR (heaviest ever for this exercise)
-    if (!exercisePR || newSet.weight > exercisePR.maxWeight.value) {
+    // Check weight PR (heaviest ever for this exercise, excluding today)
+    if (historicalPRs.maxWeight === 0 || newSet.weight > historicalPRs.maxWeight) {
         prTypes.push('weight');
     }
 
-    // Check e1RM PR (highest estimated 1RM)
-    if (!exerciseE1RM || newE1RM > exerciseE1RM.value) {
+    // Check e1RM PR (highest estimated 1RM, excluding today)
+    if (historicalPRs.maxE1RM === 0 || newE1RM > historicalPRs.maxE1RM) {
         prTypes.push('e1rm');
     }
 
     return prTypes;
+}
+
+// Get historical PRs for an exercise, excluding a specific date (usually today)
+function getHistoricalPRs(data, exerciseName, excludeDate) {
+    let maxWeight = 0;
+    let maxE1RM = 0;
+
+    for (const workout of data.workouts) {
+        // Skip the excluded date (today's workout)
+        if (workout.date === excludeDate) continue;
+
+        for (const exercise of workout.exercises) {
+            if (exercise.name !== exerciseName) continue;
+
+            for (const set of exercise.sets) {
+                // Only count completed sets for historical PRs
+                if (set.completed === false) continue;
+                if (!set.weight || !set.reps) continue;
+
+                if (set.weight > maxWeight) {
+                    maxWeight = set.weight;
+                }
+
+                const e1rm = calculateEstimated1RM(set.weight, set.reps);
+                if (e1rm > maxE1RM) {
+                    maxE1RM = e1rm;
+                }
+            }
+        }
+    }
+
+    return { maxWeight, maxE1RM };
 }
 
 // Get muscle groups not trained recently
