@@ -671,6 +671,20 @@ function setupEventListeners() {
     document.getElementById('exercise-search-results').addEventListener('click', (e) => {
         const item = e.target.closest('.exercise-search-item');
         if (!item) return;
+
+        // Handle wizard option
+        if (item.dataset.wizard !== undefined) {
+            closeExerciseModal();
+            openExerciseWizard();
+            // Pre-fill name if provided
+            if (item.dataset.wizard) {
+                setTimeout(() => {
+                    document.getElementById('wizard-exercise-name').value = item.dataset.wizard;
+                }, 100);
+            }
+            return;
+        }
+
         const exerciseName = item.dataset.exercise;
         if (item.dataset.create === 'true') {
             appData = addCustomExercise(appData, exerciseName);
@@ -1388,18 +1402,26 @@ function renderLibraryView() {
         return;
     }
 
+    // Check custom exercises from localStorage
+    const customExercises = JSON.parse(localStorage.getItem('lagomstronk_custom_exercises') || '{}');
+
     exerciseLibraryListEl.innerHTML = sortedExercises.map(exercise => {
-        const meta = getExerciseMetadata(exercise);
+        // Get metadata - prefer custom metadata if available
+        const customMeta = customExercises[exercise];
+        const meta = customMeta || getExerciseMetadata(exercise);
         const isFavorite = libraryFavorites.includes(exercise);
-        const muscleDisplay = meta.primaryMuscles.length > 0
+        const isCustom = customMeta?.isCustom;
+
+        const muscleDisplay = meta.primaryMuscles?.length > 0
             ? meta.primaryMuscles.map(m => getMuscleGroups()[m]?.displayName || m).join(', ')
             : '';
         const equipmentDisplay = getEquipmentTypes()[meta.equipment]?.displayName || '';
+        const customIcon = isCustom ? '<span class="custom-exercise-icon" title="Custom exercise">👤</span>' : '';
 
         return `
             <div class="library-card">
                 <div class="library-card-info">
-                    <div class="library-card-name">${exercise}${isFavorite ? '<span class="library-item-favorite">★</span>' : ''}</div>
+                    <div class="library-card-name">${exercise}${customIcon}${isFavorite ? '<span class="library-item-favorite">★</span>' : ''}</div>
                     ${muscleDisplay ? `<div class="library-card-muscles">${muscleDisplay}</div>` : ''}
                     ${equipmentDisplay ? `<div class="library-card-equipment">${equipmentDisplay}</div>` : ''}
                 </div>
@@ -1641,13 +1663,24 @@ function renderExerciseSearchResults(query) {
         ex.toLowerCase().includes(q)
     );
 
-    let html = filtered.map(ex =>
-        `<div class="exercise-search-item" data-exercise="${ex}">${ex}</div>`
-    ).join('');
+    // Check if exercise is custom (has metadata in localStorage)
+    const customExercises = JSON.parse(localStorage.getItem('lagomstronk_custom_exercises') || '{}');
 
-    // Show "Create" option if query doesn't match any exercise exactly
+    let html = filtered.map(ex => {
+        const isCustom = customExercises[ex]?.isCustom;
+        const customIcon = isCustom ? '<span class="custom-exercise-icon" title="Custom exercise">👤</span>' : '';
+        return `<div class="exercise-search-item" data-exercise="${ex}">${ex}${customIcon}</div>`;
+    }).join('');
+
+    // Show "Create" options if query doesn't match any exercise exactly
     if (q && !appData.exerciseLibrary.some(ex => ex.toLowerCase() === q)) {
-        html += `<div class="exercise-search-item exercise-search-create" data-exercise="${query.trim()}" data-create="true">+ Create "${query.trim()}"</div>`;
+        html += `<div class="exercise-search-item exercise-search-create" data-exercise="${query.trim()}" data-create="true">+ Quick add "${query.trim()}"</div>`;
+        html += `<div class="exercise-search-item exercise-search-wizard" data-wizard="${query.trim()}">+ Create with wizard</div>`;
+    }
+
+    // Show wizard option when no results
+    if (filtered.length === 0 && !q) {
+        html = `<div class="exercise-search-item exercise-search-wizard" data-wizard="">+ Create custom exercise</div>`;
     }
 
     resultsList.innerHTML = html;

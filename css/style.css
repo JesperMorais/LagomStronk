@@ -1351,6 +1351,11 @@ body.offline .main-content {
     font-weight: 600;
 }
 
+.exercise-search-wizard {
+    color: var(--indigo);
+    font-weight: 600;
+}
+
 /* Hide install button when app is installed */
 @media (display-mode: standalone) {
     .header-btn#install-btn {
