@@ -23,7 +23,10 @@ import {
     getEstimated1RMs,
     getMuscleGroupStats,
     getExerciseHistory,
-    getMostRecentExerciseSets
+    getMostRecentExerciseSets,
+    getMuscleGroups,
+    getEquipmentTypes,
+    getExerciseMetadata
 } from './data.js';
 
 import {
@@ -36,6 +39,13 @@ let appData = loadData();
 let currentView = 'today';
 let currentDate = getTodayStr();
 let heroVolumeChart = null;
+
+// Library view state
+let libraryViewMode = 'list'; // 'list' or 'grid'
+let librarySearchQuery = '';
+let librarySelectedMuscles = [];
+let librarySelectedEquipment = [];
+let libraryFavorites = JSON.parse(localStorage.getItem('lagomstronk_favorites') || '[]');
 
 // Day names for week calendar
 const DAY_NAMES = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
@@ -571,8 +581,8 @@ function renderTodayView() {
                                 <tr class="inline-set-row ${isCompleted ? 'completed' : ''}" data-exercise="${exIdx}" data-set="${setIdx}">
                                     <td class="set-num">${setIdx + 1}</td>
                                     <td class="set-prev">${prev ? `${prev.weight} x ${prev.reps}` : '-'}</td>
-                                    <td><input type="number" class="inline-input set-kg" value="${set.weight}" step="0.5" min="0"></td>
-                                    <td><input type="number" class="inline-input set-reps-input" value="${set.reps}" min="0"></td>
+                                    <td><input type="number" class="inline-input set-kg" value="${set.weight}" step="2.5" min="0" readonly data-numpad-type="weight"></td>
+                                    <td><input type="number" class="inline-input set-reps-input" value="${set.reps}" min="0" readonly data-numpad-type="reps"></td>
                                     <td><button class="set-check-btn ${isCompleted ? 'checked' : ''}">✓</button></td>
                                 </tr>
                             `;
@@ -932,6 +942,16 @@ function addNewExerciseToWorkout(exerciseName) {
 
 // Handle clicks on today's exercise cards (delegation)
 function handleTodayClick(e) {
+    // Input focus - show numpad
+    if (e.target.classList.contains('inline-input')) {
+        const isWeightInput = e.target.classList.contains('set-kg');
+        showNumpad(e.target, {
+            type: isWeightInput ? 'weight' : 'reps',
+            step: isWeightInput ? 2.5 : 1
+        });
+        return;
+    }
+
     // Check/uncheck set
     if (e.target.classList.contains('set-check-btn')) {
         const row = e.target.closest('.inline-set-row');

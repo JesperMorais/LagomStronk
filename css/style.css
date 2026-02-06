@@ -1594,6 +1594,13 @@ body.offline .main-content {
     caret-color: var(--mint);
 }
 
+/* Active input highlight when numpad is open */
+.inline-input.numpad-active {
+    border-color: var(--mint);
+    box-shadow: 0 0 0 2px rgba(209, 255, 198, 0.3);
+    background-color: rgba(209, 255, 198, 0.1);
+}
+
 /* ========== LIBRARY CONTROLS ========== */
 
 .library-controls {
