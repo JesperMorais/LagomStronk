@@ -82,6 +82,22 @@ const saveTemplateModal = document.getElementById('save-template-modal');
 let editingTemplateId = null;
 let viewingTemplateId = null;
 
+// Active workout state
+let activeWorkout = {
+    isActive: false,
+    name: '',
+    startTime: null,
+    timerInterval: null
+};
+
+// Mini-player DOM elements
+const miniPlayer = document.getElementById('mini-player');
+const miniPlayerName = document.getElementById('mini-player-name');
+const miniPlayerTimer = document.getElementById('mini-player-timer');
+const miniPlayerExpand = document.getElementById('mini-player-expand');
+const miniPlayerFinish = document.getElementById('mini-player-finish');
+const fabStartWorkout = document.getElementById('fab-start-workout');
+
 // ========== HERO SECTION FUNCTIONS ==========
 
 // Calculate current workout streak (consecutive days)
@@ -409,12 +425,171 @@ function renderHero() {
     }
 }
 
+// ========== WORKOUT FLOW (MINI-PLAYER) ==========
+
+// Start a workout session
+function startWorkout(workoutName = null) {
+    const workout = getWorkoutByDate(appData, currentDate);
+
+    // Generate workout name if not provided
+    if (!workoutName) {
+        if (workout && workout.exercises.length > 0) {
+            // Use first exercise name or generic name
+            workoutName = workout.name || `My Workout`;
+        } else {
+            // Count existing workouts for naming
+            const workoutCount = appData.workouts.filter(w =>
+                w.name && w.name.startsWith('My Workout')
+            ).length;
+            workoutName = `My Workout #${workoutCount + 1}`;
+        }
+    }
+
+    activeWorkout.isActive = true;
+    activeWorkout.name = workoutName;
+    activeWorkout.startTime = Date.now();
+
+    // Start timer
+    updateMiniPlayerTimer();
+    activeWorkout.timerInterval = setInterval(updateMiniPlayerTimer, 1000);
+
+    // Update UI
+    updateMiniPlayerVisibility();
+    updateFABVisibility();
+
+    // Add body class for padding adjustment
+    document.body.classList.add('workout-active');
+}
+
+// Finish the current workout
+function finishWorkout() {
+    if (!activeWorkout.isActive) return;
+
+    // Ask for confirmation
+    if (!confirm('Finish this workout?')) {
+        return;
+    }
+
+    // Stop timer
+    if (activeWorkout.timerInterval) {
+        clearInterval(activeWorkout.timerInterval);
+        activeWorkout.timerInterval = null;
+    }
+
+    // Reset state
+    activeWorkout.isActive = false;
+    activeWorkout.name = '';
+    activeWorkout.startTime = null;
+
+    // Update UI
+    updateMiniPlayerVisibility();
+    updateFABVisibility();
+
+    // Remove body class
+    document.body.classList.remove('workout-active');
+
+    // Navigate to Today to show completed workout
+    switchView('today');
+
+    // Clear calendar cache since workout data changed
+    clearCalendarCache();
+}
+
+// Update mini-player timer display
+function updateMiniPlayerTimer() {
+    if (!activeWorkout.startTime) return;
+
+    const elapsed = Date.now() - activeWorkout.startTime;
+    const seconds = Math.floor(elapsed / 1000) % 60;
+    const minutes = Math.floor(elapsed / 60000) % 60;
+    const hours = Math.floor(elapsed / 3600000);
+
+    let timeStr;
+    if (hours > 0) {
+        timeStr = `${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    } else {
+        timeStr = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+
+    if (miniPlayerTimer) {
+        miniPlayerTimer.textContent = timeStr;
+    }
+}
+
+// Update mini-player visibility based on current view and workout state
+function updateMiniPlayerVisibility() {
+    if (!miniPlayer) return;
+
+    // Show mini-player when workout is active AND not on Today view
+    const shouldShow = activeWorkout.isActive && currentView !== 'today';
+
+    if (shouldShow) {
+        miniPlayer.classList.add('active');
+        if (miniPlayerName) {
+            miniPlayerName.textContent = activeWorkout.name;
+        }
+    } else {
+        miniPlayer.classList.remove('active');
+    }
+}
+
+// Update FAB visibility
+function updateFABVisibility() {
+    if (!fabStartWorkout) return;
+
+    // Hide FAB when workout is active, show otherwise
+    if (activeWorkout.isActive) {
+        fabStartWorkout.classList.add('hidden');
+    } else {
+        fabStartWorkout.classList.remove('hidden');
+    }
+}
+
+// Setup mini-player event listeners
+function setupMiniPlayerListeners() {
+    // Expand (tap mini-player content) - return to Today
+    if (miniPlayerExpand) {
+        miniPlayerExpand.addEventListener('click', (e) => {
+            // Don't trigger if clicking the finish button
+            if (e.target.closest('.mini-player-finish-btn')) return;
+            switchView('today');
+        });
+    }
+
+    // Finish button
+    if (miniPlayerFinish) {
+        miniPlayerFinish.addEventListener('click', (e) => {
+            e.stopPropagation();
+            finishWorkout();
+        });
+    }
+
+    // FAB - start workout
+    if (fabStartWorkout) {
+        fabStartWorkout.addEventListener('click', () => {
+            // Check if there are exercises for today
+            const workout = getWorkoutByDate(appData, currentDate);
+            if (!workout || workout.exercises.length === 0) {
+                // Navigate to Today and open exercise modal
+                switchView('today');
+                openExerciseModal();
+            } else {
+                // Start the workout
+                startWorkout();
+                switchView('today');
+            }
+        });
+    }
+}
+
 // Initialize app
 function init() {
     setupNavigation();
     setupEventListeners();
+    setupMiniPlayerListeners();
     renderTodayView();
     updateTodayDate();
+    updateFABVisibility();
 }
 
 // Setup navigation
@@ -440,6 +615,9 @@ function switchView(viewName) {
     Object.keys(views).forEach(key => {
         views[key].classList.toggle('active', key === viewName);
     });
+
+    // Update mini-player visibility (show when workout active and not on Today)
+    updateMiniPlayerVisibility();
 
     // Render view content
     switch (viewName) {
@@ -1465,6 +1643,10 @@ function renderExerciseSearchResults(query) {
 
 // Add a new exercise to today's workout
 function addNewExerciseToWorkout(exerciseName) {
+    // Check if this is the first exercise (will start workout)
+    const existingWorkout = getWorkoutByDate(appData, currentDate);
+    const isFirstExercise = !existingWorkout || existingWorkout.exercises.length === 0;
+
     const prevSets = getMostRecentExerciseSets(appData, exerciseName, currentDate);
     const exercise = {
         name: exerciseName,
@@ -1473,6 +1655,12 @@ function addNewExerciseToWorkout(exerciseName) {
             : [{ weight: 20, reps: 10, completed: false }]
     };
     appData = addExerciseToWorkout(appData, currentDate, exercise);
+
+    // Auto-start workout when first exercise is added
+    if (isFirstExercise && !activeWorkout.isActive) {
+        startWorkout();
+    }
+
     renderTodayView();
 }
 
