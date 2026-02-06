@@ -100,6 +100,19 @@ let activeWorkout = {
     timerInterval: null
 };
 
+// Rest timer state
+let restTimer = {
+    isRunning: false,
+    remainingSeconds: 90,
+    defaultSeconds: 90,
+    intervalId: null
+};
+
+// Rest timer DOM elements
+const restTimerEl = document.getElementById('rest-timer');
+const restTimerTimeEl = document.getElementById('rest-timer-time');
+const restTimerToggleBtn = document.getElementById('rest-timer-toggle');
+
 // Mini-player DOM elements
 const miniPlayer = document.getElementById('mini-player');
 const miniPlayerName = document.getElementById('mini-player-name');
@@ -421,6 +434,64 @@ function renderHeroStats() {
                 heroVolumeChart = null;
             }
         }
+    }
+
+    // Render muscle group alert
+    renderMuscleAlert();
+}
+
+// Session storage key for dismissed muscle alert
+const MUSCLE_ALERT_DISMISSED_KEY = 'lagomstronk_muscle_alert_dismissed';
+
+// Render muscle group alert if any muscle groups are undertrained
+function renderMuscleAlert() {
+    const alertEl = document.getElementById('muscle-alert');
+    const textEl = document.getElementById('muscle-alert-text');
+    if (!alertEl || !textEl) return;
+
+    // Check if alert was dismissed this session
+    if (sessionStorage.getItem(MUSCLE_ALERT_DISMISSED_KEY)) {
+        alertEl.style.display = 'none';
+        return;
+    }
+
+    // Get missed muscle groups (7+ days since training)
+    const missed = getMissedMuscleGroups(appData, 7);
+
+    // Only show if there are muscle groups not trained in 7+ days
+    const significantMissed = missed.filter(m => m.daysSinceTrained === null || m.daysSinceTrained >= 7);
+
+    if (significantMissed.length === 0) {
+        alertEl.style.display = 'none';
+        return;
+    }
+
+    // Show the most overdue (max 2)
+    const topMissed = significantMissed.slice(0, 2);
+
+    let message = '';
+    if (topMissed.length === 1) {
+        const m = topMissed[0];
+        if (m.daysSinceTrained === null) {
+            message = `Consider adding some ${m.displayName.toLowerCase()} exercises`;
+        } else {
+            message = `${m.displayName} hasn't been trained in ${m.daysSinceTrained} days`;
+        }
+    } else {
+        const names = topMissed.map(m => m.displayName.toLowerCase()).join(' and ');
+        message = `Consider training ${names} soon`;
+    }
+
+    textEl.textContent = message;
+    alertEl.style.display = 'flex';
+}
+
+// Dismiss muscle alert for this session
+function dismissMuscleAlert() {
+    sessionStorage.setItem(MUSCLE_ALERT_DISMISSED_KEY, 'true');
+    const alertEl = document.getElementById('muscle-alert');
+    if (alertEl) {
+        alertEl.style.display = 'none';
     }
 }
 
@@ -922,6 +993,12 @@ function setupEventListeners() {
         workoutExerciseContainer.addEventListener('change', handleTodayInputChange);
         // Also listen for focus events for better input reliability
         workoutExerciseContainer.addEventListener('focus', handleNumpadFocus, true);
+    }
+
+    // Muscle alert dismiss button
+    const muscleAlertDismiss = document.getElementById('muscle-alert-dismiss');
+    if (muscleAlertDismiss) {
+        muscleAlertDismiss.addEventListener('click', dismissMuscleAlert);
     }
 
     // Add exercise button removed from landing page
