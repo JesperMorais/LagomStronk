@@ -779,8 +779,8 @@ function renderWorkoutExercises() {
                                 <tr class="inline-set-row ${isCompleted ? 'completed' : ''}" data-exercise="${exIdx}" data-set="${setIdx}">
                                     <td class="set-num">${setIdx + 1}</td>
                                     <td class="set-prev">${prev ? `${prev.weight} x ${prev.reps}` : '-'}</td>
-                                    <td><input type="number" class="inline-input set-kg" value="${set.weight}" step="2.5" min="0" readonly data-numpad-type="weight" placeholder="${weightPlaceholder}"></td>
-                                    <td><input type="number" class="inline-input set-reps-input" value="${set.reps}" min="0" readonly data-numpad-type="reps" placeholder="${repsPlaceholder}"></td>
+                                    <td><input type="number" class="inline-input set-kg ${isCompleted ? 'user-entered' : ''}" value="${set.weight}" step="2.5" min="0" readonly data-numpad-type="weight" placeholder="${weightPlaceholder}"></td>
+                                    <td><input type="number" class="inline-input set-reps-input ${isCompleted ? 'user-entered' : ''}" value="${set.reps}" min="0" readonly data-numpad-type="reps" placeholder="${repsPlaceholder}"></td>
                                     <td><button class="set-check-btn ${isCompleted ? 'checked' : ''}">✓</button></td>
                                 </tr>
                             `;
@@ -2411,23 +2411,22 @@ function toggleSetCompletion(exIdx, setIdx, buttonElement) {
         });
 
         if (newPRTypes.length > 0) {
-            // It's a NEW PR this session! Show celebration (weight PR takes priority)
-            const prType = newPRTypes.includes('weight') ? 'weight' : 'e1rm';
-            let prValue;
-            if (prType === 'weight') {
-                prValue = set.weight;
-                // Track this PR in session
-                sessionPRs[exercise.name] = sessionPRs[exercise.name] || {};
+            // Track ALL new PRs in session to prevent repeat celebrations
+            sessionPRs[exercise.name] = sessionPRs[exercise.name] || {};
+            if (newPRTypes.includes('weight')) {
                 sessionPRs[exercise.name].weight = set.weight;
-            } else {
-                prValue = calculateEstimated1RM(set.weight, set.reps);
-                sessionPRs[exercise.name] = sessionPRs[exercise.name] || {};
-                sessionPRs[exercise.name].e1rm = prValue;
             }
-            showPRCelebration(exercise.name, prValue, prType);
+            if (newPRTypes.includes('e1rm')) {
+                sessionPRs[exercise.name].e1rm = calculateEstimated1RM(set.weight, set.reps);
+            }
 
-            // Add PR badge to the row
-            addPRBadgeToRow(row, prType);
+            // Show celebration - pass all PR types for combined display
+            const prValue = set.weight; // Always show weight in celebration
+            showPRCelebration(exercise.name, prValue, newPRTypes);
+
+            // Add PR badge to the row (show weight badge if both, otherwise the one we have)
+            const badgeType = newPRTypes.includes('weight') ? 'weight' : 'e1rm';
+            addPRBadgeToRow(row, badgeType);
         } else if (prTypes.length > 0) {
             // It's a PR but we already celebrated, just add badge without celebration
             const prType = prTypes.includes('weight') ? 'weight' : 'e1rm';
@@ -2794,7 +2793,13 @@ function showPRCelebration(exerciseName, value, prType) {
     // Set content
     exerciseEl.textContent = exerciseName;
     valueEl.textContent = `${value} kg`;
-    typeEl.textContent = prType === 'weight' ? 'Weight PR' : 'Estimated 1RM PR';
+
+    // Handle single string or array of PR types
+    const prTypes = Array.isArray(prType) ? prType : [prType];
+    const labels = [];
+    if (prTypes.includes('weight')) labels.push('Weight PR');
+    if (prTypes.includes('e1rm')) labels.push('E1RM PR');
+    typeEl.textContent = labels.join(' + ');
 
     // Show overlay
     overlay.classList.add('active');
