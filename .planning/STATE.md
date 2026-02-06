@@ -10,11 +10,11 @@ See: .planning/REQUIREMENTS.md (updated 2026-02-05)
 ## Current Position
 
 Phase: 2 of 7 (UX Overhaul & Exercise System)
-Plan: 6 of 9 (Workout Logging UX complete)
-Status: In progress - Phase 2 re-execution
-Last activity: 2026-02-06 - Completed 02-06-PLAN.md (Workout Logging UX)
+Plan: 8 of 9 (Mini-Player and Workout Flow complete)
+Status: In progress - Phase 2 execution
+Last activity: 2026-02-06 - Completed 02-08-PLAN.md (Mini-Player and Workout Flow)
 
-Progress: [████████░░] 77% (10/13 plans)
+Progress: [█████████░] 85% (11/13 plans)
 
 ## Performance Metrics
 
@@ -95,6 +95,10 @@ Progress: [████████░░] 77% (10/13 plans)
 | 02 | 06 | Animation timing 0.3s ease-out | Snappy but visible pop animation for checkmark |
 | 02 | 06 | In-place DOM updates for animations | toggleSetCompletion updates classes directly without re-render to preserve animation state |
 | 02 | 06 | Haptic feedback via navigator.vibrate | 30ms pulse if supported for tactile confirmation |
+| 02 | 08 | Mini-player shows only when navigating away | Spotify-style: visible on History/Stats/Library, hidden on Today |
+| 02 | 08 | Auto-start workout on first exercise | Seamless UX without explicit "Start Workout" button |
+| 02 | 08 | Timer format MM:SS or HH:MM:SS | Adapts based on duration; HH only when workout exceeds 1 hour |
+| 02 | 08 | FAB hidden during active workout | Prevents confusion; FAB only shows when no workout in progress |
 
 ### Pending Todos
 
@@ -124,6 +128,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-06 (plan execution)
-Stopped at: Completed 02-06-PLAN.md (Workout Logging UX)
+Stopped at: Completed 02-08-PLAN.md (Mini-Player and Workout Flow)
 Resume file: None
-Next: 02-07-PLAN.md
+Next: 02-09-PLAN.md
