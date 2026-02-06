@@ -1714,6 +1714,9 @@ function formatVolume(volume) {
 
 // Render library view with search, filters, and recent exercises
 function renderLibraryView() {
+    // Render programs list
+    renderProgramsList();
+
     // Render filter drawer chips
     renderFilterDrawerChips();
 
@@ -1779,6 +1782,74 @@ function renderLibraryView() {
         `;
     }).join('');
 }
+
+// ========== PROGRAM LIST RENDERING ==========
+
+// Render the programs list in the Library view
+function renderProgramsList() {
+    const programsListEl = document.getElementById('programs-list');
+    if (!programsListEl) return;
+
+    const programs = getPrograms();
+    const activeProgram = getActiveProgram(appData);
+    const progress = getProgramProgress(appData);
+
+    programsListEl.innerHTML = programs.map(program => {
+        const isActive = activeProgram && activeProgram.programId === program.id;
+        const activeClass = isActive ? 'active' : '';
+
+        // Progress bar only shown for active program
+        const progressHTML = isActive ? `
+            <div class="program-card-progress">
+                <div class="program-progress-bar">
+                    <div class="program-progress-fill" style="width: ${progress.percentComplete}%"></div>
+                </div>
+                <div class="program-progress-text">Day ${progress.cyclePosition} of ${progress.totalDays}</div>
+            </div>
+        ` : '';
+
+        return `
+            <div class="program-card ${activeClass}" onclick="handleProgramSelect('${program.id}')">
+                <div class="program-card-name">${program.name}</div>
+                <div class="program-card-days">${program.daysPerWeek} days/week</div>
+                ${progressHTML}
+            </div>
+        `;
+    }).join('');
+}
+
+// Handle program card click - start or end a program
+function handleProgramSelect(programId) {
+    const activeProgram = getActiveProgram(appData);
+
+    if (activeProgram && activeProgram.programId === programId) {
+        // Clicking active program - ask to end it
+        if (confirm('End this training program?')) {
+            appData = endActiveProgram(appData);
+            renderProgramsList();
+            renderTodayView();
+        }
+    } else if (activeProgram) {
+        // Switching programs - confirm first
+        const currentProgram = getProgramById(activeProgram.programId);
+        if (confirm(`Switch from ${currentProgram.name} to a new program?`)) {
+            appData = setActiveProgram(appData, programId);
+            renderProgramsList();
+            renderTodayView();
+        }
+    } else {
+        // Starting a new program
+        const program = getProgramById(programId);
+        if (confirm(`Start ${program.name}?`)) {
+            appData = setActiveProgram(appData, programId);
+            renderProgramsList();
+            renderTodayView();
+        }
+    }
+}
+
+// Make handleProgramSelect available globally for onclick
+window.handleProgramSelect = handleProgramSelect;
 
 // Filter exercises based on query, muscle groups, and equipment
 function filterExercises(query, muscleGroups, equipment) {
