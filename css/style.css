@@ -4125,3 +4125,157 @@ body.workout-active .bottom-nav {
         grid-template-columns: repeat(2, 1fr);
     }
 }
+
+/* ========== INSIGHTS SECTION ========== */
+
+#insights-section {
+    background: linear-gradient(135deg, rgba(26, 31, 53, 0.4) 0%, rgba(24, 32, 37, 0.4) 100%);
+    border: 1px solid var(--border-mint);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+}
+
+.insights-card {
+    background: rgba(35, 44, 51, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.insights-card:last-child {
+    margin-bottom: 0;
+}
+
+.insights-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-md);
+}
+
+.insights-card-header h4 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0;
+}
+
+.quality-score-display {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.quality-score-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--mint);
+    line-height: 1;
+}
+
+.quality-score-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+}
+
+/* Trend Highlights */
+.trend-highlights {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.trend-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm);
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: var(--radius);
+}
+
+.trend-item-icon {
+    font-size: 1.25rem;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.trend-item-text {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
+.trend-empty {
+    text-align: center;
+    color: var(--text-tertiary);
+    font-size: 0.85rem;
+    padding: var(--spacing-md);
+}
+
+/* Muscle Heatmap */
+.muscle-heatmap {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-sm);
+}
+
+.muscle-heatmap-block {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: var(--spacing-md) var(--spacing-sm);
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.muscle-heatmap-block.intensity-high {
+    background: var(--mint);
+    border-color: var(--mint);
+}
+
+.muscle-heatmap-block.intensity-medium {
+    background: rgba(209, 255, 198, 0.5);
+    border-color: rgba(209, 255, 198, 0.7);
+}
+
+.muscle-heatmap-block.intensity-low {
+    background: rgba(209, 255, 198, 0.2);
+    border-color: rgba(209, 255, 198, 0.3);
+}
+
+.muscle-heatmap-block.intensity-zero {
+    background: rgba(248, 113, 113, 0.1);
+    border-color: rgba(248, 113, 113, 0.2);
+}
+
+.muscle-heatmap-name {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+}
+
+.muscle-heatmap-block.intensity-high .muscle-heatmap-name {
+    color: var(--background-color);
+}
+
+.muscle-heatmap-sets {
+    font-size: 0.7rem;
+    color: var(--text-tertiary);
+}
+
+.muscle-heatmap-block.intensity-high .muscle-heatmap-sets {
+    color: var(--background-color);
+    opacity: 0.8;
+}

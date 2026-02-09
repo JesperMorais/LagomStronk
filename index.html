@@ -245,6 +245,45 @@
                     <h2>Progress</h2>
                 </div>
 
+                <!-- Insights Section -->
+                <div class="stats-section" id="insights-section">
+                    <h3 class="stats-section-title">This Week's Insights</h3>
+
+                    <!-- Workout Quality Chart -->
+                    <div class="insights-card" id="quality-chart-container">
+                        <div class="insights-card-header">
+                            <h4>Workout Quality</h4>
+                            <div class="quality-score-display" id="quality-score-display">
+                                <span class="quality-score-value" id="quality-score-value">--</span>
+                                <span class="quality-score-label" id="quality-score-label">--</span>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="quality-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Trend Highlights -->
+                    <div class="insights-card" id="trend-highlights-container">
+                        <div class="insights-card-header">
+                            <h4>Trends</h4>
+                        </div>
+                        <div id="trend-highlights" class="trend-highlights">
+                            <!-- Trend items will be rendered here -->
+                        </div>
+                    </div>
+
+                    <!-- Muscle Heatmap -->
+                    <div class="insights-card" id="muscle-heatmap-container">
+                        <div class="insights-card-header">
+                            <h4>Muscle Focus This Week</h4>
+                        </div>
+                        <div id="muscle-heatmap" class="muscle-heatmap">
+                            <!-- Heatmap blocks will be rendered here -->
+                        </div>
+                    </div>
+                </div>
+
                 <!-- PR Feed Section -->
                 <div class="stats-section">
                     <h3 class="stats-section-title">PR Feed</h3>

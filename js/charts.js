@@ -1,10 +1,11 @@
-import { getExerciseHistory, getVolumeHistory, getWeightHistory, getMeasurementHistory, getBodyFatHistory, formatDate } from './data.js';
+import { getExerciseHistory, getVolumeHistory, getWeightHistory, getMeasurementHistory, getBodyFatHistory, formatDate, getRecentQualityScores } from './data.js';
 
 let progressChart = null;
 let volumeChart = null;
 let weightChart = null;
 const measurementCharts = {};
 let bodyFatChart = null;
+let qualityChart = null;
 
 // Initialize or update the progress chart for a specific exercise
 export function updateProgressChart(data, exerciseName) {
@@ -522,6 +523,92 @@ export function updateMeasurementChart(data, type) {
     });
 }
 
+// Initialize or update the workout quality chart
+export function updateQualityChart(data) {
+    const ctx = document.getElementById('quality-chart');
+    if (!ctx) return;
+
+    const qualityScores = getRecentQualityScores(data, 10);
+
+    // Destroy existing chart if it exists
+    if (qualityChart) {
+        qualityChart.destroy();
+    }
+
+    if (qualityScores.length === 0) {
+        qualityChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Quality Score',
+                    data: [],
+                    borderColor: '#D1FFC6',
+                    backgroundColor: 'rgba(209, 255, 198, 0.15)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: getChartOptions('Not enough workouts yet')
+        });
+        return;
+    }
+
+    const labels = qualityScores.map(q => formatDate(q.date));
+    const scores = qualityScores.map(q => q.score);
+
+    qualityChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels,
+            datasets: [{
+                label: 'Quality Score',
+                data: scores,
+                borderColor: '#D1FFC6',
+                backgroundColor: 'rgba(209, 255, 198, 0.15)',
+                tension: 0.4,
+                fill: true,
+                pointBackgroundColor: '#D1FFC6',
+                pointBorderColor: '#0f1419',
+                pointBorderWidth: 2,
+                pointRadius: 5,
+                pointHoverRadius: 7,
+                borderWidth: 2.5
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: { display: false },
+                title: { display: false }
+            },
+            scales: {
+                x: {
+                    grid: { display: false },
+                    ticks: {
+                        maxRotation: 45,
+                        minRotation: 45,
+                        font: { size: 10 },
+                        color: '#9ca3af'
+                    },
+                    border: { display: false }
+                },
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                    ticks: {
+                        color: '#9ca3af',
+                        stepSize: 20
+                    },
+                    border: { display: false }
+                }
+            }
+        }
+    });
+}
+
 // Destroy all charts (cleanup)
 export function destroyCharts() {
     if (progressChart) {
@@ -545,5 +632,9 @@ export function destroyCharts() {
     if (bodyFatChart) {
         bodyFatChart.destroy();
         bodyFatChart = null;
+    }
+    if (qualityChart) {
+        qualityChart.destroy();
+        qualityChart = null;
     }
 }

@@ -59,7 +59,10 @@ import {
     getExerciseRecommendations,
     getTrainingSplitSuggestion,
     getRecoveryInsights,
-    getFatigueScore
+    getFatigueScore,
+    getRecentQualityScores,
+    getTrendAnalysis,
+    getWeeklyMuscleHeatmap
 } from './data.js';
 
 import {
@@ -67,7 +70,8 @@ import {
     updateVolumeChart,
     updateWeightChart,
     updateMeasurementChart,
-    updateBodyFatChart
+    updateBodyFatChart,
+    updateQualityChart
 } from './charts.js';
 
 // App state
@@ -1786,6 +1790,7 @@ function renderProgressView() {
     }
 
     // Show all stats sections
+    document.getElementById('insights-section').style.display = '';
     document.getElementById('pr-feed').parentElement.style.display = '';
     document.getElementById('overall-stats').parentElement.style.display = '';
     document.getElementById('frequency-stats').parentElement.style.display = '';
@@ -1795,6 +1800,9 @@ function renderProgressView() {
     document.getElementById('volume-chart').parentElement.parentElement.style.display = '';
     document.getElementById('personal-records').parentElement.style.display = '';
     document.getElementById('estimated-1rms').parentElement.style.display = '';
+
+    // Render insights section
+    renderInsights();
 
     // Render overall stats
     renderOverallStats();
@@ -1834,6 +1842,7 @@ function renderProgressView() {
 // Render empty progress view
 function renderEmptyProgressView() {
     // Hide all stats sections except overall stats
+    document.getElementById('insights-section').style.display = 'none';
     document.getElementById('pr-feed').parentElement.style.display = 'none';
     document.getElementById('frequency-stats').parentElement.style.display = 'none';
     document.getElementById('weekly-summary').parentElement.style.display = 'none';
@@ -2030,6 +2039,110 @@ function renderPRFeed() {
                 </div>
             `;
         }).join('');
+
+    container.innerHTML = html;
+}
+
+// Render insights section (quality, trends, heatmap)
+function renderInsights() {
+    renderQualityScore();
+    renderTrendHighlights();
+    renderMuscleHeatmap();
+}
+
+// Render workout quality score and chart
+function renderQualityScore() {
+    const qualityScores = getRecentQualityScores(appData, 10);
+
+    // Hide if less than 3 workouts
+    if (appData.workouts.length < 3) {
+        document.getElementById('quality-chart-container').style.display = 'none';
+        return;
+    }
+
+    document.getElementById('quality-chart-container').style.display = '';
+
+    // Calculate average score
+    if (qualityScores.length > 0) {
+        const avgScore = Math.round(qualityScores.reduce((sum, q) => sum + q.score, 0) / qualityScores.length);
+        const latestScore = qualityScores[qualityScores.length - 1];
+
+        document.getElementById('quality-score-value').textContent = avgScore;
+        document.getElementById('quality-score-label').textContent = latestScore.label;
+    } else {
+        document.getElementById('quality-score-value').textContent = '--';
+        document.getElementById('quality-score-label').textContent = '--';
+    }
+
+    // Update chart
+    updateQualityChart(appData);
+}
+
+// Render trend highlights
+function renderTrendHighlights() {
+    const trendData = getTrendAnalysis(appData);
+    const container = document.getElementById('trend-highlights');
+
+    // Hide if less than 30 days of data
+    if (trendData.needsMoreData || trendData.highlights.length === 0) {
+        document.getElementById('trend-highlights-container').style.display = 'none';
+        return;
+    }
+
+    document.getElementById('trend-highlights-container').style.display = '';
+
+    if (trendData.highlights.length === 0) {
+        container.innerHTML = `
+            <div class="trend-empty">
+                No significant trends detected. Keep training!
+            </div>
+        `;
+        return;
+    }
+
+    const html = trendData.highlights.map(trend => {
+        let icon = '➡️';
+        if (trend.type.includes('up') || trend.positive === true) {
+            icon = '📈';
+        } else if (trend.type.includes('down') || trend.positive === false) {
+            icon = '📉';
+        }
+
+        return `
+            <div class="trend-item">
+                <span class="trend-item-icon">${icon}</span>
+                <span class="trend-item-text">${trend.text}</span>
+            </div>
+        `;
+    }).join('');
+
+    container.innerHTML = html;
+}
+
+// Render muscle heatmap
+function renderMuscleHeatmap() {
+    const heatmapData = getWeeklyMuscleHeatmap(appData);
+    const container = document.getElementById('muscle-heatmap');
+
+    const html = heatmapData.map(muscle => {
+        let intensityClass = 'intensity-zero';
+        if (muscle.intensity >= 0.8) {
+            intensityClass = 'intensity-high';
+        } else if (muscle.intensity >= 0.5) {
+            intensityClass = 'intensity-medium';
+        } else if (muscle.intensity > 0) {
+            intensityClass = 'intensity-low';
+        }
+
+        const setsText = muscle.sets === 0 ? 'Not trained' : `${muscle.sets} sets`;
+
+        return `
+            <div class="muscle-heatmap-block ${intensityClass}">
+                <div class="muscle-heatmap-name">${muscle.displayName}</div>
+                <div class="muscle-heatmap-sets">${setsText}</div>
+            </div>
+        `;
+    }).join('');
 
     container.innerHTML = html;
 }
