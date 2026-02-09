@@ -4048,6 +4048,234 @@ document.getElementById('bodyfat-input')?.addEventListener('keydown', (e) => {
     }
 });
 
+// ========== ONBOARDING WIZARD ==========
+
+let onboardingState = {
+    currentStep: 1,
+    goals: [],
+    experience: null,
+    trainingDays: 3,
+    equipment: ['barbell', 'dumbbell', 'machine', 'cable', 'bodyweight', 'kettlebell']
+};
+
+function showOnboarding() {
+    const overlay = document.getElementById('onboarding-overlay');
+    if (!overlay) return;
+
+    // Reset to step 1
+    onboardingState.currentStep = 1;
+    updateOnboardingStep(1);
+
+    // Pre-populate with current profile data if editing
+    const profile = getUserProfile(appData);
+    if (profile.onboardingComplete) {
+        onboardingState.goals = [...profile.goals];
+        onboardingState.experience = profile.experience;
+        onboardingState.trainingDays = profile.trainingDays;
+        onboardingState.equipment = [...profile.equipment];
+        updateOnboardingUI();
+    }
+
+    overlay.classList.add('active');
+}
+
+function hideOnboarding() {
+    const overlay = document.getElementById('onboarding-overlay');
+    if (!overlay) return;
+    overlay.classList.remove('active');
+}
+
+function updateOnboardingStep(step) {
+    onboardingState.currentStep = step;
+
+    // Update step indicators
+    document.querySelectorAll('.wizard-step').forEach((el, idx) => {
+        const stepNum = idx + 1;
+        el.classList.toggle('active', stepNum === step);
+        el.classList.toggle('completed', stepNum < step);
+    });
+
+    document.querySelectorAll('.wizard-step-line').forEach((el, idx) => {
+        el.classList.toggle('active', idx < step - 1);
+    });
+
+    // Update panels
+    document.querySelectorAll('.wizard-panel').forEach(panel => {
+        const panelStep = parseInt(panel.getAttribute('data-panel'));
+        panel.classList.toggle('active', panelStep === step);
+    });
+
+    // Update buttons
+    const backBtn = document.getElementById('onboarding-back');
+    const nextBtn = document.getElementById('onboarding-next');
+
+    if (backBtn) {
+        backBtn.style.display = step > 1 ? 'block' : 'none';
+    }
+
+    if (nextBtn) {
+        nextBtn.textContent = step === 4 ? 'Get Started' : 'Next';
+    }
+
+    // Update title
+    const title = document.getElementById('onboarding-title');
+    if (title) {
+        const titles = [
+            'Welcome to LagomStronk',
+            'Your Training Goals',
+            'Your Experience Level',
+            'Training Frequency',
+            'Available Equipment'
+        ];
+        title.textContent = titles[step - 1] || titles[0];
+    }
+}
+
+function updateOnboardingUI() {
+    // Update goals
+    document.querySelectorAll('#onboarding-goals .wizard-chip').forEach(chip => {
+        const goal = chip.getAttribute('data-goal');
+        chip.classList.toggle('selected', onboardingState.goals.includes(goal));
+    });
+
+    // Update experience
+    document.querySelectorAll('#onboarding-experience .experience-card').forEach(card => {
+        const exp = card.getAttribute('data-experience');
+        card.classList.toggle('selected', onboardingState.experience === exp);
+    });
+
+    // Update training days
+    document.querySelectorAll('#onboarding-training-days .day-btn').forEach(btn => {
+        const days = parseInt(btn.getAttribute('data-days'));
+        btn.classList.toggle('selected', onboardingState.trainingDays === days);
+    });
+
+    // Update equipment
+    document.querySelectorAll('#onboarding-equipment .wizard-chip').forEach(chip => {
+        const equip = chip.getAttribute('data-equipment');
+        chip.classList.toggle('selected', onboardingState.equipment.includes(equip));
+    });
+}
+
+function handleOnboardingNext() {
+    if (onboardingState.currentStep < 4) {
+        updateOnboardingStep(onboardingState.currentStep + 1);
+    } else {
+        // Complete onboarding
+        completeOnboarding();
+    }
+}
+
+function handleOnboardingBack() {
+    if (onboardingState.currentStep > 1) {
+        updateOnboardingStep(onboardingState.currentStep - 1);
+    }
+}
+
+function handleOnboardingSkip() {
+    // Save defaults
+    saveUserProfile(appData, {
+        goals: [],
+        experience: null,
+        trainingDays: 3,
+        equipment: ['barbell', 'dumbbell', 'machine', 'cable', 'bodyweight', 'kettlebell'],
+        onboardingComplete: true
+    });
+
+    hideOnboarding();
+    init();
+}
+
+function completeOnboarding() {
+    saveUserProfile(appData, {
+        goals: onboardingState.goals,
+        experience: onboardingState.experience,
+        trainingDays: onboardingState.trainingDays,
+        equipment: onboardingState.equipment,
+        onboardingComplete: true
+    });
+
+    hideOnboarding();
+
+    // Reload data and re-render
+    appData = loadData();
+    init();
+}
+
+// Onboarding event listeners
+document.getElementById('onboarding-next')?.addEventListener('click', handleOnboardingNext);
+document.getElementById('onboarding-back')?.addEventListener('click', handleOnboardingBack);
+document.getElementById('onboarding-skip')?.addEventListener('click', handleOnboardingSkip);
+
+// Settings button
+document.getElementById('settings-btn')?.addEventListener('click', () => {
+    showOnboarding();
+});
+
+// Goals selection
+document.querySelectorAll('#onboarding-goals .wizard-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+        const goal = chip.getAttribute('data-goal');
+        const idx = onboardingState.goals.indexOf(goal);
+
+        if (idx >= 0) {
+            onboardingState.goals.splice(idx, 1);
+        } else {
+            onboardingState.goals.push(goal);
+        }
+
+        chip.classList.toggle('selected');
+    });
+});
+
+// Experience selection
+document.querySelectorAll('#onboarding-experience .experience-card').forEach(card => {
+    card.addEventListener('click', () => {
+        const experience = card.getAttribute('data-experience');
+        onboardingState.experience = experience;
+
+        document.querySelectorAll('#onboarding-experience .experience-card').forEach(c => {
+            c.classList.remove('selected');
+        });
+        card.classList.add('selected');
+    });
+});
+
+// Training days selection
+document.querySelectorAll('#onboarding-training-days .day-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const days = parseInt(btn.getAttribute('data-days'));
+        onboardingState.trainingDays = days;
+
+        document.querySelectorAll('#onboarding-training-days .day-btn').forEach(b => {
+            b.classList.remove('selected');
+        });
+        btn.classList.add('selected');
+    });
+});
+
+// Equipment selection
+document.querySelectorAll('#onboarding-equipment .wizard-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+        const equipment = chip.getAttribute('data-equipment');
+        const idx = onboardingState.equipment.indexOf(equipment);
+
+        if (idx >= 0) {
+            onboardingState.equipment.splice(idx, 1);
+        } else {
+            onboardingState.equipment.push(equipment);
+        }
+
+        chip.classList.toggle('selected');
+    });
+});
+
+// Check if onboarding needed on app load
+if (!isOnboardingComplete(appData)) {
+    // Show onboarding after a brief delay
+    setTimeout(() => showOnboarding(), 300);
+}
+
 // Initialize the app
 init();
 

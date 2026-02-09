@@ -39,7 +39,16 @@
             <section id="today-view" class="view active">
                 <div class="view-header">
                     <h2>Today's Workout</h2>
-                    <span class="date-display" id="today-date"></span>
+                    <div class="view-header-actions">
+                        <span class="date-display" id="today-date"></span>
+                        <button class="icon-btn" id="settings-btn" title="Settings">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3"/>
+                                <path d="M12 1v6m0 6v6M1 12h6m6 0h6"/>
+                                <path d="M4.2 4.2l4.2 4.2m5.6 5.6l4.2 4.2M4.2 19.8l4.2-4.2m5.6-5.6l4.2-4.2"/>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Dashboard Hero Section -->
@@ -872,6 +881,95 @@
                     </svg>
                 </button>
                 <button class="numpad-btn numpad-btn-next" id="numpad-next">NEXT</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Onboarding Wizard -->
+    <div class="onboarding-overlay" id="onboarding-overlay">
+        <div class="onboarding-container">
+            <div class="onboarding-header">
+                <h2 id="onboarding-title">Welcome to LagomStronk</h2>
+                <button class="onboarding-skip" id="onboarding-skip">Skip</button>
+            </div>
+
+            <!-- Step Progress Indicators -->
+            <div class="wizard-progress">
+                <div class="wizard-step active" data-step="1">1</div>
+                <div class="wizard-step-line"></div>
+                <div class="wizard-step" data-step="2">2</div>
+                <div class="wizard-step-line"></div>
+                <div class="wizard-step" data-step="3">3</div>
+                <div class="wizard-step-line"></div>
+                <div class="wizard-step" data-step="4">4</div>
+            </div>
+
+            <!-- Step 1: Goals -->
+            <div class="wizard-panel active" data-panel="1">
+                <h4 class="wizard-panel-title">What are your training goals?</h4>
+                <p class="wizard-panel-desc">Select all that apply</p>
+                <div class="wizard-chips" id="onboarding-goals">
+                    <button class="wizard-chip" data-goal="strength">Strength</button>
+                    <button class="wizard-chip" data-goal="hypertrophy">Hypertrophy</button>
+                    <button class="wizard-chip" data-goal="endurance">Endurance</button>
+                    <button class="wizard-chip" data-goal="weight_loss">Weight Loss</button>
+                    <button class="wizard-chip" data-goal="general_fitness">General Fitness</button>
+                </div>
+            </div>
+
+            <!-- Step 2: Experience -->
+            <div class="wizard-panel" data-panel="2">
+                <h4 class="wizard-panel-title">How long have you been lifting?</h4>
+                <p class="wizard-panel-desc">This helps us personalize recommendations</p>
+                <div class="experience-cards" id="onboarding-experience">
+                    <button class="experience-card" data-experience="beginner">
+                        <div class="experience-card-title">Beginner</div>
+                        <div class="experience-card-desc">Less than 6 months</div>
+                    </button>
+                    <button class="experience-card" data-experience="intermediate">
+                        <div class="experience-card-title">Intermediate</div>
+                        <div class="experience-card-desc">6 months - 2 years</div>
+                    </button>
+                    <button class="experience-card" data-experience="advanced">
+                        <div class="experience-card-title">Advanced</div>
+                        <div class="experience-card-desc">2+ years</div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 3: Training Days -->
+            <div class="wizard-panel" data-panel="3">
+                <h4 class="wizard-panel-title">How many days per week do you train?</h4>
+                <p class="wizard-panel-desc">Your typical training frequency</p>
+                <div class="training-days-selector" id="onboarding-training-days">
+                    <button class="day-btn" data-days="1">1</button>
+                    <button class="day-btn" data-days="2">2</button>
+                    <button class="day-btn selected" data-days="3">3</button>
+                    <button class="day-btn" data-days="4">4</button>
+                    <button class="day-btn" data-days="5">5</button>
+                    <button class="day-btn" data-days="6">6</button>
+                    <button class="day-btn" data-days="7">7</button>
+                </div>
+            </div>
+
+            <!-- Step 4: Equipment -->
+            <div class="wizard-panel" data-panel="4">
+                <h4 class="wizard-panel-title">What equipment do you have access to?</h4>
+                <p class="wizard-panel-desc">Select all that you have available</p>
+                <div class="wizard-chips" id="onboarding-equipment">
+                    <button class="wizard-chip selected" data-equipment="barbell">Barbell</button>
+                    <button class="wizard-chip selected" data-equipment="dumbbell">Dumbbell</button>
+                    <button class="wizard-chip selected" data-equipment="machine">Machine</button>
+                    <button class="wizard-chip selected" data-equipment="cable">Cable</button>
+                    <button class="wizard-chip selected" data-equipment="bodyweight">Bodyweight</button>
+                    <button class="wizard-chip selected" data-equipment="kettlebell">Kettlebell</button>
+                </div>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="wizard-footer">
+                <button class="btn btn-secondary" id="onboarding-back" style="display: none;">Back</button>
+                <button class="btn btn-primary" id="onboarding-next">Next</button>
             </div>
         </div>
     </div>

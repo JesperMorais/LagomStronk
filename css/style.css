@@ -3688,3 +3688,181 @@ body.workout-active .bottom-nav {
 .nav-label {
     font-size: 0.55rem;
 }
+
+/* ========== View Header Actions ========== */
+.view-header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.icon-btn {
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.icon-btn:hover {
+    background: var(--card-hover);
+    border-color: var(--border-mint);
+}
+
+.icon-btn:active {
+    transform: scale(0.95);
+}
+
+.icon-btn svg {
+    color: var(--text-secondary);
+}
+
+.icon-btn:hover svg {
+    color: var(--mint);
+}
+
+/* ========== Onboarding Wizard ========== */
+.onboarding-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-md);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.onboarding-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.onboarding-container {
+    background: var(--card-background);
+    border-radius: var(--radius-lg);
+    width: 100%;
+    max-width: 500px;
+    padding: var(--spacing-xl);
+    box-shadow: var(--shadow-lg);
+    transform: scale(0.95);
+    transition: transform 0.3s ease;
+}
+
+.onboarding-overlay.active .onboarding-container {
+    transform: scale(1);
+}
+
+.onboarding-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-lg);
+}
+
+.onboarding-header h2 {
+    color: var(--mint);
+    font-size: 1.5rem;
+    margin: 0;
+}
+
+.onboarding-skip {
+    background: none;
+    border: none;
+    color: var(--text-tertiary);
+    font-size: 0.9rem;
+    cursor: pointer;
+    padding: var(--spacing-sm);
+    transition: color 0.2s ease;
+}
+
+.onboarding-skip:hover {
+    color: var(--mint);
+}
+
+/* Experience Cards */
+.experience-cards {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    margin: var(--spacing-lg) 0;
+}
+
+.experience-card {
+    background: var(--bg-slate);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: var(--spacing-lg);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+}
+
+.experience-card:hover {
+    background: var(--card-hover);
+    border-color: var(--border-mint);
+}
+
+.experience-card.selected {
+    background: var(--primary-muted);
+    border-color: var(--mint);
+}
+
+.experience-card-title {
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: var(--spacing-xs);
+}
+
+.experience-card-desc {
+    color: var(--text-tertiary);
+    font-size: 0.9rem;
+}
+
+/* Training Days Selector */
+.training-days-selector {
+    display: flex;
+    gap: var(--spacing-sm);
+    justify-content: center;
+    margin: var(--spacing-lg) 0;
+    flex-wrap: wrap;
+}
+
+.day-btn {
+    background: var(--bg-slate);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius);
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.day-btn:hover {
+    background: var(--card-hover);
+    border-color: var(--border-mint);
+}
+
+.day-btn.selected {
+    background: var(--mint);
+    border-color: var(--mint);
+    color: #0f1419;
+}
