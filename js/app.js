@@ -45,7 +45,10 @@ import {
     addMeasurementEntry,
     getMeasurementHistory,
     addBodyFatEntry,
-    getBodyFatHistory
+    getBodyFatHistory,
+    getUserProfile,
+    saveUserProfile,
+    isOnboardingComplete
 } from './data.js';
 
 import {

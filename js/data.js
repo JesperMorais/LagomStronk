@@ -290,6 +290,14 @@ function getDefaultData() {
             weight: [],        // [{date: "2026-02-06", value: 85.5, unit: "kg"}]
             measurements: [],  // [{date: "2026-02-06", bicep: 38, chest: 105, waist: 82, thigh: 60, unit: "cm"}]
             bodyFat: []        // [{date: "2026-02-06", value: 15.2}]
+        },
+        userProfile: {
+            goals: [],           // ['strength', 'hypertrophy', 'endurance', 'weight_loss', 'general_fitness']
+            experience: null,    // 'beginner' | 'intermediate' | 'advanced'
+            trainingDays: 3,     // target days per week (1-7)
+            equipment: [],       // ['barbell', 'dumbbell', 'machine', 'cable', 'bodyweight', 'kettlebell']
+            onboardingComplete: false,
+            createdAt: null      // ISO date string when profile was created
         }
     };
 }
@@ -319,6 +327,17 @@ export function loadData() {
             // Ensure bodyTracking exists (migration for pre-Phase 4 data)
             if (!data.bodyTracking) {
                 data.bodyTracking = { weight: [], measurements: [], bodyFat: [] };
+            }
+            // Ensure userProfile exists (migration for pre-Phase 6 data)
+            if (!data.userProfile) {
+                data.userProfile = {
+                    goals: [],
+                    experience: null,
+                    trainingDays: 3,
+                    equipment: [],
+                    onboardingComplete: false,
+                    createdAt: null
+                };
             }
             return data;
         }
@@ -1774,4 +1793,64 @@ export function addBodyFatEntry(data, date, value) {
 export function getBodyFatHistory(data) {
     if (!data.bodyTracking || !data.bodyTracking.bodyFat) return [];
     return [...data.bodyTracking.bodyFat].sort((a, b) => a.date.localeCompare(b.date));
+}
+
+// ========== USER PROFILE HELPERS ==========
+
+// Get user profile or default
+export function getUserProfile(data) {
+    if (!data.userProfile) {
+        return {
+            goals: [],
+            experience: null,
+            trainingDays: 3,
+            equipment: [],
+            onboardingComplete: false,
+            createdAt: null
+        };
+    }
+    return data.userProfile;
+}
+
+// Save user profile (validates and updates)
+export function saveUserProfile(data, profile) {
+    // Validate goals array
+    const validGoals = ['strength', 'hypertrophy', 'endurance', 'weight_loss', 'general_fitness'];
+    const goals = Array.isArray(profile.goals)
+        ? profile.goals.filter(g => validGoals.includes(g))
+        : [];
+
+    // Validate experience
+    const validExperience = ['beginner', 'intermediate', 'advanced'];
+    const experience = validExperience.includes(profile.experience) ? profile.experience : null;
+
+    // Validate training days (1-7)
+    const trainingDays = Math.max(1, Math.min(7, parseInt(profile.trainingDays) || 3));
+
+    // Validate equipment array
+    const validEquipment = ['barbell', 'dumbbell', 'machine', 'cable', 'bodyweight', 'kettlebell'];
+    const equipment = Array.isArray(profile.equipment)
+        ? profile.equipment.filter(e => validEquipment.includes(e))
+        : [];
+
+    // Create timestamp if first time completing onboarding
+    const createdAt = data.userProfile?.createdAt || new Date().toISOString();
+
+    data.userProfile = {
+        goals,
+        experience,
+        trainingDays,
+        equipment,
+        onboardingComplete: profile.onboardingComplete === true,
+        createdAt
+    };
+
+    saveData(data);
+    return data;
+}
+
+// Check if user completed onboarding
+export function isOnboardingComplete(data) {
+    const profile = getUserProfile(data);
+    return profile.onboardingComplete === true;
 }
