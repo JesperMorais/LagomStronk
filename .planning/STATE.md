@@ -5,14 +5,14 @@
 See: .planning/REQUIREMENTS.md (updated 2026-02-05)
 
 **Core value:** Make strength training feel effortless and intelligent
-**Current focus:** Phase 5 - Health Integration (next)
+**Current focus:** Phase 6 - Gamification & Intelligence (next; Phase 5 deferred)
 
 ## Current Position
 
 Phase: 4 of 7 (Body Tracking) - COMPLETE
 Plan: 2 of 2 complete
-Status: Phase 4 complete, ready for Phase 5
-Last activity: 2026-02-06 - Completed Phase 4 (all 2 plans + UAT)
+Status: Phase 4 complete, Phase 5 deferred, ready for Phase 6
+Last activity: 2026-02-09 - Phase 5 deferred (needs Capacitor), Phase 6 context gathered
 
 Progress: [████████░░] 80% (23/~28 plans)
 
@@ -60,9 +60,9 @@ None yet.
 **Phase 4 - Privacy Sensitive (DEFERRED):**
 - Photo storage requires encryption strategy — deferred per CONTEXT.md (progress photos out of scope)
 
-**Phase 5 - Platform Complexity:**
-- Health Connect and HealthKit have different data models requiring normalization strategy
-- Deduplication logic needed to prevent duplicate workout imports
+**Phase 5 - DEFERRED:**
+- Entire phase deferred — Health Connect and HealthKit require Capacitor/native wrapper
+- Will revisit when project moves to native app distribution
 
 **Phase 6 - Data Dependency:**
 - Intelligence features require minimum 30+ workouts per user for meaningful recommendations
@@ -74,7 +74,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-06 (Phase 4 complete)
-Stopped at: Phase 4 complete with all 2 plans executed and UAT passed
+Last session: 2026-02-09 (Phase 5 deferred, Phase 6 context gathered)
+Stopped at: Phase 6 context captured, ready for research/planning
 Resume file: None
-Next: Plan and execute Phase 5 (Health Integration)
+Next: Research and plan Phase 6 (Gamification & Intelligence)

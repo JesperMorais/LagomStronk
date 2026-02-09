@@ -16,7 +16,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: UX Overhaul & Exercise System** - Modern interface and enhanced exercise management
 - [x] **Phase 3: Workout Features** - Rest timer, PR tracking, and training programs
 - [x] **Phase 4: Body Tracking** - Measurements and progress photos
-- [ ] **Phase 5: Health Integration** - Platform sync with Health Connect and HealthKit
+- [ ] ~~**Phase 5: Health Integration**~~ - DEFERRED (requires Capacitor/native wrapper)
 - [ ] **Phase 6: Gamification & Intelligence** - Engagement systems and adaptive recommendations
 - [ ] **Phase 7: Documentation** - Polish and release preparation
 
@@ -109,27 +109,11 @@ Plans:
 - [x] 04-01-PLAN.md — Body tracking data model + weight tracking UI (hero)
 - [x] 04-02-PLAN.md — Muscle measurements + body fat % tracking
 
-### Phase 5: Health Integration
+### Phase 5: Health Integration — DEFERRED
 **Goal**: Sync workout and body data with native health platforms on Android and iOS
-**Depends on**: Phase 1 (event infrastructure), Phase 4 (body data to sync)
+**Status**: DEFERRED — Requires Capacitor/native wrapper for Health Connect and HealthKit API access. Will be revisited when project moves to native app distribution.
+**Depends on**: Phase 1 (event infrastructure), Phase 4 (body data to sync), Capacitor integration
 **Requirements**: HLTH-01, HLTH-02, HLTH-03, HLTH-04, HLTH-05, HLTH-06, HLTH-07, HLTH-08, HLTH-09, HLTH-10
-**Success Criteria** (what must be TRUE):
-  1. Android users can connect to Health Connect and grant permissions
-  2. iOS users can connect to Apple HealthKit and grant permissions
-  3. User's body weight imports automatically from health platform
-  4. User's past workouts import from health platform with deduplication
-  5. LagomStronk workouts export to health platform after completion
-  6. User sees imported steps and daily activity data in app
-  7. User sees imported heart rate data from workouts
-  8. User sees imported sleep data for recovery insights
-  9. Body measurements sync bidirectionally with health platform
-  10. Calories burned data imports and exports correctly with disclaimer on accuracy
-**Plans**: TBD
-
-Plans:
-- [ ] 05-01: TBD
-- [ ] 05-02: TBD
-- [ ] 05-03: TBD
 
 ### Phase 6: Gamification & Intelligence
 **Goal**: Add engagement systems and adaptive intelligence that makes training effortless
@@ -174,7 +158,7 @@ Plans:
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
+Phases execute in numeric order: 1 → 2 → 3 → 4 → ~~5~~ → 6 → 7 (Phase 5 deferred)
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -182,6 +166,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 | 2. UX Overhaul & Exercise System | 11/11 | Complete | 2026-02-06 |
 | 3. Workout Features | 5/5 | Complete | 2026-02-06 |
 | 4. Body Tracking | 2/2 | Complete | 2026-02-06 |
-| 5. Health Integration | 0/TBD | Not started | - |
+| 5. Health Integration | - | DEFERRED | - |
 | 6. Gamification & Intelligence | 0/TBD | Not started | - |
 | 7. Documentation | 0/TBD | Not started | - |
