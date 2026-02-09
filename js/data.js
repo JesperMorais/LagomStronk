@@ -2555,3 +2555,355 @@ export function getFatigueScore(data) {
         warning
     };
 }
+
+// ========== INSIGHTS & ANALYTICS ==========
+
+// Get workout quality score for a single workout (INTL-07)
+export function getWorkoutQualityScore(data, dateStr) {
+    const workout = data.workouts.find(w => w.date === dateStr);
+
+    if (!workout) {
+        return { score: 0, breakdown: {}, label: 'No Data' };
+    }
+
+    const breakdown = {
+        completion: 0,
+        pr: 0,
+        volume: 0,
+        consistency: 0
+    };
+
+    // 1. Completion rate (40 points max)
+    let totalSets = 0;
+    let completedSets = 0;
+
+    for (const exercise of workout.exercises) {
+        totalSets += exercise.sets.length;
+        completedSets += exercise.sets.filter(s => s.completed).length;
+    }
+
+    if (totalSets > 0) {
+        breakdown.completion = Math.round((completedSets / totalSets) * 40);
+    }
+
+    // 2. PR achievement (20 points max)
+    const prTimeline = getPRTimeline(data);
+    const prsOnDate = prTimeline.filter(pr => pr.date === dateStr);
+    breakdown.pr = Math.min(prsOnDate.length * 20, 20);
+
+    // 3. Volume vs average (20 points max)
+    // Calculate this workout's volume
+    let workoutVolume = 0;
+    const workoutMuscles = new Set();
+
+    for (const exercise of workout.exercises) {
+        const metadata = getExerciseMetadata(exercise.name);
+        metadata.primaryMuscles.forEach(m => workoutMuscles.add(m));
+
+        for (const set of exercise.sets) {
+            workoutVolume += set.reps * set.weight;
+        }
+    }
+
+    // Calculate average weekly volume for the same muscle groups
+    const weekStart = new Date(dateStr);
+    weekStart.setDate(weekStart.getDate() - 7);
+
+    let totalWeeklyVolume = 0;
+    let weeklyWorkoutCount = 0;
+
+    for (const w of data.workouts) {
+        if (w.date !== dateStr && w.date >= weekStart.toISOString().split('T')[0]) {
+            let matchingVolume = 0;
+
+            for (const ex of w.exercises) {
+                const meta = getExerciseMetadata(ex.name);
+                const hasMatchingMuscle = meta.primaryMuscles.some(m => workoutMuscles.has(m));
+
+                if (hasMatchingMuscle) {
+                    for (const s of ex.sets) {
+                        matchingVolume += s.reps * s.weight;
+                    }
+                }
+            }
+
+            if (matchingVolume > 0) {
+                totalWeeklyVolume += matchingVolume;
+                weeklyWorkoutCount++;
+            }
+        }
+    }
+
+    const avgVolume = weeklyWorkoutCount > 0 ? totalWeeklyVolume / weeklyWorkoutCount : workoutVolume;
+
+    if (workoutVolume > avgVolume) {
+        breakdown.volume = Math.round(((workoutVolume - avgVolume) / avgVolume) * 20);
+        breakdown.volume = Math.min(breakdown.volume, 20);
+    }
+
+    // 4. Consistency (20 points max)
+    // Check if workout matches active program schedule
+    const activeProgram = getActiveProgram(data);
+
+    if (activeProgram) {
+        const workoutDate = new Date(dateStr);
+        const dayOfWeek = workoutDate.getDay(); // 0 = Sunday
+
+        // Check if this day is in the program schedule
+        const programDay = activeProgram.schedule.find(d => {
+            const scheduledDay = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][dayOfWeek];
+            return d.day.toLowerCase() === scheduledDay;
+        });
+
+        if (programDay) {
+            breakdown.consistency = 20;
+        }
+    } else {
+        // No active program - give points for just training
+        breakdown.consistency = 10;
+    }
+
+    // Calculate total score
+    const score = breakdown.completion + breakdown.pr + breakdown.volume + breakdown.consistency;
+
+    // Determine label
+    let label = 'Needs Work';
+    if (score >= 81) label = 'Exceptional';
+    else if (score >= 61) label = 'Great';
+    else if (score >= 41) label = 'Solid';
+
+    return {
+        score,
+        breakdown,
+        label
+    };
+}
+
+// Get recent workout quality scores for chart display (INTL-07)
+export function getRecentQualityScores(data, count = 10) {
+    const scores = [];
+
+    // Get last N workouts
+    const recentWorkouts = [...data.workouts]
+        .sort((a, b) => b.date.localeCompare(a.date))
+        .slice(0, count);
+
+    for (const workout of recentWorkouts) {
+        const qualityScore = getWorkoutQualityScore(data, workout.date);
+        scores.push({
+            date: workout.date,
+            score: qualityScore.score,
+            label: qualityScore.label
+        });
+    }
+
+    // Return in chronological order (oldest first for chart display)
+    return scores.reverse();
+}
+
+// Get trend analysis comparing last 30 days vs previous 30 days (INTL-08)
+export function getTrendAnalysis(data) {
+    const highlights = [];
+    const today = new Date();
+
+    const current30Start = new Date(today);
+    current30Start.setDate(today.getDate() - 30);
+
+    const previous30Start = new Date(today);
+    previous30Start.setDate(today.getDate() - 60);
+    const previous30End = new Date(current30Start);
+
+    // Check if we have enough data
+    const hasOldData = data.workouts.some(w => new Date(w.date) < current30Start);
+
+    if (!hasOldData) {
+        return { highlights: [], period: '30 days', needsMoreData: true };
+    }
+
+    // 1. Volume change per exercise
+    const exerciseVolumes = {};
+
+    for (const workout of data.workouts) {
+        const workoutDate = new Date(workout.date);
+        const period = workoutDate >= current30Start ? 'current' :
+                      (workoutDate >= previous30Start && workoutDate < previous30End) ? 'previous' : null;
+
+        if (!period) continue;
+
+        for (const exercise of workout.exercises) {
+            if (!exerciseVolumes[exercise.name]) {
+                exerciseVolumes[exercise.name] = { current: 0, previous: 0 };
+            }
+
+            let exVolume = 0;
+            for (const set of exercise.sets) {
+                exVolume += set.reps * set.weight;
+            }
+
+            exerciseVolumes[exercise.name][period] += exVolume;
+        }
+    }
+
+    // Find top volume changes
+    const volumeChanges = [];
+    for (const [exercise, volumes] of Object.entries(exerciseVolumes)) {
+        if (volumes.previous > 0 && volumes.current > 0) {
+            const change = ((volumes.current - volumes.previous) / volumes.previous) * 100;
+            volumeChanges.push({ exercise, change });
+        }
+    }
+
+    volumeChanges.sort((a, b) => Math.abs(b.change) - Math.abs(a.change));
+
+    // Add top 2 volume trends
+    for (let i = 0; i < Math.min(2, volumeChanges.length); i++) {
+        const trend = volumeChanges[i];
+        if (Math.abs(trend.change) >= 10) { // Only show significant changes
+            highlights.push({
+                type: trend.change > 0 ? 'volume_up' : 'volume_down',
+                text: `${trend.exercise} volume ${trend.change > 0 ? 'up' : 'down'} ${Math.abs(Math.round(trend.change))}% this month`,
+                positive: trend.change > 0
+            });
+        }
+    }
+
+    // 2. Frequency change
+    const currentWorkouts = data.workouts.filter(w => new Date(w.date) >= current30Start).length;
+    const previousWorkouts = data.workouts.filter(w => {
+        const d = new Date(w.date);
+        return d >= previous30Start && d < previous30End;
+    }).length;
+
+    const currentFreq = Math.round((currentWorkouts / 30) * 7 * 10) / 10;
+    const previousFreq = Math.round((previousWorkouts / 30) * 7 * 10) / 10;
+
+    if (Math.abs(currentFreq - previousFreq) >= 0.5) {
+        highlights.push({
+            type: currentFreq > previousFreq ? 'frequency_up' : 'frequency_down',
+            text: `Training ${currentFreq}x/week, ${currentFreq > previousFreq ? 'up from' : 'down from'} ${previousFreq}x/week`,
+            positive: currentFreq > previousFreq
+        });
+    }
+
+    // 3. Strength trends per muscle group
+    const muscleStrength = {};
+
+    for (const workout of data.workouts) {
+        const workoutDate = new Date(workout.date);
+        const period = workoutDate >= current30Start ? 'current' :
+                      (workoutDate >= previous30Start && workoutDate < previous30End) ? 'previous' : null;
+
+        if (!period) continue;
+
+        for (const exercise of workout.exercises) {
+            const metadata = getExerciseMetadata(exercise.name);
+            const maxWeight = Math.max(...exercise.sets.map(s => s.weight), 0);
+
+            for (const muscle of metadata.primaryMuscles) {
+                const muscleName = MUSCLE_GROUPS[muscle]?.displayName || muscle;
+
+                if (!muscleStrength[muscleName]) {
+                    muscleStrength[muscleName] = { current: [], previous: [] };
+                }
+
+                muscleStrength[muscleName][period].push(maxWeight);
+            }
+        }
+    }
+
+    // Calculate average max weights
+    for (const [muscle, data] of Object.entries(muscleStrength)) {
+        if (data.current.length > 0 && data.previous.length > 0) {
+            const currentAvg = data.current.reduce((a, b) => a + b, 0) / data.current.length;
+            const previousAvg = data.previous.reduce((a, b) => a + b, 0) / data.previous.length;
+            const change = ((currentAvg - previousAvg) / previousAvg) * 100;
+
+            if (Math.abs(change) >= 5) {
+                highlights.push({
+                    type: change > 0 ? 'strength_up' : 'strength_down',
+                    text: `${muscle} strength ${change > 0 ? 'up' : 'down'} ${Math.abs(Math.round(change))}%`,
+                    positive: change > 0
+                });
+            }
+        }
+    }
+
+    // 4. Body weight trend (if body tracking data exists)
+    if (data.bodyTracking && data.bodyTracking.weight && data.bodyTracking.weight.length > 1) {
+        const recentWeights = data.bodyTracking.weight
+            .filter(w => new Date(w.date) >= current30Start)
+            .sort((a, b) => a.date.localeCompare(b.date));
+
+        if (recentWeights.length >= 2) {
+            const firstWeight = recentWeights[0].value;
+            const lastWeight = recentWeights[recentWeights.length - 1].value;
+            const change = lastWeight - firstWeight;
+
+            if (Math.abs(change) >= 0.5) {
+                highlights.push({
+                    type: 'bodyweight',
+                    text: `Body weight ${change > 0 ? 'up' : 'down'} ${Math.abs(change).toFixed(1)}kg this month`,
+                    positive: null // Neutral - could be intentional
+                });
+            }
+        }
+    }
+
+    // Limit to top 5 most notable trends
+    return {
+        highlights: highlights.slice(0, 5),
+        period: '30 days'
+    };
+}
+
+// Get weekly muscle heatmap data (INTL-09)
+export function getWeeklyMuscleHeatmap(data) {
+    const today = new Date();
+
+    // Get ISO week start (Monday)
+    const currentDay = today.getDay();
+    const mondayOffset = currentDay === 0 ? -6 : 1 - currentDay;
+    const weekStart = new Date(today);
+    weekStart.setDate(today.getDate() + mondayOffset);
+    weekStart.setHours(0, 0, 0, 0);
+
+    const weekStartStr = weekStart.toISOString().split('T')[0];
+
+    // Initialize muscle group counts
+    const muscleSets = {};
+
+    for (const [muscleId, muscleData] of Object.entries(MUSCLE_GROUPS)) {
+        muscleSets[muscleId] = {
+            muscle: muscleId,
+            displayName: muscleData.displayName,
+            sets: 0
+        };
+    }
+
+    // Count sets per muscle group this week
+    for (const workout of data.workouts) {
+        if (workout.date >= weekStartStr) {
+            for (const exercise of workout.exercises) {
+                const metadata = getExerciseMetadata(exercise.name);
+
+                for (const muscle of metadata.primaryMuscles) {
+                    if (muscleSets[muscle]) {
+                        muscleSets[muscle].sets += exercise.sets.length;
+                    }
+                }
+            }
+        }
+    }
+
+    // Calculate intensity normalization
+    const maxSets = Math.max(...Object.values(muscleSets).map(m => m.sets), 1);
+
+    const heatmap = Object.values(muscleSets).map(m => ({
+        muscle: m.muscle,
+        displayName: m.displayName,
+        sets: m.sets,
+        intensity: maxSets > 0 ? m.sets / maxSets : 0
+    }));
+
+    return heatmap;
+}
