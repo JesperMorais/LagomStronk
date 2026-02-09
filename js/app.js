@@ -526,26 +526,43 @@ function dismissMuscleAlert() {
 function renderHero() {
     const streakCount = calculateStreak();
     const weekDays = getWeekWorkoutDays();
+    const freqStats = getFrequencyStats(appData);
 
-    // Update streak display
+    // Update streak display - show weekly streak if available
     const streakEl = document.getElementById('streak-count');
     if (streakEl) {
-        streakEl.textContent = streakCount;
+        if (freqStats.weeklyStreak > 0) {
+            streakEl.textContent = freqStats.weeklyStreak;
+        } else {
+            streakEl.textContent = streakCount;
+        }
     }
 
-    // Update streak label for singular/plural
+    // Update streak label
     const streakLabel = document.querySelector('.streak-label');
     if (streakLabel) {
-        streakLabel.textContent = streakCount === 1 ? 'day streak' : 'day streak';
+        if (freqStats.weeklyStreak > 0) {
+            streakLabel.textContent = freqStats.weeklyStreak === 1 ? 'week consistent' : 'weeks consistent';
+        } else {
+            streakLabel.textContent = streakCount === 1 ? 'day streak' : 'day streak';
+        }
     }
 
-    // Render week calendar
+    // Render week calendar with weekly target indicator
     const weekCalendarEl = document.getElementById('week-calendar');
     if (weekCalendarEl) {
+        const thisWeekCount = weekDays.filter(d => d.hasWorkout).length;
+        const target = freqStats.weeklyTarget;
+        const behindPace = thisWeekCount < target && weekDays.some(d => d.isToday && !d.hasWorkout);
+
         weekCalendarEl.innerHTML = weekDays.map(day => {
             const classes = ['week-day-dot'];
             if (day.isToday) classes.push('today');
             if (day.hasWorkout) classes.push('has-workout');
+            // Amber if behind pace
+            if (behindPace && !day.hasWorkout && day.dateStr <= getTodayStr()) {
+                classes.push('behind-pace');
+            }
 
             return `
                 <div class="week-day">
@@ -623,6 +640,19 @@ function finishWorkout() {
         saveData(appData);
     }
 
+    // Check for new achievements
+    const newAchievements = checkNewAchievements(appData);
+    if (newAchievements.length > 0) {
+        // Show achievement celebrations after a brief delay
+        setTimeout(() => {
+            newAchievements.forEach((achievement, index) => {
+                setTimeout(() => {
+                    showAchievementCelebration(achievement);
+                }, index * 1000); // Stagger celebrations by 1 second
+            });
+        }, 500);
+    }
+
     // Reset state
     activeWorkout.isActive = false;
     activeWorkout.name = '';
@@ -648,6 +678,9 @@ function finishWorkout() {
 
     // Render dashboard to update "Today's Workout" card
     renderTodaysWorkout();
+
+    // Update badge count indicator
+    updateBadgeCountIndicator();
 }
 
 // Open workout screen (fullscreen takeover)
@@ -963,6 +996,7 @@ function init() {
     renderTodayView();
     updateTodayDate();
     updateFABVisibility();
+    updateBadgeCountIndicator();
 }
 
 // Setup navigation
@@ -2893,6 +2927,140 @@ function renderPRBadge(prTypes) {
     return `<span class="pr-set-badge"title="${title}">${text}</span>`;
 }
 
+// ========== ACHIEVEMENT CELEBRATIONS ==========
+
+// Show achievement celebration with toast and confetti
+function showAchievementCelebration(achievement) {
+    // Create toast element
+    const toast = document.createElement('div');
+    toast.className = 'achievement-toast';
+    toast.innerHTML = `
+        <span class="achievement-icon">${achievement.icon}</span>
+        <div class="achievement-info">
+            <div class="achievement-name">${achievement.name}</div>
+            <div class="achievement-desc">${achievement.desc}</div>
+        </div>
+    `;
+
+    document.body.appendChild(toast);
+
+    // Animate in
+    setTimeout(() => {
+        toast.classList.add('show');
+    }, 10);
+
+    // Check if it's a streak milestone for bigger celebration
+    const isStreakMilestone = achievement.id.startsWith('streak_');
+
+    // Fire confetti
+    if (typeof confetti === 'function') {
+        if (isStreakMilestone) {
+            // Larger celebration for streak milestones
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { x: 0.5, y: 0.5 },
+                colors: ['#fbbf24', '#f59e0b', '#D1FFC6', '#86efac', '#ffffff'],
+                startVelocity: 30,
+                gravity: 1,
+                ticks: 100,
+                scalar: 1,
+                disableForReducedMotion: true
+            });
+        } else {
+            // Standard gold confetti for other achievements
+            confetti({
+                particleCount: 50,
+                spread: 60,
+                origin: { x: 0.5, y: 0.4 },
+                colors: ['#fbbf24', '#f59e0b', '#D1FFC6'],
+                startVelocity: 25,
+                gravity: 1,
+                ticks: 80,
+                scalar: 0.9,
+                disableForReducedMotion: true
+            });
+        }
+    }
+
+    // Haptic feedback
+    if (navigator.vibrate) {
+        navigator.vibrate([50, 50, 50]);
+    }
+
+    // Auto-dismiss after 3 seconds
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => {
+            toast.remove();
+        }, 300);
+    }, 3000);
+
+    // Tap to dismiss
+    toast.onclick = () => {
+        toast.classList.remove('show');
+        setTimeout(() => {
+            toast.remove();
+        }, 300);
+    };
+}
+
+// Update badge count indicator
+function updateBadgeCountIndicator() {
+    const indicator = document.getElementById('badge-count-indicator');
+    if (!indicator) return;
+
+    const earnedAchievements = getEarnedAchievements(appData);
+    if (earnedAchievements.length > 0) {
+        indicator.textContent = earnedAchievements.length;
+        indicator.style.display = 'flex';
+    } else {
+        indicator.style.display = 'none';
+    }
+}
+
+// Open badges modal
+function openBadgesModal() {
+    const modal = document.getElementById('badges-modal');
+    const grid = document.getElementById('badges-grid');
+    if (!modal || !grid) return;
+
+    // Get all achievements (earned and unearned)
+    const allAchievements = getAllAchievements(appData);
+
+    // Render badges grid
+    grid.innerHTML = allAchievements.map(achievement => {
+        const classes = ['badge-card'];
+        if (!achievement.earned) {
+            classes.push('unearned');
+        }
+
+        const icon = achievement.earned ? achievement.icon : '?';
+        const name = achievement.earned ? achievement.name : '???';
+        const desc = achievement.earned ? achievement.desc : 'Not yet earned';
+
+        return `
+            <div class="${classes.join(' ')}">
+                <div class="badge-icon">${icon}</div>
+                <div class="badge-name">${name}</div>
+                <div class="badge-desc">${desc}</div>
+            </div>
+        `;
+    }).join('');
+
+    modal.style.display = 'flex';
+}
+
+// Close badges modal
+function closeBadgesModal() {
+    const modal = document.getElementById('badges-modal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+// ========== PR BADGE FUNCTIONS ==========
+
 function addPRBadgeToRow(row, prTypes) {
     if (!row) return;
 
@@ -4216,6 +4384,26 @@ document.getElementById('onboarding-skip')?.addEventListener('click', handleOnbo
 document.getElementById('settings-btn')?.addEventListener('click', () => {
     showOnboarding();
 });
+
+// Badges button
+document.getElementById('badges-btn')?.addEventListener('click', () => {
+    openBadgesModal();
+});
+
+// Close badges modal
+document.getElementById('close-badges-modal')?.addEventListener('click', () => {
+    closeBadgesModal();
+});
+
+// Close badges modal on background click
+const badgesModal = document.getElementById('badges-modal');
+if (badgesModal) {
+    badgesModal.addEventListener('click', (e) => {
+        if (e.target === badgesModal) {
+            closeBadgesModal();
+        }
+    });
+}
 
 // Goals selection
 document.querySelectorAll('#onboarding-goals .wizard-chip').forEach(chip => {
