@@ -2076,6 +2076,98 @@ export function getAllAchievements(data) {
     });
 }
 
+// Get PR timeline - chronological list of all PR events
+export function getPRTimeline(data) {
+    const prEvents = [];
+
+    // Track running max per exercise to calculate previousBest
+    const exerciseMaxes = {}; // { exerciseName: { weight: max, e1rm: max } }
+
+    // Sort workouts chronologically (oldest first) to process in time order
+    const sortedWorkouts = [...data.workouts].sort((a, b) => a.date.localeCompare(b.date));
+
+    for (const workout of sortedWorkouts) {
+        for (const exercise of workout.exercises) {
+            const exerciseName = exercise.name;
+
+            // Initialize tracking for this exercise if needed
+            if (!exerciseMaxes[exerciseName]) {
+                exerciseMaxes[exerciseName] = { weight: 0, e1rm: 0 };
+            }
+
+            for (const set of exercise.sets) {
+                // Only process sets with PR tags
+                if (!set.pr || set.pr.length === 0) continue;
+
+                // Skip incomplete or invalid sets
+                if (!set.weight || set.weight <= 0 || !set.reps || set.reps <= 0) continue;
+
+                const setWeight = set.weight;
+                const setE1RM = calculateEstimated1RM(set.weight, set.reps);
+
+                // Process each PR type
+                for (const prType of set.pr) {
+                    let value, previousBest;
+
+                    if (prType === 'weight') {
+                        value = setWeight;
+                        previousBest = exerciseMaxes[exerciseName].weight > 0 ? exerciseMaxes[exerciseName].weight : null;
+
+                        // Update running max
+                        if (setWeight > exerciseMaxes[exerciseName].weight) {
+                            exerciseMaxes[exerciseName].weight = setWeight;
+                        }
+                    } else if (prType === 'e1rm') {
+                        value = setE1RM;
+                        previousBest = exerciseMaxes[exerciseName].e1rm > 0 ? exerciseMaxes[exerciseName].e1rm : null;
+
+                        // Update running max
+                        if (setE1RM > exerciseMaxes[exerciseName].e1rm) {
+                            exerciseMaxes[exerciseName].e1rm = setE1RM;
+                        }
+                    } else {
+                        continue; // Unknown PR type
+                    }
+
+                    const improvement = previousBest ? value - previousBest : 0;
+
+                    prEvents.push({
+                        date: workout.date,
+                        exercise: exerciseName,
+                        type: prType,
+                        value: value,
+                        unit: 'kg',
+                        previousBest: previousBest,
+                        improvement: improvement
+                    });
+                }
+            }
+        }
+    }
+
+    // Sort reverse chronological (newest first) for feed display
+    prEvents.sort((a, b) => b.date.localeCompare(a.date));
+
+    return prEvents;
+}
+
+// Get total count of PR events
+export function getPRCount(data) {
+    let count = 0;
+
+    for (const workout of data.workouts) {
+        for (const exercise of workout.exercises) {
+            for (const set of exercise.sets) {
+                if (set.pr && set.pr.length > 0) {
+                    count += set.pr.length;
+                }
+            }
+        }
+    }
+
+    return count;
+}
+
 // ========== USER PROFILE HELPERS ==========
 
 // Get user profile or default
