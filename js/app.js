@@ -53,7 +53,9 @@ import {
     checkNewAchievements,
     markAchievementSeen,
     getEarnedAchievements,
-    getAllAchievements
+    getAllAchievements,
+    getPRTimeline,
+    getPRCount
 } from './data.js';
 
 import {
@@ -1672,6 +1674,7 @@ function renderProgressView() {
     }
 
     // Show all stats sections
+    document.getElementById('pr-feed').parentElement.style.display = '';
     document.getElementById('overall-stats').parentElement.style.display = '';
     document.getElementById('frequency-stats').parentElement.style.display = '';
     document.getElementById('weekly-summary').parentElement.style.display = '';
@@ -1706,6 +1709,9 @@ function renderProgressView() {
         updateProgressChart(appData, usedExercises[0]);
     }
 
+    // Render PR feed (before personal records table)
+    renderPRFeed();
+
     // Render personal records
     renderPersonalRecords();
 
@@ -1716,6 +1722,7 @@ function renderProgressView() {
 // Render empty progress view
 function renderEmptyProgressView() {
     // Hide all stats sections except overall stats
+    document.getElementById('pr-feed').parentElement.style.display = 'none';
     document.getElementById('frequency-stats').parentElement.style.display = 'none';
     document.getElementById('weekly-summary').parentElement.style.display = 'none';
     document.getElementById('muscle-group-stats').parentElement.style.display = 'none';
@@ -1836,6 +1843,83 @@ function renderMuscleGroupStats() {
             </div>
         `;
     }).join('');
+}
+
+// Render PR feed - timeline of all PR events
+function renderPRFeed() {
+    const prTimeline = getPRTimeline(appData);
+    const container = document.getElementById('pr-feed');
+
+    if (prTimeline.length === 0) {
+        container.innerHTML = `
+            <div class="pr-feed-empty">
+                <span class="pr-feed-empty-icon">🏆</span>
+                <p class="pr-feed-empty-text">No PRs yet — keep training and they'll come!</p>
+            </div>
+        `;
+        return;
+    }
+
+    // Limit to last 50 PRs
+    const displayPRs = prTimeline.slice(0, 50);
+
+    // Group PRs by date
+    const groupedByDate = {};
+    for (const pr of displayPRs) {
+        if (!groupedByDate[pr.date]) {
+            groupedByDate[pr.date] = [];
+        }
+        groupedByDate[pr.date].push(pr);
+    }
+
+    // Generate date headers
+    const today = getTodayStr();
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+    const getDateLabel = (dateStr) => {
+        if (dateStr === today) return 'Today';
+        if (dateStr === yesterdayStr) return 'Yesterday';
+        return formatDate(dateStr);
+    };
+
+    // Render PR feed
+    const html = Object.keys(groupedByDate)
+        .sort((a, b) => b.localeCompare(a)) // Newest first
+        .map(date => {
+            const prsForDate = groupedByDate[date];
+            const dateLabel = getDateLabel(date);
+
+            const prItems = prsForDate.map(pr => {
+                const prTypeBadge = pr.type === 'weight' ? 'Weight PR' : '1RM PR';
+                const improvementText = pr.previousBest
+                    ? `+${pr.improvement.toFixed(1)} kg`
+                    : 'First PR!';
+
+                return `
+                    <div class="pr-feed-item">
+                        <div class="pr-feed-item-header">
+                            <span class="pr-feed-exercise">${pr.exercise}</span>
+                            <span class="pr-feed-badge">${prTypeBadge}</span>
+                        </div>
+                        <div class="pr-feed-item-details">
+                            <span class="pr-feed-value">${pr.value.toFixed(1)} kg</span>
+                            <span class="pr-feed-improvement">${improvementText}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            return `
+                <div class="pr-feed-date-group">
+                    <div class="pr-feed-date-header">${dateLabel}</div>
+                    ${prItems}
+                </div>
+            `;
+        }).join('');
+
+    container.innerHTML = html;
 }
 
 // Render personal records
