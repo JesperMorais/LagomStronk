@@ -298,6 +298,9 @@ function getDefaultData() {
             equipment: [],       // ['barbell', 'dumbbell', 'machine', 'cable', 'bodyweight', 'kettlebell']
             onboardingComplete: false,
             createdAt: null      // ISO date string when profile was created
+        },
+        achievements: {
+            earned: []           // [{id: 'workout_10', earnedAt: '2026-02-09', seen: false}]
         }
     };
 }
@@ -338,6 +341,10 @@ export function loadData() {
                     onboardingComplete: false,
                     createdAt: null
                 };
+            }
+            // Ensure achievements exists (migration for pre-Phase 6-02 data)
+            if (!data.achievements) {
+                data.achievements = { earned: [] };
             }
             return data;
         }
@@ -689,7 +696,16 @@ export function getOverallStats(data) {
 // Get workout frequency stats
 export function getFrequencyStats(data) {
     if (data.workouts.length === 0) {
-        return { thisWeek: 0, thisMonth: 0, avgPerWeek: 0, currentStreak: 0, longestStreak: 0 };
+        const userProfile = getUserProfile(data);
+        return {
+            thisWeek: 0,
+            thisMonth: 0,
+            avgPerWeek: 0,
+            currentStreak: 0,
+            longestStreak: 0,
+            weeklyStreak: 0,
+            weeklyTarget: userProfile.trainingDays
+        };
     }
 
     const today = new Date();
@@ -715,10 +731,23 @@ export function getFrequencyStats(data) {
     const weeksSinceFirst = Math.max(1, daysSinceFirst / 7);
     const avgPerWeek = Math.round(data.workouts.length / weeksSinceFirst * 10) / 10;
 
-    // Calculate streaks
+    // Calculate streaks (daily for backward compatibility)
     const { currentStreak, longestStreak } = calculateStreaks(data.workouts);
 
-    return { thisWeek, thisMonth, avgPerWeek, currentStreak, longestStreak };
+    // Calculate weekly streak (rest-day-aware)
+    const userProfile = getUserProfile(data);
+    const weeklyTarget = userProfile.trainingDays || 3;
+    const weeklyStreak = calculateWeeklyStreak(data.workouts, weeklyTarget);
+
+    return {
+        thisWeek,
+        thisMonth,
+        avgPerWeek,
+        currentStreak,
+        longestStreak,
+        weeklyStreak,
+        weeklyTarget
+    };
 }
 
 // Calculate workout streaks
@@ -772,6 +801,59 @@ function calculateStreaks(workouts) {
     }
 
     return { currentStreak, longestStreak };
+}
+
+// Calculate weekly streak (rest-day-aware)
+// A streak is maintained if user trains at least 'weeklyTarget' times per week
+function calculateWeeklyStreak(workouts, weeklyTarget) {
+    if (workouts.length === 0) return 0;
+
+    const today = new Date();
+    const dates = workouts.map(w => w.date).sort();
+    const uniqueDates = [...new Set(dates)];
+
+    // Group workouts by week (ISO week starting Monday)
+    const getWeekKey = (dateStr) => {
+        const date = new Date(dateStr);
+        // Adjust to Monday-based week
+        const day = date.getDay();
+        const diff = date.getDate() - day + (day === 0 ? -6 : 1); // Adjust when day is Sunday
+        const monday = new Date(date.setDate(diff));
+        monday.setHours(0, 0, 0, 0);
+        return monday.toISOString().split('T')[0];
+    };
+
+    // Count workouts per week
+    const weekCounts = new Map();
+    for (const date of uniqueDates) {
+        const weekKey = getWeekKey(date);
+        weekCounts.set(weekKey, (weekCounts.get(weekKey) || 0) + 1);
+    }
+
+    // Get current week key
+    const currentWeekKey = getWeekKey(today.toISOString().split('T')[0]);
+
+    // Sort week keys in reverse (newest first)
+    const sortedWeeks = Array.from(weekCounts.keys()).sort().reverse();
+
+    // Check if current week or last week is active
+    let streak = 0;
+    for (const weekKey of sortedWeeks) {
+        const count = weekCounts.get(weekKey);
+        if (count >= weeklyTarget) {
+            streak++;
+        } else {
+            // If this is the current week and we haven't broken yet, allow partial progress
+            if (weekKey === currentWeekKey && streak === 0) {
+                // Current week in progress - don't break streak yet
+                continue;
+            }
+            // Otherwise, streak is broken
+            break;
+        }
+    }
+
+    return streak;
 }
 
 // Get weekly summary (last 4 weeks)
@@ -1793,6 +1875,205 @@ export function addBodyFatEntry(data, date, value) {
 export function getBodyFatHistory(data) {
     if (!data.bodyTracking || !data.bodyTracking.bodyFat) return [];
     return [...data.bodyTracking.bodyFat].sort((a, b) => a.date.localeCompare(b.date));
+}
+
+// ========== ACHIEVEMENTS & BADGES ==========
+
+// Achievement definitions
+export const ACHIEVEMENT_DEFINITIONS = [
+    {
+        id: 'workout_10',
+        name: 'Getting Started',
+        desc: '10 workouts completed',
+        icon: '💪',
+        check: (data) => data.workouts.length >= 10
+    },
+    {
+        id: 'workout_50',
+        name: 'Committed',
+        desc: '50 workouts completed',
+        icon: '🔥',
+        check: (data) => data.workouts.length >= 50
+    },
+    {
+        id: 'workout_100',
+        name: 'Century',
+        desc: '100 workouts completed',
+        icon: '🏆',
+        check: (data) => data.workouts.length >= 100
+    },
+    {
+        id: 'streak_7',
+        name: 'Week Warrior',
+        desc: '7-day streak',
+        icon: '⚡',
+        check: (data) => {
+            const freq = getFrequencyStats(data);
+            return freq.currentStreak >= 7;
+        }
+    },
+    {
+        id: 'streak_30',
+        name: 'Iron Will',
+        desc: '30-day streak',
+        icon: '🌟',
+        check: (data) => {
+            const freq = getFrequencyStats(data);
+            return freq.currentStreak >= 30;
+        }
+    },
+    {
+        id: 'streak_weeks_4',
+        name: 'Monthly Consistency',
+        desc: '4-week streak hitting target',
+        icon: '📅',
+        check: (data) => {
+            const freq = getFrequencyStats(data);
+            return freq.weeklyStreak >= 4;
+        }
+    },
+    {
+        id: 'pr_first',
+        name: 'New Record',
+        desc: 'First personal record',
+        icon: '🎯',
+        check: (data) => {
+            const prs = getPersonalRecords(data);
+            return Object.keys(prs).length > 0;
+        }
+    },
+    {
+        id: 'pr_10',
+        name: 'Record Breaker',
+        desc: '10 personal records',
+        icon: '🏅',
+        check: (data) => {
+            // Count total PRs across all exercises
+            let totalPRs = 0;
+            for (const workout of data.workouts) {
+                for (const exercise of workout.exercises) {
+                    for (const set of exercise.sets) {
+                        const prTypes = checkForPR(data, exercise.name, set, workout.date);
+                        totalPRs += prTypes.length;
+                    }
+                }
+            }
+            return totalPRs >= 10;
+        }
+    },
+    {
+        id: 'exercises_10',
+        name: 'Explorer',
+        desc: '10 unique exercises used',
+        icon: '🧭',
+        check: (data) => {
+            const exercises = new Set();
+            for (const workout of data.workouts) {
+                for (const exercise of workout.exercises) {
+                    exercises.add(exercise.name);
+                }
+            }
+            return exercises.size >= 10;
+        }
+    },
+    {
+        id: 'volume_10k',
+        name: 'Heavy Lifter',
+        desc: '10,000 kg total volume',
+        icon: '🪨',
+        check: (data) => {
+            const stats = getOverallStats(data);
+            return stats.totalVolume >= 10000;
+        }
+    },
+    {
+        id: 'volume_100k',
+        name: 'Monster',
+        desc: '100,000 kg total volume',
+        icon: '👹',
+        check: (data) => {
+            const stats = getOverallStats(data);
+            return stats.totalVolume >= 100000;
+        }
+    }
+];
+
+// Check for newly earned achievements (not already in earned list)
+export function checkNewAchievements(data) {
+    if (!data.achievements) {
+        data.achievements = { earned: [] };
+    }
+
+    const earnedIds = new Set(data.achievements.earned.map(a => a.id));
+    const newAchievements = [];
+
+    for (const definition of ACHIEVEMENT_DEFINITIONS) {
+        // Skip if already earned
+        if (earnedIds.has(definition.id)) continue;
+
+        // Check if condition is met
+        if (definition.check(data)) {
+            const achievement = {
+                id: definition.id,
+                earnedAt: getTodayStr(),
+                seen: false
+            };
+            data.achievements.earned.push(achievement);
+            newAchievements.push({
+                ...achievement,
+                ...definition
+            });
+        }
+    }
+
+    if (newAchievements.length > 0) {
+        saveData(data);
+    }
+
+    return newAchievements;
+}
+
+// Mark achievement as seen
+export function markAchievementSeen(data, achievementId) {
+    if (!data.achievements) return data;
+
+    const achievement = data.achievements.earned.find(a => a.id === achievementId);
+    if (achievement) {
+        achievement.seen = true;
+        saveData(data);
+    }
+
+    return data;
+}
+
+// Get earned achievements with definition details
+export function getEarnedAchievements(data) {
+    if (!data.achievements) {
+        return [];
+    }
+
+    return data.achievements.earned.map(earned => {
+        const definition = ACHIEVEMENT_DEFINITIONS.find(d => d.id === earned.id);
+        return {
+            ...earned,
+            ...definition
+        };
+    });
+}
+
+// Get all achievements (earned and unearned)
+export function getAllAchievements(data) {
+    const earnedIds = new Set(data.achievements?.earned.map(a => a.id) || []);
+
+    return ACHIEVEMENT_DEFINITIONS.map(definition => {
+        const earned = data.achievements?.earned.find(a => a.id === definition.id);
+        return {
+            ...definition,
+            earned: earnedIds.has(definition.id),
+            earnedAt: earned?.earnedAt || null,
+            seen: earned?.seen || false
+        };
+    });
 }
 
 // ========== USER PROFILE HELPERS ==========

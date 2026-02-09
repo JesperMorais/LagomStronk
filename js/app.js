@@ -48,7 +48,12 @@ import {
     getBodyFatHistory,
     getUserProfile,
     saveUserProfile,
-    isOnboardingComplete
+    isOnboardingComplete,
+    ACHIEVEMENT_DEFINITIONS,
+    checkNewAchievements,
+    markAchievementSeen,
+    getEarnedAchievements,
+    getAllAchievements
 } from './data.js';
 
 import {
