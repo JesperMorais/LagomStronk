@@ -55,7 +55,11 @@ import {
     getEarnedAchievements,
     getAllAchievements,
     getPRTimeline,
-    getPRCount
+    getPRCount,
+    getExerciseRecommendations,
+    getTrainingSplitSuggestion,
+    getRecoveryInsights,
+    getFatigueScore
 } from './data.js';
 
 import {
@@ -524,6 +528,90 @@ function dismissMuscleAlert() {
     }
 }
 
+// Render Smart Coach Card with intelligent insights
+function renderSmartCoach() {
+    const cardEl = document.getElementById('smart-coach-card');
+    const titleEl = document.getElementById('smart-coach-title');
+    const textEl = document.getElementById('smart-coach-text');
+
+    if (!cardEl || !titleEl || !textEl) return;
+
+    // Minimum data threshold - require at least 5 workouts
+    if (appData.workouts.length < 5) {
+        cardEl.style.display = 'none';
+        return;
+    }
+
+    // Collect all potential insights
+    const insights = [];
+
+    // 1. Fatigue warnings (highest priority)
+    const fatigueScore = getFatigueScore(appData);
+    if (fatigueScore.warning === 'overtraining risk') {
+        insights.push({
+            priority: 1,
+            title: 'Overtraining Risk',
+            text: `You've done ${fatigueScore.setsThisWeek} sets this week vs ${fatigueScore.avgSets} average. Consider taking a rest day.`
+        });
+    } else if (fatigueScore.warning === 'high fatigue') {
+        insights.push({
+            priority: 2,
+            title: 'High Training Load',
+            text: `Volume is ${Math.round(fatigueScore.volumeRatio * 100)}% of your average. Monitor recovery carefully.`
+        });
+    }
+
+    // 2. Training split suggestions (if no active program)
+    const splitSuggestion = getTrainingSplitSuggestion(appData);
+    if (splitSuggestion) {
+        insights.push({
+            priority: 3,
+            title: 'Training Split Suggestion',
+            text: `Try ${splitSuggestion.split} — ${splitSuggestion.reason}`
+        });
+    }
+
+    // 3. Exercise recommendations (balance alerts)
+    const recommendations = getExerciseRecommendations(appData);
+    if (recommendations.length > 0) {
+        const topRec = recommendations[0];
+        insights.push({
+            priority: 4,
+            title: 'Exercise Suggestion',
+            text: `Try ${topRec.exercise} — ${topRec.reason}`
+        });
+    }
+
+    // 4. Recovery status summary
+    const recoveryInsights = getRecoveryInsights(appData);
+    const recovered = recoveryInsights.filter(i => i.status === 'recovered');
+    const recovering = recoveryInsights.filter(i => i.status === 'recovering');
+
+    if (recovered.length > 0 && recovering.length > 0) {
+        const recoveredNames = recovered.slice(0, 2).map(i => i.muscle.toLowerCase()).join(' and ');
+        const recoveringNames = recovering.slice(0, 2).map(i => i.muscle.toLowerCase()).join(' and ');
+        insights.push({
+            priority: 5,
+            title: 'Recovery Status',
+            text: `${recoveredNames} recovered, ${recoveringNames} still recovering`
+        });
+    }
+
+    // Sort by priority and pick top insight
+    insights.sort((a, b) => a.priority - b.priority);
+
+    if (insights.length === 0) {
+        cardEl.style.display = 'none';
+        return;
+    }
+
+    // Display the top insight
+    const topInsight = insights[0];
+    titleEl.textContent = topInsight.title;
+    textEl.textContent = topInsight.text;
+    cardEl.style.display = 'flex';
+}
+
 // Render the hero section
 function renderHero() {
     const streakCount = calculateStreak();
@@ -741,7 +829,7 @@ function expandWorkout() {
     openWorkoutScreen();
 }
 
-// Render coach hint for progressive overload
+// Render coach hint for progressive overload with recovery insights
 function renderCoachHint(exerciseName) {
     const suggestion = getProgressiveOverloadSuggestion(appData, exerciseName);
 
@@ -749,6 +837,16 @@ function renderCoachHint(exerciseName) {
     if (!suggestion.lastWeight) {
         return '';
     }
+
+    // Get recovery insights for this exercise's muscle groups
+    const exerciseMetadata = getExerciseMetadata(exerciseName);
+    const recoveryInsights = getRecoveryInsights(appData);
+
+    // Find recovery status for primary muscles
+    const primaryMuscles = exerciseMetadata.primaryMuscles || [];
+    const muscleRecovery = recoveryInsights.find(insight =>
+        primaryMuscles.includes(insight.muscleId)
+    );
 
     // Build message based on trend
     let message = '';
@@ -774,6 +872,18 @@ function renderCoachHint(exerciseName) {
         default:
             icon = '📊';
             message = `Last: ${suggestion.lastWeight}kg`;
+    }
+
+    // Add recovery context if available
+    if (muscleRecovery) {
+        if (muscleRecovery.status === 'fresh') {
+            message += ` • Trained recently - take it easy`;
+        } else if (muscleRecovery.status === 'recovering') {
+            message += ` • ${muscleRecovery.muscle} still recovering`;
+        } else if (muscleRecovery.hoursAgo && muscleRecovery.hoursAgo >= 72) {
+            const days = Math.floor(muscleRecovery.hoursAgo / 24);
+            message += ` • Last trained ${days} days ago - recovered`;
+        }
     }
 
     return `
@@ -1254,6 +1364,8 @@ function renderTodayView() {
     renderTodaysWorkout();
     // Render stats cards (volume chart, PRs)
     renderHeroStats();
+    // Render Smart Coach insights
+    renderSmartCoach();
     // Render last workout summary
     renderLastWorkout();
 
