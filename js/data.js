@@ -1501,6 +1501,7 @@ export function getProgramProgress(data) {
 // ========== PROGRESSIVE OVERLOAD & COACHING HELPERS ==========
 
 // Get progressive overload suggestion for an exercise based on history
+// Enhanced to factor in user experience level (INTL-05)
 export function getProgressiveOverloadSuggestion(data, exerciseName) {
     const history = getExerciseHistory(data, exerciseName);
 
@@ -1539,9 +1540,26 @@ export function getProgressiveOverloadSuggestion(data, exerciseName) {
         }
     }
 
-    // Check consistency - did user hit all reps in last 2+ workouts?
-    const consistentSuccess = recentWorkouts.length >= 2 &&
-        recentWorkouts.slice(-2).every(w =>
+    // Get user experience level for personalized progression
+    const userProfile = getUserProfile(data);
+    const experience = userProfile.experience || 'intermediate'; // Default to intermediate
+
+    // Define progression rules based on experience
+    let requiredSuccessfulSessions = 3; // intermediate default
+    let weightIncrement = 2.5;
+
+    if (experience === 'beginner') {
+        requiredSuccessfulSessions = 2;
+        weightIncrement = 2.5;
+    } else if (experience === 'advanced') {
+        requiredSuccessfulSessions = 3;
+        weightIncrement = 1.25;
+    }
+
+    // Check consistency - did user hit all reps in required sessions?
+    const sessionsToCheck = Math.min(requiredSuccessfulSessions, recentWorkouts.length);
+    const consistentSuccess = recentWorkouts.length >= sessionsToCheck &&
+        recentWorkouts.slice(-sessionsToCheck).every(w =>
             w.sets.every(s => s.completed !== false)
         );
 
@@ -1549,8 +1567,8 @@ export function getProgressiveOverloadSuggestion(data, exerciseName) {
     let reason = '';
 
     if (consistentSuccess && completedSetsSuccessfully) {
-        // Progressive overload: increase by 2.5kg
-        suggestedWeight = lastWeight + 2.5;
+        // Progressive overload: increase based on experience
+        suggestedWeight = lastWeight + weightIncrement;
         reason = 'You completed all sets successfully in your last workouts. Time to increase!';
         trend = 'increase';
     } else if (!completedSetsSuccessfully) {
@@ -2226,4 +2244,314 @@ export function saveUserProfile(data, profile) {
 export function isOnboardingComplete(data) {
     const profile = getUserProfile(data);
     return profile.onboardingComplete === true;
+}
+
+// ========== INTELLIGENCE ENGINE ==========
+
+// Get exercise recommendations based on undertrained muscles and user profile (INTL-02)
+export function getExerciseRecommendations(data) {
+    const userProfile = getUserProfile(data);
+    const missedMuscles = getMissedMuscleGroups(data, 7);
+    const recommendations = [];
+
+    // Get user's available equipment
+    const userEquipment = userProfile.equipment || [];
+
+    // Get recently performed exercises (last 14 days)
+    const recentExercises = new Set();
+    const twoWeeksAgo = new Date();
+    twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+    const cutoffStr = twoWeeksAgo.toISOString().split('T')[0];
+
+    for (const workout of data.workouts) {
+        if (workout.date >= cutoffStr) {
+            for (const exercise of workout.exercises) {
+                recentExercises.add(exercise.name);
+            }
+        }
+    }
+
+    // For each undertrained muscle, find suitable exercises
+    for (const missed of missedMuscles.slice(0, 3)) { // Top 3 undertrained muscles
+        const muscleId = missed.muscleGroup;
+
+        // Get exercises that target this muscle
+        const suitableExercises = filterExercisesByPrimaryMuscle(muscleId, DEFAULT_EXERCISES)
+            .filter(name => {
+                const meta = getExerciseMetadata(name);
+                // Filter by user's equipment (or bodyweight which everyone has)
+                return userEquipment.includes(meta.equipment) || meta.equipment === 'bodyweight';
+            })
+            .filter(name => !recentExercises.has(name)); // Prefer variety
+
+        if (suitableExercises.length === 0) continue;
+
+        // Prioritize compound movements if goal is strength
+        const isStrengthFocused = userProfile.goals && userProfile.goals.includes('strength');
+        const compoundExercises = ['Bench Press', 'Squat', 'Deadlift', 'Overhead Press', 'Barbell Row'];
+
+        let selectedExercise = suitableExercises[0];
+        if (isStrengthFocused) {
+            const compound = suitableExercises.find(ex => compoundExercises.includes(ex));
+            if (compound) selectedExercise = compound;
+        }
+
+        const daysSince = missed.daysSinceTrained;
+        const reason = daysSince === null
+            ? `${missed.displayName} not trained yet`
+            : `${missed.displayName} undertrained (${daysSince} days)`;
+
+        const priority = daysSince === null || daysSince >= 14 ? 'high' : 'medium';
+
+        recommendations.push({
+            exercise: selectedExercise,
+            reason: reason,
+            priority: priority,
+            muscleGroup: missed.displayName
+        });
+    }
+
+    // Sort by priority
+    recommendations.sort((a, b) => {
+        if (a.priority === 'high' && b.priority !== 'high') return -1;
+        if (a.priority !== 'high' && b.priority === 'high') return 1;
+        return 0;
+    });
+
+    return recommendations.slice(0, 5); // Return top 5
+}
+
+// Get training split suggestion based on user profile (INTL-03)
+export function getTrainingSplitSuggestion(data) {
+    const activeProgram = getActiveProgram(data);
+
+    // Don't suggest if user has an active program
+    if (activeProgram) {
+        return null;
+    }
+
+    const userProfile = getUserProfile(data);
+    const trainingDays = userProfile.trainingDays || 3;
+    const experience = userProfile.experience || 'intermediate';
+
+    let split = '';
+    let schedule = [];
+    let reason = '';
+
+    if (trainingDays <= 3) {
+        // Full Body or compressed PPL
+        if (experience === 'beginner') {
+            split = 'Full Body 3x';
+            schedule = [
+                { day: 'Mon', focus: 'Full Body A' },
+                { day: 'Wed', focus: 'Full Body B' },
+                { day: 'Fri', focus: 'Full Body C' }
+            ];
+            reason = 'Full body training hits all muscles frequently, ideal for beginners with 3 days/week';
+        } else {
+            split = 'Push/Pull/Legs (compressed)';
+            schedule = [
+                { day: 'Mon', focus: 'Push' },
+                { day: 'Wed', focus: 'Pull' },
+                { day: 'Fri', focus: 'Legs' }
+            ];
+            reason = 'Classic PPL split adapted for 3 days, each muscle group trained once per week';
+        }
+    } else if (trainingDays === 4) {
+        split = 'Upper/Lower Split';
+        schedule = [
+            { day: 'Mon', focus: 'Upper' },
+            { day: 'Tue', focus: 'Lower' },
+            { day: 'Thu', focus: 'Upper' },
+            { day: 'Fri', focus: 'Lower' }
+        ];
+        reason = 'Upper/Lower split trains each muscle group twice per week with adequate recovery';
+    } else if (trainingDays === 5) {
+        split = 'Bro Split (5-day)';
+        schedule = [
+            { day: 'Mon', focus: 'Chest' },
+            { day: 'Tue', focus: 'Back' },
+            { day: 'Wed', focus: 'Shoulders' },
+            { day: 'Thu', focus: 'Arms' },
+            { day: 'Fri', focus: 'Legs' }
+        ];
+        reason = 'Bodybuilding-style split with high volume per muscle group, one muscle per day';
+    } else {
+        split = 'Push/Pull/Legs';
+        schedule = [
+            { day: 'Mon', focus: 'Push' },
+            { day: 'Tue', focus: 'Pull' },
+            { day: 'Wed', focus: 'Legs' },
+            { day: 'Thu', focus: 'Push' },
+            { day: 'Fri', focus: 'Pull' },
+            { day: 'Sat', focus: 'Legs' }
+        ];
+        reason = 'Classic PPL for high frequency, each muscle group trained twice per week';
+    }
+
+    return {
+        split,
+        schedule,
+        reason
+    };
+}
+
+// Get recovery insights for each muscle group (INTL-06)
+export function getRecoveryInsights(data) {
+    const insights = [];
+    const today = new Date();
+
+    // Track when each muscle group was last trained
+    const muscleLastTrained = {};
+
+    // Initialize all muscle groups
+    for (const muscleId of Object.keys(MUSCLE_GROUPS)) {
+        muscleLastTrained[muscleId] = null;
+    }
+
+    // Scan workout history
+    for (const workout of data.workouts) {
+        const workoutDate = workout.date;
+
+        for (const exercise of workout.exercises) {
+            const metadata = getExerciseMetadata(exercise.name);
+
+            // Mark primary muscles as trained
+            for (const muscle of metadata.primaryMuscles) {
+                if (!muscleLastTrained[muscle] || workoutDate > muscleLastTrained[muscle]) {
+                    muscleLastTrained[muscle] = workoutDate;
+                }
+            }
+        }
+    }
+
+    // Generate insights for each muscle group
+    for (const [muscleId, lastDate] of Object.entries(muscleLastTrained)) {
+        const muscle = MUSCLE_GROUPS[muscleId];
+        if (!muscle) continue;
+
+        let hoursAgo = null;
+        let status = 'recovered';
+        let recommendation = 'Ready to train';
+
+        if (lastDate) {
+            const lastTrainedDate = new Date(lastDate);
+            hoursAgo = Math.floor((today - lastTrainedDate) / (1000 * 60 * 60));
+
+            if (hoursAgo < 24) {
+                status = 'fresh';
+                recommendation = 'Train if feeling good';
+            } else if (hoursAgo < 48) {
+                status = 'recovering';
+                recommendation = 'Rest recommended';
+            } else {
+                status = 'recovered';
+                recommendation = 'Ready to train';
+            }
+        } else {
+            status = 'recovered';
+            recommendation = 'Ready to train';
+        }
+
+        insights.push({
+            muscle: muscle.displayName,
+            muscleId: muscleId,
+            lastTrained: lastDate,
+            hoursAgo: hoursAgo,
+            status: status,
+            recommendation: recommendation
+        });
+    }
+
+    return insights;
+}
+
+// Get fatigue score based on weekly training load (INTL-10)
+export function getFatigueScore(data) {
+    const today = new Date();
+    const currentWeekStart = new Date(today);
+    currentWeekStart.setDate(today.getDate() - today.getDay()); // Start of week (Sunday)
+    currentWeekStart.setHours(0, 0, 0, 0);
+
+    // Calculate current week stats
+    let setsThisWeek = 0;
+    let volumeThisWeek = 0;
+
+    for (const workout of data.workouts) {
+        const workoutDate = new Date(workout.date);
+        if (workoutDate >= currentWeekStart) {
+            for (const exercise of workout.exercises) {
+                setsThisWeek += exercise.sets.length;
+                for (const set of exercise.sets) {
+                    volumeThisWeek += set.reps * set.weight;
+                }
+            }
+        }
+    }
+
+    // Calculate average weekly stats over last 4 weeks (excluding current week)
+    const weeklyStats = [];
+    for (let i = 1; i <= 4; i++) {
+        const weekStart = new Date(currentWeekStart);
+        weekStart.setDate(currentWeekStart.getDate() - (i * 7));
+        const weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekStart.getDate() + 6);
+
+        let sets = 0;
+        let volume = 0;
+
+        for (const workout of data.workouts) {
+            const workoutDate = new Date(workout.date);
+            if (workoutDate >= weekStart && workoutDate <= weekEnd) {
+                for (const exercise of workout.exercises) {
+                    sets += exercise.sets.length;
+                    for (const set of exercise.sets) {
+                        volume += set.reps * set.weight;
+                    }
+                }
+            }
+        }
+
+        weeklyStats.push({ sets, volume });
+    }
+
+    // Calculate averages
+    const avgSets = weeklyStats.length > 0
+        ? weeklyStats.reduce((sum, w) => sum + w.sets, 0) / weeklyStats.length
+        : 0;
+    const avgVolume = weeklyStats.length > 0
+        ? weeklyStats.reduce((sum, w) => sum + w.volume, 0) / weeklyStats.length
+        : 0;
+
+    // Calculate ratios
+    const setRatio = avgSets > 0 ? setsThisWeek / avgSets : 0;
+    const volumeRatio = avgVolume > 0 ? volumeThisWeek / avgVolume : 0;
+
+    // Determine fatigue score
+    let score = 'low';
+    let warning = null;
+
+    const maxRatio = Math.max(setRatio, volumeRatio);
+
+    if (maxRatio >= 1.5) {
+        score = 'high';
+        warning = 'overtraining risk';
+    } else if (maxRatio >= 1.3) {
+        score = 'moderate';
+        warning = 'high fatigue';
+    } else if (maxRatio < 0.7 && avgSets > 0) {
+        score = 'very low';
+        warning = 'consider increasing volume';
+    }
+
+    return {
+        score,
+        setsThisWeek,
+        avgSets: Math.round(avgSets),
+        volumeThisWeek: Math.round(volumeThisWeek),
+        avgVolume: Math.round(avgVolume),
+        setRatio: Math.round(setRatio * 100) / 100,
+        volumeRatio: Math.round(volumeRatio * 100) / 100,
+        warning
+    };
 }
