@@ -17,7 +17,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 3: Workout Features** - Rest timer, PR tracking, and training programs
 - [x] **Phase 4: Body Tracking** - Measurements and progress photos
 - [ ] ~~**Phase 5: Health Integration**~~ - DEFERRED (requires Capacitor/native wrapper)
-- [ ] **Phase 6: Gamification & Intelligence** - Engagement systems and adaptive recommendations
+- [x] **Phase 6: Gamification & Intelligence** - Engagement systems and adaptive recommendations
 - [ ] **Phase 7: Documentation** - Polish and release preparation
 
 ## Phase Details
@@ -134,13 +134,14 @@ Plans:
   12. User receives trend analysis showing progress over time
   13. User sees muscle heatmap visualization showing weekly training distribution
   14. User gets fatigue detection warnings to prevent overtraining
-**Plans**: TBD
+**Plans**: 5 plans
 
 Plans:
-- [ ] 06-01: TBD
-- [ ] 06-02: TBD
-- [ ] 06-03: TBD
-- [ ] 06-04: TBD
+- [x] 06-01-PLAN.md — Onboarding & user profile wizard
+- [x] 06-02-PLAN.md — Gamification (streaks with rest day logic, badges, celebrations)
+- [x] 06-03-PLAN.md — PR feed timeline in Progress view
+- [x] 06-04-PLAN.md — Intelligence engine (recommendations, splits, recovery, fatigue)
+- [x] 06-05-PLAN.md — Insights dashboard (quality scores, trends, muscle heatmap)
 
 ### Phase 7: Documentation
 **Goal**: Prepare polished documentation for public release and contributors
@@ -167,5 +168,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → ~~5~~ → 6 → 7 (Phas
 | 3. Workout Features | 5/5 | Complete | 2026-02-06 |
 | 4. Body Tracking | 2/2 | Complete | 2026-02-06 |
 | 5. Health Integration | - | DEFERRED | - |
-| 6. Gamification & Intelligence | 0/TBD | Not started | - |
+| 6. Gamification & Intelligence | 5/5 | Complete | 2026-02-09 |
 | 7. Documentation | 0/TBD | Not started | - |

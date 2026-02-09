@@ -68,23 +68,23 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Gamification (GAME)
 
-- [ ] **GAME-01**: Workout streak tracker with rest day logic (5/week target)
-- [ ] **GAME-02**: PR feed - dedicated view celebrating personal records
-- [ ] **GAME-03**: Badge/achievement system (10, 50, 100 workouts, streaks, etc.)
-- [ ] **GAME-04**: Streak milestones with celebrations
+- [x] **GAME-01**: Workout streak tracker with rest day logic (5/week target)
+- [x] **GAME-02**: PR feed - dedicated view celebrating personal records
+- [x] **GAME-03**: Badge/achievement system (10, 50, 100 workouts, streaks, etc.)
+- [x] **GAME-04**: Streak milestones with celebrations
 
 ### Intelligence (INTL)
 
-- [ ] **INTL-01**: Onboarding flow capturing goals, experience, preferences, equipment
-- [ ] **INTL-02**: Exercise recommendations based on history and goals
-- [ ] **INTL-03**: Training split suggestions based on user profile
-- [ ] **INTL-04**: Balance alerts ("You haven't trained legs in 8 days")
-- [ ] **INTL-05**: Progressive overload hints (suggest weight increase)
-- [ ] **INTL-06**: Recovery insights showing muscle recovery status
-- [ ] **INTL-07**: Workout quality score based on completion and PRs
-- [ ] **INTL-08**: Trend analysis ("Your bench is up 15% this month")
-- [ ] **INTL-09**: Muscle heatmap showing which muscles trained this week
-- [ ] **INTL-10**: Fatigue/overtraining detection with warnings
+- [x] **INTL-01**: Onboarding flow capturing goals, experience, preferences, equipment
+- [x] **INTL-02**: Exercise recommendations based on history and goals
+- [x] **INTL-03**: Training split suggestions based on user profile
+- [x] **INTL-04**: Balance alerts ("You haven't trained legs in 8 days")
+- [x] **INTL-05**: Progressive overload hints (suggest weight increase)
+- [x] **INTL-06**: Recovery insights showing muscle recovery status
+- [x] **INTL-07**: Workout quality score based on completion and PRs
+- [x] **INTL-08**: Trend analysis ("Your bench is up 15% this month")
+- [x] **INTL-09**: Muscle heatmap showing which muscles trained this week
+- [x] **INTL-10**: Fatigue/overtraining detection with warnings
 
 ### Documentation (DOCS)
 

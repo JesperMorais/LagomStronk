@@ -5,23 +5,23 @@
 See: .planning/REQUIREMENTS.md (updated 2026-02-05)
 
 **Core value:** Make strength training feel effortless and intelligent
-**Current focus:** Phase 6 - Gamification & Intelligence (next; Phase 5 deferred)
+**Current focus:** Phase 6 complete, Phase 7 (Documentation) next
 
 ## Current Position
 
-Phase: 6 of 7 (Gamification & Intelligence) - IN PROGRESS
-Plan: 3 of 5 complete
-Status: Phase 6 in progress
-Last activity: 2026-02-09 - Completed 06-03-PLAN.md (PR feed)
+Phase: 6 of 7 (Gamification & Intelligence) - COMPLETE
+Plan: 5 of 5 complete
+Status: Phase 6 complete, ready for Phase 7
+Last activity: 2026-02-09 - Completed Phase 6 (all 5 plans)
 
-Progress: [█████████░] 89% (26/~29 plans)
+Progress: [█████████░] 93% (28/~30 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 26
-- Average duration: 3.2 min
-- Total execution time: 1.45 hours
+- Total plans completed: 28
+- Average duration: 3.4 min
+- Total execution time: 1.6 hours
 
 **By Phase:**
 
@@ -31,11 +31,11 @@ Progress: [█████████░] 89% (26/~29 plans)
 | 02-ux-overhaul-exercise-system | 11 | 45min | 4.1min |
 | 03-workout-features | 5 | 25min | 5min |
 | 04-body-tracking | 2 | 10min | 5min |
-| 06-gamification-intelligence | 3 | 12min | 4min |
+| 06-gamification-intelligence | 5 | 34min | 6.8min |
 
 **Recent Trend:**
-- Last 5 plans: 04-02 (5min), 06-01 (5min), 06-02 (5min), 06-03 (2.4min)
-- Trend: Consistently fast execution; 06-03 completed in under 3 minutes
+- Last 5 plans: 06-01 (20min), 06-02 (5min), 06-03 (2.4min), 06-04 (4min), 06-05 (5min)
+- Trend: Phase 6 completed in single session
 
 *Updated after each plan completion*
 
@@ -49,13 +49,16 @@ Progress: [█████████░] 89% (26/~29 plans)
 | 04 | 01 | Nav label 0.55rem for 6 tabs | Prevents overflow on 375px mobile while keeping readable |
 | 04 | 02 | Individual charts per measurement | CONTEXT requirement — NOT combined chart |
 | 04 | 02 | Partial data logging for measurements | Users may not measure all 4 areas every time |
+| 06 | 01 | Settings via gear icon in Today view header | Keeps nav clean, no separate settings tab |
+| 06 | 01 | Equipment pre-selected to all by default | Most users have gym access, easier to deselect |
 | 06 | 02 | Weekly streaks use Monday-based ISO weeks | ISO standard for consistent week boundaries |
-| 06 | 02 | Behind-pace amber indicator | Shows missed days when user hasn't met weekly target yet |
 | 06 | 02 | Gold confetti for achievements | Differentiates from mint-colored set completion confetti |
-| 06 | 02 | Badge modal 3-column grid | Efficient use of space; 2 columns on mobile |
 | 06 | 03 | PR feed at top of Progress view | PRs are most motivating metric, deserve prominent placement |
-| 06 | 03 | Last 50 PRs display limit | Performance optimization; users won't scroll beyond 50 entries |
-| 06 | 03 | Timeline with improvement deltas | "+X kg" more motivating than absolute values alone |
+| 06 | 03 | Last 50 PRs display limit | Performance optimization |
+| 06 | 04 | All intelligence rule-based, no AI/ML | Deterministic, explainable, per CONTEXT requirement |
+| 06 | 04 | Min 5 workouts threshold for insights | Prevents misleading data with insufficient history |
+| 06 | 05 | Heatmap as colored blocks, not anatomical diagram | Simple implementation, no SVG assets needed |
+| 06 | 05 | Min 3 workouts for quality, 30 days for trends | Prevents misleading data with insufficient history |
 
 ### Pending Todos
 
@@ -63,17 +66,10 @@ None yet.
 
 ### Blockers/Concerns
 
-**Phase 1-3 - RESOLVED:** All previous blockers resolved.
-
-**Phase 4 - Privacy Sensitive (DEFERRED):**
-- Photo storage requires encryption strategy — deferred per CONTEXT.md (progress photos out of scope)
+**Phase 1-4 - RESOLVED:** All previous blockers resolved.
 
 **Phase 5 - DEFERRED:**
 - Entire phase deferred — Health Connect and HealthKit require Capacitor/native wrapper
-- Will revisit when project moves to native app distribution
-
-**Phase 6 - Data Dependency:**
-- Intelligence features require minimum 30+ workouts per user for meaningful recommendations
 
 ### Issues Logged
 
@@ -82,7 +78,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-09 (Completed 06-03-PLAN.md)
-Stopped at: Completed PR feed plan
+Last session: 2026-02-09 (Completed Phase 6 — all 5 plans)
+Stopped at: Phase 6 complete
 Resume file: None
-Next: Continue with Phase 6 remaining plans (06-04, 06-05)
+Next: Phase 7 (Documentation)
