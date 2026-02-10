@@ -32,7 +32,6 @@ jobs:
             Update README.md to reflect the current state of the codebase.
 
             Guidelines:
-            - Keep it SHORT (under 50 lines)
             - Keep existing badges, update if needed
             - Update features list if new features were added
             - Update tech stack if dependencies changed
