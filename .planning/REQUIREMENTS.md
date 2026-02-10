@@ -88,9 +88,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Documentation (DOCS)
 
-- [ ] **DOCS-01**: Polished README with screenshots and feature overview
-- [ ] **DOCS-02**: User guide documentation
-- [ ] **DOCS-03**: Architecture docs for contributors
+- [x] **DOCS-01**: Polished README with screenshots and feature overview
+- [ ] **DOCS-02**: User guide documentation *(deferred - out of scope per CONTEXT)*
+- [ ] **DOCS-03**: Architecture docs for contributors *(deferred - out of scope per CONTEXT)*
 
 ## v2 Requirements
 
@@ -178,23 +178,23 @@ Which phases cover which requirements. Updated during roadmap creation.
 | HLTH-08 | Phase 5 | Pending |
 | HLTH-09 | Phase 5 | Pending |
 | HLTH-10 | Phase 5 | Pending |
-| GAME-01 | Phase 6 | Pending |
-| GAME-02 | Phase 6 | Pending |
-| GAME-03 | Phase 6 | Pending |
-| GAME-04 | Phase 6 | Pending |
-| INTL-01 | Phase 6 | Pending |
-| INTL-02 | Phase 6 | Pending |
-| INTL-03 | Phase 6 | Pending |
-| INTL-04 | Phase 6 | Pending |
-| INTL-05 | Phase 6 | Pending |
-| INTL-06 | Phase 6 | Pending |
-| INTL-07 | Phase 6 | Pending |
-| INTL-08 | Phase 6 | Pending |
-| INTL-09 | Phase 6 | Pending |
-| INTL-10 | Phase 6 | Pending |
-| DOCS-01 | Phase 7 | Pending |
-| DOCS-02 | Phase 7 | Pending |
-| DOCS-03 | Phase 7 | Pending |
+| GAME-01 | Phase 6 | Complete |
+| GAME-02 | Phase 6 | Complete |
+| GAME-03 | Phase 6 | Complete |
+| GAME-04 | Phase 6 | Complete |
+| INTL-01 | Phase 6 | Complete |
+| INTL-02 | Phase 6 | Complete |
+| INTL-03 | Phase 6 | Complete |
+| INTL-04 | Phase 6 | Complete |
+| INTL-05 | Phase 6 | Complete |
+| INTL-06 | Phase 6 | Complete |
+| INTL-07 | Phase 6 | Complete |
+| INTL-08 | Phase 6 | Complete |
+| INTL-09 | Phase 6 | Complete |
+| INTL-10 | Phase 6 | Complete |
+| DOCS-01 | Phase 7 | Complete |
+| DOCS-02 | Phase 7 | Deferred |
+| DOCS-03 | Phase 7 | Deferred |
 
 **Coverage:**
 - v1 requirements: 56 total
