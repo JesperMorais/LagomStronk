@@ -1,3 +1,185 @@
+// ========== MUSCLE GROUPS ==========
+const MUSCLE_GROUPS = {
+    chest: { id: 'chest', displayName: 'Chest' },
+    back: { id: 'back', displayName: 'Back' },
+    shoulders: { id: 'shoulders', displayName: 'Shoulders' },
+    biceps: { id: 'biceps', displayName: 'Biceps' },
+    triceps: { id: 'triceps', displayName: 'Triceps' },
+    forearms: { id: 'forearms', displayName: 'Forearms' },
+    quads: { id: 'quads', displayName: 'Quadriceps' },
+    hamstrings: { id: 'hamstrings', displayName: 'Hamstrings' },
+    glutes: { id: 'glutes', displayName: 'Glutes' },
+    calves: { id: 'calves', displayName: 'Calves' },
+    abs: { id: 'abs', displayName: 'Abs' },
+    obliques: { id: 'obliques', displayName: 'Obliques' }
+};
+
+// ========== EQUIPMENT TYPES ==========
+const EQUIPMENT_TYPES = {
+    barbell: { id: 'barbell', displayName: 'Barbell' },
+    dumbbell: { id: 'dumbbell', displayName: 'Dumbbell' },
+    ezbar: { id: 'ezbar', displayName: 'EZ Bar' },
+    machine: { id: 'machine', displayName: 'Machine' },
+    cable: { id: 'cable', displayName: 'Cable' },
+    smithMachine: { id: 'smithMachine', displayName: 'Smith Machine' },
+    kettlebell: { id: 'kettlebell', displayName: 'Kettlebell' },
+    resistanceBand: { id: 'resistanceBand', displayName: 'Resistance Band' },
+    bodyweight: { id: 'bodyweight', displayName: 'Bodyweight' },
+    other: { id: 'other', displayName: 'Other' }
+};
+
+// ========== EXERCISE METADATA ==========
+// Maps exercise names to primary/secondary muscles and equipment
+const EXERCISE_METADATA = {
+    'Bench Press': {
+        primaryMuscles: ['chest'],
+        secondaryMuscles: ['triceps', 'shoulders'],
+        equipment: 'barbell'
+    },
+    'Incline Bench Press': {
+        primaryMuscles: ['chest'],
+        secondaryMuscles: ['triceps', 'shoulders'],
+        equipment: 'barbell'
+    },
+    'Dumbbell Bench Press': {
+        primaryMuscles: ['chest'],
+        secondaryMuscles: ['triceps', 'shoulders'],
+        equipment: 'dumbbell'
+    },
+    'Squat': {
+        primaryMuscles: ['quads', 'glutes'],
+        secondaryMuscles: ['hamstrings', 'abs'],
+        equipment: 'barbell'
+    },
+    'Front Squat': {
+        primaryMuscles: ['quads'],
+        secondaryMuscles: ['glutes', 'abs'],
+        equipment: 'barbell'
+    },
+    'Deadlift': {
+        primaryMuscles: ['back', 'glutes', 'hamstrings'],
+        secondaryMuscles: ['quads', 'forearms', 'abs'],
+        equipment: 'barbell'
+    },
+    'Romanian Deadlift': {
+        primaryMuscles: ['hamstrings', 'glutes'],
+        secondaryMuscles: ['back', 'forearms'],
+        equipment: 'barbell'
+    },
+    'Overhead Press': {
+        primaryMuscles: ['shoulders'],
+        secondaryMuscles: ['triceps', 'abs'],
+        equipment: 'barbell'
+    },
+    'Barbell Row': {
+        primaryMuscles: ['back'],
+        secondaryMuscles: ['biceps', 'forearms'],
+        equipment: 'barbell'
+    },
+    'Pull-ups': {
+        primaryMuscles: ['back'],
+        secondaryMuscles: ['biceps', 'forearms'],
+        equipment: 'bodyweight'
+    },
+    'Chin-ups': {
+        primaryMuscles: ['back', 'biceps'],
+        secondaryMuscles: ['forearms'],
+        equipment: 'bodyweight'
+    },
+    'Lat Pulldown': {
+        primaryMuscles: ['back'],
+        secondaryMuscles: ['biceps', 'forearms'],
+        equipment: 'cable'
+    },
+    'Seated Cable Row': {
+        primaryMuscles: ['back'],
+        secondaryMuscles: ['biceps', 'forearms'],
+        equipment: 'cable'
+    },
+    'Leg Press': {
+        primaryMuscles: ['quads', 'glutes'],
+        secondaryMuscles: ['hamstrings'],
+        equipment: 'machine'
+    },
+    'Leg Extension': {
+        primaryMuscles: ['quads'],
+        secondaryMuscles: [],
+        equipment: 'machine'
+    },
+    'Leg Curl': {
+        primaryMuscles: ['hamstrings'],
+        secondaryMuscles: [],
+        equipment: 'machine'
+    },
+    'Lunges': {
+        primaryMuscles: ['quads', 'glutes'],
+        secondaryMuscles: ['hamstrings', 'calves'],
+        equipment: 'bodyweight'
+    },
+    'Bulgarian Split Squat': {
+        primaryMuscles: ['quads', 'glutes'],
+        secondaryMuscles: ['hamstrings'],
+        equipment: 'bodyweight'
+    },
+    'Bicep Curls': {
+        primaryMuscles: ['biceps'],
+        secondaryMuscles: ['forearms'],
+        equipment: 'dumbbell'
+    },
+    'Hammer Curls': {
+        primaryMuscles: ['biceps'],
+        secondaryMuscles: ['forearms'],
+        equipment: 'dumbbell'
+    },
+    'Tricep Extensions': {
+        primaryMuscles: ['triceps'],
+        secondaryMuscles: [],
+        equipment: 'dumbbell'
+    },
+    'Tricep Pushdown': {
+        primaryMuscles: ['triceps'],
+        secondaryMuscles: [],
+        equipment: 'cable'
+    },
+    'Skull Crushers': {
+        primaryMuscles: ['triceps'],
+        secondaryMuscles: [],
+        equipment: 'ezbar'
+    },
+    'Lateral Raises': {
+        primaryMuscles: ['shoulders'],
+        secondaryMuscles: [],
+        equipment: 'dumbbell'
+    },
+    'Face Pulls': {
+        primaryMuscles: ['shoulders', 'back'],
+        secondaryMuscles: [],
+        equipment: 'cable'
+    },
+    'Calf Raises': {
+        primaryMuscles: ['calves'],
+        secondaryMuscles: [],
+        equipment: 'machine'
+    },
+    'Plank': {
+        primaryMuscles: ['abs'],
+        secondaryMuscles: ['obliques', 'shoulders'],
+        equipment: 'bodyweight'
+    },
+    'Ab Wheel Rollout': {
+        primaryMuscles: ['abs'],
+        secondaryMuscles: ['obliques', 'shoulders'],
+        equipment: 'other'
+    }
+};
+
+// Default metadata for unknown exercises
+const DEFAULT_EXERCISE_METADATA = {
+    primaryMuscles: [],
+    secondaryMuscles: [],
+    equipment: 'other'
+};
+
 // Default exercise library
 const DEFAULT_EXERCISES = [
     'Bench Press',
@@ -102,7 +284,24 @@ function getDefaultData() {
     return {
         workouts: [],
         exerciseLibrary: [...DEFAULT_EXERCISES],
-        workoutTemplates: [...DEFAULT_WORKOUT_TEMPLATES]
+        workoutTemplates: [...DEFAULT_WORKOUT_TEMPLATES],
+        activeProgram: DEFAULT_ACTIVE_PROGRAM,
+        bodyTracking: {
+            weight: [],        // [{date: "2026-02-06", value: 85.5, unit: "kg"}]
+            measurements: [],  // [{date: "2026-02-06", bicep: 38, chest: 105, waist: 82, thigh: 60, unit: "cm"}]
+            bodyFat: []        // [{date: "2026-02-06", value: 15.2}]
+        },
+        userProfile: {
+            goals: [],           // ['strength', 'hypertrophy', 'endurance', 'weight_loss', 'general_fitness']
+            experience: null,    // 'beginner' | 'intermediate' | 'advanced'
+            trainingDays: 3,     // target days per week (1-7)
+            equipment: [],       // ['barbell', 'dumbbell', 'machine', 'cable', 'bodyweight', 'kettlebell']
+            onboardingComplete: false,
+            createdAt: null      // ISO date string when profile was created
+        },
+        achievements: {
+            earned: []           // [{id: 'workout_10', earnedAt: '2026-02-09', seen: false}]
+        }
     };
 }
 
@@ -123,6 +322,29 @@ export function loadData() {
             // Ensure workoutTemplates exists
             if (!data.workoutTemplates) {
                 data.workoutTemplates = [...DEFAULT_WORKOUT_TEMPLATES];
+            }
+            // Ensure activeProgram exists (defaults to null if missing)
+            if (data.activeProgram === undefined) {
+                data.activeProgram = null;
+            }
+            // Ensure bodyTracking exists (migration for pre-Phase 4 data)
+            if (!data.bodyTracking) {
+                data.bodyTracking = { weight: [], measurements: [], bodyFat: [] };
+            }
+            // Ensure userProfile exists (migration for pre-Phase 6 data)
+            if (!data.userProfile) {
+                data.userProfile = {
+                    goals: [],
+                    experience: null,
+                    trainingDays: 3,
+                    equipment: [],
+                    onboardingComplete: false,
+                    createdAt: null
+                };
+            }
+            // Ensure achievements exists (migration for pre-Phase 6-02 data)
+            if (!data.achievements) {
+                data.achievements = { earned: [] };
             }
             return data;
         }
@@ -474,7 +696,16 @@ export function getOverallStats(data) {
 // Get workout frequency stats
 export function getFrequencyStats(data) {
     if (data.workouts.length === 0) {
-        return { thisWeek: 0, thisMonth: 0, avgPerWeek: 0, currentStreak: 0, longestStreak: 0 };
+        const userProfile = getUserProfile(data);
+        return {
+            thisWeek: 0,
+            thisMonth: 0,
+            avgPerWeek: 0,
+            currentStreak: 0,
+            longestStreak: 0,
+            weeklyStreak: 0,
+            weeklyTarget: userProfile.trainingDays
+        };
     }
 
     const today = new Date();
@@ -500,10 +731,23 @@ export function getFrequencyStats(data) {
     const weeksSinceFirst = Math.max(1, daysSinceFirst / 7);
     const avgPerWeek = Math.round(data.workouts.length / weeksSinceFirst * 10) / 10;
 
-    // Calculate streaks
+    // Calculate streaks (daily for backward compatibility)
     const { currentStreak, longestStreak } = calculateStreaks(data.workouts);
 
-    return { thisWeek, thisMonth, avgPerWeek, currentStreak, longestStreak };
+    // Calculate weekly streak (rest-day-aware)
+    const userProfile = getUserProfile(data);
+    const weeklyTarget = userProfile.trainingDays || 3;
+    const weeklyStreak = calculateWeeklyStreak(data.workouts, weeklyTarget);
+
+    return {
+        thisWeek,
+        thisMonth,
+        avgPerWeek,
+        currentStreak,
+        longestStreak,
+        weeklyStreak,
+        weeklyTarget
+    };
 }
 
 // Calculate workout streaks
@@ -557,6 +801,59 @@ function calculateStreaks(workouts) {
     }
 
     return { currentStreak, longestStreak };
+}
+
+// Calculate weekly streak (rest-day-aware)
+// A streak is maintained if user trains at least 'weeklyTarget' times per week
+function calculateWeeklyStreak(workouts, weeklyTarget) {
+    if (workouts.length === 0) return 0;
+
+    const today = new Date();
+    const dates = workouts.map(w => w.date).sort();
+    const uniqueDates = [...new Set(dates)];
+
+    // Group workouts by week (ISO week starting Monday)
+    const getWeekKey = (dateStr) => {
+        const date = new Date(dateStr);
+        // Adjust to Monday-based week
+        const day = date.getDay();
+        const diff = date.getDate() - day + (day === 0 ? -6 : 1); // Adjust when day is Sunday
+        const monday = new Date(date.setDate(diff));
+        monday.setHours(0, 0, 0, 0);
+        return monday.toISOString().split('T')[0];
+    };
+
+    // Count workouts per week
+    const weekCounts = new Map();
+    for (const date of uniqueDates) {
+        const weekKey = getWeekKey(date);
+        weekCounts.set(weekKey, (weekCounts.get(weekKey) || 0) + 1);
+    }
+
+    // Get current week key
+    const currentWeekKey = getWeekKey(today.toISOString().split('T')[0]);
+
+    // Sort week keys in reverse (newest first)
+    const sortedWeeks = Array.from(weekCounts.keys()).sort().reverse();
+
+    // Check if current week or last week is active
+    let streak = 0;
+    for (const weekKey of sortedWeeks) {
+        const count = weekCounts.get(weekKey);
+        if (count >= weeklyTarget) {
+            streak++;
+        } else {
+            // If this is the current week and we haven't broken yet, allow partial progress
+            if (weekKey === currentWeekKey && streak === 0) {
+                // Current week in progress - don't break streak yet
+                continue;
+            }
+            // Otherwise, streak is broken
+            break;
+        }
+    }
+
+    return streak;
 }
 
 // Get weekly summary (last 4 weeks)
@@ -700,4 +997,1913 @@ export function getMostRecentExerciseSets(data, exerciseName, excludeDate) {
         if (exercise) return exercise.sets;
     }
     return [];
+}
+
+// ========== EXERCISE METADATA HELPERS ==========
+
+// Get metadata for an exercise (returns default if unknown)
+export function getExerciseMetadata(exerciseName) {
+    return EXERCISE_METADATA[exerciseName] || DEFAULT_EXERCISE_METADATA;
+}
+
+// Get all muscle groups
+export function getMuscleGroups() {
+    return MUSCLE_GROUPS;
+}
+
+// Get all equipment types
+export function getEquipmentTypes() {
+    return EQUIPMENT_TYPES;
+}
+
+// Filter exercises by muscle group (checks primary and secondary)
+export function filterExercisesByMuscle(muscleGroup, exerciseList = DEFAULT_EXERCISES) {
+    return exerciseList.filter(name => {
+        const meta = getExerciseMetadata(name);
+        return meta.primaryMuscles.includes(muscleGroup) ||
+               meta.secondaryMuscles.includes(muscleGroup);
+    });
+}
+
+// Filter exercises by primary muscle group only
+export function filterExercisesByPrimaryMuscle(muscleGroup, exerciseList = DEFAULT_EXERCISES) {
+    return exerciseList.filter(name => {
+        const meta = getExerciseMetadata(name);
+        return meta.primaryMuscles.includes(muscleGroup);
+    });
+}
+
+// Filter exercises by equipment type
+export function filterExercisesByEquipment(equipment, exerciseList = DEFAULT_EXERCISES) {
+    return exerciseList.filter(name => {
+        const meta = getExerciseMetadata(name);
+        return meta.equipment === equipment;
+    });
+}
+
+// Get all exercises for a specific muscle group with their metadata
+export function getExercisesForMuscle(muscleGroup) {
+    const exercises = filterExercisesByMuscle(muscleGroup);
+    return exercises.map(name => ({
+        name,
+        ...getExerciseMetadata(name)
+    }));
+}
+
+// ========== TRAINING PROGRAM TEMPLATES ==========
+
+// Program templates for multi-week structured training
+const PROGRAM_TEMPLATES = [
+    {
+        id: 'ppl',
+        name: 'Push Pull Legs',
+        description: 'Classic 6-day hypertrophy split targeting each muscle group twice per week',
+        daysPerWeek: 6,
+        schedule: [
+            { day: 1, workout: 'push-day', label: 'Push' },
+            { day: 2, workout: 'pull-day', label: 'Pull' },
+            { day: 3, workout: 'leg-day', label: 'Legs' },
+            { day: 4, workout: 'push-day', label: 'Push' },
+            { day: 5, workout: 'pull-day', label: 'Pull' },
+            { day: 6, workout: 'leg-day', label: 'Legs' }
+        ],
+        workouts: {
+            'push-day': {
+                name: 'Push',
+                exercises: [
+                    { name: 'Bench Press', sets: 4, reps: 8 },
+                    { name: 'Overhead Press', sets: 3, reps: 10 },
+                    { name: 'Incline Bench Press', sets: 3, reps: 10 },
+                    { name: 'Lateral Raises', sets: 3, reps: 15 },
+                    { name: 'Tricep Pushdown', sets: 3, reps: 12 }
+                ]
+            },
+            'pull-day': {
+                name: 'Pull',
+                exercises: [
+                    { name: 'Deadlift', sets: 4, reps: 5 },
+                    { name: 'Barbell Row', sets: 4, reps: 8 },
+                    { name: 'Lat Pulldown', sets: 3, reps: 10 },
+                    { name: 'Face Pulls', sets: 3, reps: 15 },
+                    { name: 'Bicep Curls', sets: 3, reps: 12 }
+                ]
+            },
+            'leg-day': {
+                name: 'Legs',
+                exercises: [
+                    { name: 'Squat', sets: 4, reps: 6 },
+                    { name: 'Romanian Deadlift', sets: 3, reps: 10 },
+                    { name: 'Leg Press', sets: 3, reps: 12 },
+                    { name: 'Leg Curl', sets: 3, reps: 12 },
+                    { name: 'Calf Raises', sets: 4, reps: 15 }
+                ]
+            }
+        },
+        tips: 'Rest on day 7, then repeat cycle. Great for intermediate to advanced lifters.'
+    },
+    {
+        id: '5x5',
+        name: 'StrongLifts 5x5',
+        description: 'Simple A/B alternating program focused on progressive overload with compound lifts',
+        daysPerWeek: 3,
+        schedule: [
+            { day: 1, workout: 'workout-a', label: 'Workout A' },
+            { day: 2, workout: 'workout-b', label: 'Workout B' },
+            { day: 3, workout: 'workout-a', label: 'Workout A' }
+        ],
+        workouts: {
+            'workout-a': {
+                name: 'Workout A',
+                exercises: [
+                    { name: 'Squat', sets: 5, reps: 5 },
+                    { name: 'Bench Press', sets: 5, reps: 5 },
+                    { name: 'Barbell Row', sets: 5, reps: 5 }
+                ]
+            },
+            'workout-b': {
+                name: 'Workout B',
+                exercises: [
+                    { name: 'Squat', sets: 5, reps: 5 },
+                    { name: 'Overhead Press', sets: 5, reps: 5 },
+                    { name: 'Deadlift', sets: 1, reps: 5 }
+                ]
+            }
+        },
+        tips: 'Train 3x/week with rest days between. Add 2.5kg each workout. Best for beginners.'
+    },
+    {
+        id: 'upper-lower',
+        name: 'Upper/Lower Split',
+        description: '4-day split alternating upper and lower body for balanced development',
+        daysPerWeek: 4,
+        schedule: [
+            { day: 1, workout: 'upper-day', label: 'Upper' },
+            { day: 2, workout: 'lower-day', label: 'Lower' },
+            { day: 3, workout: 'upper-day', label: 'Upper' },
+            { day: 4, workout: 'lower-day', label: 'Lower' }
+        ],
+        workouts: {
+            'upper-day': {
+                name: 'Upper Body',
+                exercises: [
+                    { name: 'Bench Press', sets: 4, reps: 8 },
+                    { name: 'Barbell Row', sets: 4, reps: 8 },
+                    { name: 'Overhead Press', sets: 3, reps: 10 },
+                    { name: 'Lat Pulldown', sets: 3, reps: 10 },
+                    { name: 'Bicep Curls', sets: 2, reps: 12 },
+                    { name: 'Tricep Extensions', sets: 2, reps: 12 }
+                ]
+            },
+            'lower-day': {
+                name: 'Lower Body',
+                exercises: [
+                    { name: 'Squat', sets: 4, reps: 6 },
+                    { name: 'Romanian Deadlift', sets: 3, reps: 10 },
+                    { name: 'Leg Press', sets: 3, reps: 12 },
+                    { name: 'Leg Curl', sets: 3, reps: 12 },
+                    { name: 'Calf Raises', sets: 4, reps: 15 }
+                ]
+            }
+        },
+        tips: 'Rest 1-2 days between sessions. Versatile for all levels.'
+    },
+    {
+        id: 'bro-split',
+        name: 'Bro Split',
+        description: '5-day bodybuilding split with one muscle group per day',
+        daysPerWeek: 5,
+        schedule: [
+            { day: 1, workout: 'chest-day', label: 'Chest' },
+            { day: 2, workout: 'back-day', label: 'Back' },
+            { day: 3, workout: 'shoulders-day', label: 'Shoulders' },
+            { day: 4, workout: 'arms-day', label: 'Arms' },
+            { day: 5, workout: 'legs-day', label: 'Legs' }
+        ],
+        workouts: {
+            'chest-day': {
+                name: 'Chest',
+                exercises: [
+                    { name: 'Bench Press', sets: 4, reps: 8 },
+                    { name: 'Incline Bench Press', sets: 4, reps: 10 },
+                    { name: 'Dumbbell Bench Press', sets: 3, reps: 12 }
+                ]
+            },
+            'back-day': {
+                name: 'Back',
+                exercises: [
+                    { name: 'Deadlift', sets: 4, reps: 5 },
+                    { name: 'Barbell Row', sets: 4, reps: 8 },
+                    { name: 'Lat Pulldown', sets: 3, reps: 10 },
+                    { name: 'Seated Cable Row', sets: 3, reps: 10 }
+                ]
+            },
+            'shoulders-day': {
+                name: 'Shoulders',
+                exercises: [
+                    { name: 'Overhead Press', sets: 4, reps: 8 },
+                    { name: 'Lateral Raises', sets: 4, reps: 15 },
+                    { name: 'Face Pulls', sets: 3, reps: 15 }
+                ]
+            },
+            'arms-day': {
+                name: 'Arms',
+                exercises: [
+                    { name: 'Bicep Curls', sets: 4, reps: 10 },
+                    { name: 'Hammer Curls', sets: 3, reps: 12 },
+                    { name: 'Tricep Pushdown', sets: 4, reps: 10 },
+                    { name: 'Skull Crushers', sets: 3, reps: 12 }
+                ]
+            },
+            'legs-day': {
+                name: 'Legs',
+                exercises: [
+                    { name: 'Squat', sets: 4, reps: 8 },
+                    { name: 'Leg Press', sets: 4, reps: 12 },
+                    { name: 'Romanian Deadlift', sets: 3, reps: 10 },
+                    { name: 'Leg Extension', sets: 3, reps: 15 },
+                    { name: 'Leg Curl', sets: 3, reps: 12 },
+                    { name: 'Calf Raises', sets: 4, reps: 15 }
+                ]
+            }
+        },
+        tips: 'Rest weekends. High volume per muscle group for hypertrophy.'
+    },
+    {
+        id: 'full-body-3x',
+        name: 'Full Body 3x',
+        description: 'Full body training 3 days per week, ideal for beginners or busy schedules',
+        daysPerWeek: 3,
+        schedule: [
+            { day: 1, workout: 'full-body-a', label: 'Full Body A' },
+            { day: 2, workout: 'full-body-b', label: 'Full Body B' },
+            { day: 3, workout: 'full-body-c', label: 'Full Body C' }
+        ],
+        workouts: {
+            'full-body-a': {
+                name: 'Full Body A',
+                exercises: [
+                    { name: 'Squat', sets: 3, reps: 8 },
+                    { name: 'Bench Press', sets: 3, reps: 8 },
+                    { name: 'Barbell Row', sets: 3, reps: 8 },
+                    { name: 'Overhead Press', sets: 2, reps: 10 },
+                    { name: 'Bicep Curls', sets: 2, reps: 12 }
+                ]
+            },
+            'full-body-b': {
+                name: 'Full Body B',
+                exercises: [
+                    { name: 'Deadlift', sets: 3, reps: 5 },
+                    { name: 'Incline Bench Press', sets: 3, reps: 10 },
+                    { name: 'Lat Pulldown', sets: 3, reps: 10 },
+                    { name: 'Lateral Raises', sets: 3, reps: 15 },
+                    { name: 'Tricep Pushdown', sets: 2, reps: 12 }
+                ]
+            },
+            'full-body-c': {
+                name: 'Full Body C',
+                exercises: [
+                    { name: 'Front Squat', sets: 3, reps: 8 },
+                    { name: 'Dumbbell Bench Press', sets: 3, reps: 10 },
+                    { name: 'Seated Cable Row', sets: 3, reps: 10 },
+                    { name: 'Face Pulls', sets: 3, reps: 15 },
+                    { name: 'Hammer Curls', sets: 2, reps: 12 }
+                ]
+            }
+        },
+        tips: 'Train Mon/Wed/Fri or similar. Rest at least 1 day between sessions.'
+    },
+    {
+        id: 'phul',
+        name: 'PHUL',
+        description: 'Power Hypertrophy Upper Lower - combines strength and size training',
+        daysPerWeek: 4,
+        schedule: [
+            { day: 1, workout: 'upper-power', label: 'Upper Power' },
+            { day: 2, workout: 'lower-power', label: 'Lower Power' },
+            { day: 3, workout: 'upper-hypertrophy', label: 'Upper Hypertrophy' },
+            { day: 4, workout: 'lower-hypertrophy', label: 'Lower Hypertrophy' }
+        ],
+        workouts: {
+            'upper-power': {
+                name: 'Upper Power',
+                exercises: [
+                    { name: 'Bench Press', sets: 4, reps: 5 },
+                    { name: 'Barbell Row', sets: 4, reps: 5 },
+                    { name: 'Overhead Press', sets: 3, reps: 6 },
+                    { name: 'Lat Pulldown', sets: 3, reps: 8 },
+                    { name: 'Bicep Curls', sets: 2, reps: 8 },
+                    { name: 'Skull Crushers', sets: 2, reps: 8 }
+                ]
+            },
+            'lower-power': {
+                name: 'Lower Power',
+                exercises: [
+                    { name: 'Squat', sets: 4, reps: 5 },
+                    { name: 'Deadlift', sets: 3, reps: 5 },
+                    { name: 'Leg Press', sets: 3, reps: 8 },
+                    { name: 'Leg Curl', sets: 3, reps: 8 },
+                    { name: 'Calf Raises', sets: 4, reps: 10 }
+                ]
+            },
+            'upper-hypertrophy': {
+                name: 'Upper Hypertrophy',
+                exercises: [
+                    { name: 'Incline Bench Press', sets: 4, reps: 12 },
+                    { name: 'Seated Cable Row', sets: 4, reps: 12 },
+                    { name: 'Lateral Raises', sets: 4, reps: 15 },
+                    { name: 'Face Pulls', sets: 3, reps: 15 },
+                    { name: 'Hammer Curls', sets: 3, reps: 12 },
+                    { name: 'Tricep Pushdown', sets: 3, reps: 12 }
+                ]
+            },
+            'lower-hypertrophy': {
+                name: 'Lower Hypertrophy',
+                exercises: [
+                    { name: 'Front Squat', sets: 4, reps: 10 },
+                    { name: 'Romanian Deadlift', sets: 4, reps: 10 },
+                    { name: 'Leg Extension', sets: 3, reps: 15 },
+                    { name: 'Leg Curl', sets: 3, reps: 15 },
+                    { name: 'Calf Raises', sets: 4, reps: 15 }
+                ]
+            }
+        },
+        tips: 'Rest 1-2 days between upper/lower pairs. Combines powerlifting and bodybuilding.'
+    }
+];
+
+// Default active program state (null = no active program)
+const DEFAULT_ACTIVE_PROGRAM = null;
+
+/*
+ * Active program state structure:
+ * {
+ *   programId: 'ppl',              // ID of the program template
+ *   startDate: '2026-02-01',       // When user started the program
+ *   currentDay: 4,                  // Current day in the program cycle (1-indexed)
+ *   completedDays: ['2026-02-01', '2026-02-02', '2026-02-03'],  // Dates workouts completed
+ *   lastWorkoutDate: '2026-02-03', // Most recent workout date
+ *   customizations: {}             // Exercise swaps, weight adjustments (future use)
+ * }
+ */
+
+// ========== PROGRAM MANAGEMENT FUNCTIONS ==========
+
+// Get all available program templates
+export function getPrograms() {
+    return PROGRAM_TEMPLATES;
+}
+
+// Get a specific program by ID
+export function getProgramById(programId) {
+    return PROGRAM_TEMPLATES.find(p => p.id === programId);
+}
+
+// Get current active program state from data
+export function getActiveProgram(data) {
+    return data.activeProgram || null;
+}
+
+// Start a program (sets startDate to today, currentDay to 1)
+export function setActiveProgram(data, programId) {
+    const program = getProgramById(programId);
+    if (!program) {
+        console.error(`Program not found: ${programId}`);
+        return data;
+    }
+
+    data.activeProgram = {
+        programId: programId,
+        startDate: getTodayStr(),
+        currentDay: 1,
+        completedDays: [],
+        lastWorkoutDate: null,
+        customizations: {}
+    };
+
+    saveData(data);
+    return data;
+}
+
+// End current program (clears active state)
+export function endActiveProgram(data) {
+    data.activeProgram = null;
+    saveData(data);
+    return data;
+}
+
+// Get today's scheduled workout based on active program
+export function getTodaysProgrammedWorkout(data) {
+    const activeProgram = getActiveProgram(data);
+    if (!activeProgram) return null;
+
+    const program = getProgramById(activeProgram.programId);
+    if (!program) return null;
+
+    // Calculate which day in schedule based on currentDay
+    // Schedule is 1-indexed, so we use modulo to cycle
+    const scheduleIndex = (activeProgram.currentDay - 1) % program.schedule.length;
+    const scheduledDay = program.schedule[scheduleIndex];
+    const workout = program.workouts[scheduledDay.workout];
+
+    // Get next workout info
+    const nextIndex = activeProgram.currentDay % program.schedule.length;
+    const nextScheduledDay = program.schedule[nextIndex];
+    const nextWorkout = program.workouts[nextScheduledDay.workout];
+
+    return {
+        dayNumber: activeProgram.currentDay,
+        label: scheduledDay.label,
+        workout: workout,
+        workoutId: scheduledDay.workout,
+        programName: program.name,
+        nextWorkout: {
+            label: nextScheduledDay.label,
+            name: nextWorkout.name
+        }
+    };
+}
+
+// Increment currentDay after completing a workout
+export function advanceProgramDay(data) {
+    const activeProgram = getActiveProgram(data);
+    if (!activeProgram) return data;
+
+    const today = getTodayStr();
+
+    // Don't advance if already completed today
+    if (activeProgram.completedDays.includes(today)) {
+        return data;
+    }
+
+    activeProgram.currentDay += 1;
+    activeProgram.completedDays.push(today);
+    activeProgram.lastWorkoutDate = today;
+
+    saveData(data);
+    return data;
+}
+
+// Skip today and advance (for missed days)
+export function skipProgramDay(data) {
+    const activeProgram = getActiveProgram(data);
+    if (!activeProgram) return data;
+
+    activeProgram.currentDay += 1;
+    // Don't add to completedDays since it was skipped
+
+    saveData(data);
+    return data;
+}
+
+// Get program progress statistics
+export function getProgramProgress(data) {
+    const activeProgram = getActiveProgram(data);
+    if (!activeProgram) {
+        return {
+            currentDay: 0,
+            totalDays: 0,
+            percentComplete: 0,
+            daysCompleted: 0,
+            isActive: false
+        };
+    }
+
+    const program = getProgramById(activeProgram.programId);
+    if (!program) {
+        return {
+            currentDay: 0,
+            totalDays: 0,
+            percentComplete: 0,
+            daysCompleted: 0,
+            isActive: false
+        };
+    }
+
+    // Calculate completion based on cycle
+    const totalDaysInCycle = program.schedule.length;
+    const cyclePosition = ((activeProgram.currentDay - 1) % totalDaysInCycle) + 1;
+    const cycleNumber = Math.floor((activeProgram.currentDay - 1) / totalDaysInCycle) + 1;
+    const percentComplete = Math.round((cyclePosition / totalDaysInCycle) * 100);
+
+    return {
+        currentDay: activeProgram.currentDay,
+        totalDays: totalDaysInCycle,
+        percentComplete: percentComplete,
+        daysCompleted: activeProgram.completedDays.length,
+        cycleNumber: cycleNumber,
+        cyclePosition: cyclePosition,
+        isActive: true,
+        programName: program.name,
+        startDate: activeProgram.startDate
+    };
+}
+
+// ========== PROGRESSIVE OVERLOAD & COACHING HELPERS ==========
+
+// Get progressive overload suggestion for an exercise based on history
+// Enhanced to factor in user experience level (INTL-05)
+export function getProgressiveOverloadSuggestion(data, exerciseName) {
+    const history = getExerciseHistory(data, exerciseName);
+
+    if (history.length === 0) {
+        return {
+            suggestedWeight: null,
+            reason: 'No workout history for this exercise',
+            lastWeight: null,
+            trend: 'unknown'
+        };
+    }
+
+    // Look at last 3 workouts for this exercise
+    const recentWorkouts = history.slice(-3);
+    const lastWorkout = recentWorkouts[recentWorkouts.length - 1];
+    const lastWeight = lastWorkout.maxWeight;
+
+    // Check if user completed all sets successfully in last workout
+    // "Success" = completed sets with target reps (no failed reps)
+    const lastSets = lastWorkout.sets;
+    const completedSetsSuccessfully = lastSets.every(s =>
+        s.completed !== false && s.reps >= (s.targetReps || s.reps)
+    );
+
+    // Analyze trend across recent workouts
+    let trend = 'maintain';
+    if (recentWorkouts.length >= 2) {
+        const weights = recentWorkouts.map(w => w.maxWeight);
+        const firstWeight = weights[0];
+        const latestWeight = weights[weights.length - 1];
+
+        if (latestWeight > firstWeight) {
+            trend = 'increase';
+        } else if (latestWeight < firstWeight) {
+            trend = 'decrease';
+        }
+    }
+
+    // Get user experience level for personalized progression
+    const userProfile = getUserProfile(data);
+    const experience = userProfile.experience || 'intermediate'; // Default to intermediate
+
+    // Define progression rules based on experience
+    let requiredSuccessfulSessions = 3; // intermediate default
+    let weightIncrement = 2.5;
+
+    if (experience === 'beginner') {
+        requiredSuccessfulSessions = 2;
+        weightIncrement = 2.5;
+    } else if (experience === 'advanced') {
+        requiredSuccessfulSessions = 3;
+        weightIncrement = 1.25;
+    }
+
+    // Check consistency - did user hit all reps in required sessions?
+    const sessionsToCheck = Math.min(requiredSuccessfulSessions, recentWorkouts.length);
+    const consistentSuccess = recentWorkouts.length >= sessionsToCheck &&
+        recentWorkouts.slice(-sessionsToCheck).every(w =>
+            w.sets.every(s => s.completed !== false)
+        );
+
+    let suggestedWeight = lastWeight;
+    let reason = '';
+
+    if (consistentSuccess && completedSetsSuccessfully) {
+        // Progressive overload: increase based on experience
+        suggestedWeight = lastWeight + weightIncrement;
+        reason = 'You completed all sets successfully in your last workouts. Time to increase!';
+        trend = 'increase';
+    } else if (!completedSetsSuccessfully) {
+        // Stay at same weight
+        reason = 'Some sets were challenging last time. Stay at this weight to build strength.';
+        trend = 'maintain';
+    } else {
+        // Need more data
+        reason = 'Building consistency at this weight. Keep it up!';
+        trend = 'maintain';
+    }
+
+    return {
+        suggestedWeight: Math.round(suggestedWeight * 2) / 2, // Round to nearest 0.5kg
+        reason: reason,
+        lastWeight: lastWeight,
+        trend: trend,
+        recentWorkouts: recentWorkouts.length
+    };
+}
+
+// Check if a set represents a new personal record
+// Returns array of PR types achieved: ['weight', 'e1rm']
+export function checkForPR(data, exerciseName, newSet, todayDate) {
+    const prTypes = [];
+
+    // Validate set has weight and reps
+    if (!newSet.weight || newSet.weight <= 0 || !newSet.reps || newSet.reps <= 0) {
+        return prTypes;
+    }
+
+    // Get PRs EXCLUDING today's workout (so we compare against historical data only)
+    const historicalPRs = getHistoricalPRs(data, exerciseName, todayDate);
+
+    // Calculate new set's estimated 1RM
+    const newE1RM = calculateEstimated1RM(newSet.weight, newSet.reps);
+
+    // Check weight PR (heaviest ever for this exercise, excluding today)
+    if (historicalPRs.maxWeight === 0 || newSet.weight > historicalPRs.maxWeight) {
+        prTypes.push('weight');
+    }
+
+    // Check e1RM PR (highest estimated 1RM, excluding today)
+    if (historicalPRs.maxE1RM === 0 || newE1RM > historicalPRs.maxE1RM) {
+        prTypes.push('e1rm');
+    }
+
+    return prTypes;
+}
+
+// Get historical PRs for an exercise, excluding a specific date (usually today)
+function getHistoricalPRs(data, exerciseName, excludeDate) {
+    let maxWeight = 0;
+    let maxE1RM = 0;
+
+    for (const workout of data.workouts) {
+        // Skip the excluded date (today's workout)
+        if (workout.date === excludeDate) continue;
+
+        for (const exercise of workout.exercises) {
+            if (exercise.name !== exerciseName) continue;
+
+            for (const set of exercise.sets) {
+                // Only count completed sets for historical PRs
+                if (set.completed === false) continue;
+                if (!set.weight || !set.reps) continue;
+
+                if (set.weight > maxWeight) {
+                    maxWeight = set.weight;
+                }
+
+                const e1rm = calculateEstimated1RM(set.weight, set.reps);
+                if (e1rm > maxE1RM) {
+                    maxE1RM = e1rm;
+                }
+            }
+        }
+    }
+
+    return { maxWeight, maxE1RM };
+}
+
+// Get muscle groups not trained recently
+export function getMissedMuscleGroups(data, daysBack = 7) {
+    const today = new Date();
+    const cutoffDate = new Date(today);
+    cutoffDate.setDate(today.getDate() - daysBack);
+    const cutoffStr = cutoffDate.toISOString().split('T')[0];
+
+    // Track when each muscle group was last trained
+    const muscleLastTrained = {};
+
+    // Initialize all muscle groups
+    for (const muscleId of Object.keys(MUSCLE_GROUPS)) {
+        muscleLastTrained[muscleId] = null;
+    }
+
+    // Scan workout history
+    for (const workout of data.workouts) {
+        const workoutDate = workout.date;
+
+        for (const exercise of workout.exercises) {
+            const metadata = getExerciseMetadata(exercise.name);
+
+            // Mark primary muscles as trained
+            for (const muscle of metadata.primaryMuscles) {
+                if (!muscleLastTrained[muscle] || workoutDate > muscleLastTrained[muscle]) {
+                    muscleLastTrained[muscle] = workoutDate;
+                }
+            }
+        }
+    }
+
+    // Find muscle groups not trained recently
+    const missed = [];
+    for (const [muscleId, lastDate] of Object.entries(muscleLastTrained)) {
+        if (!lastDate || lastDate < cutoffStr) {
+            const muscle = MUSCLE_GROUPS[muscleId];
+            if (!muscle) continue;
+
+            const daysSinceTrained = lastDate
+                ? Math.floor((today - new Date(lastDate)) / (1000 * 60 * 60 * 24))
+                : null;
+
+            // Generate suggestion based on muscle group
+            let suggestion = `Consider adding ${muscle.displayName.toLowerCase()} exercises`;
+            const muscleExercises = filterExercisesByPrimaryMuscle(muscleId);
+            if (muscleExercises.length > 0) {
+                suggestion = `Try: ${muscleExercises.slice(0, 2).join(', ')}`;
+            }
+
+            missed.push({
+                muscleGroup: muscleId,
+                displayName: muscle.displayName,
+                daysSinceTrained: daysSinceTrained,
+                lastTrainedDate: lastDate,
+                suggestion: suggestion
+            });
+        }
+    }
+
+    // Sort by days since trained (null/never first, then longest)
+    missed.sort((a, b) => {
+        if (a.daysSinceTrained === null && b.daysSinceTrained === null) return 0;
+        if (a.daysSinceTrained === null) return -1;
+        if (b.daysSinceTrained === null) return 1;
+        return b.daysSinceTrained - a.daysSinceTrained;
+    });
+
+    return missed;
+}
+
+// Calculate program adherence - how well user is following program
+export function getProgramAdherence(data) {
+    const activeProgram = getActiveProgram(data);
+
+    if (!activeProgram) {
+        return {
+            adherencePercent: 0,
+            missedDays: 0,
+            extraWorkouts: 0,
+            streak: 0,
+            isActive: false
+        };
+    }
+
+    const program = getProgramById(activeProgram.programId);
+    if (!program) {
+        return {
+            adherencePercent: 0,
+            missedDays: 0,
+            extraWorkouts: 0,
+            streak: 0,
+            isActive: false
+        };
+    }
+
+    const startDate = new Date(activeProgram.startDate);
+    const today = new Date();
+    const daysSinceStart = Math.floor((today - startDate) / (1000 * 60 * 60 * 24)) + 1;
+
+    // Calculate expected workouts based on days per week
+    const weeksActive = Math.max(1, daysSinceStart / 7);
+    const expectedWorkouts = Math.floor(weeksActive * program.daysPerWeek);
+
+    // Actual completed workouts
+    const completedWorkouts = activeProgram.completedDays.length;
+
+    // Calculate adherence percentage
+    const adherencePercent = expectedWorkouts > 0
+        ? Math.min(100, Math.round((completedWorkouts / expectedWorkouts) * 100))
+        : 100;
+
+    // Calculate missed days (expected - actual, clamped to 0)
+    const missedDays = Math.max(0, expectedWorkouts - completedWorkouts);
+
+    // Extra workouts (if user did more than expected)
+    const extraWorkouts = Math.max(0, completedWorkouts - expectedWorkouts);
+
+    // Calculate current streak
+    let streak = 0;
+    if (activeProgram.completedDays.length > 0) {
+        const sortedDays = [...activeProgram.completedDays].sort().reverse();
+        const todayStr = getTodayStr();
+        const yesterdayDate = new Date(today);
+        yesterdayDate.setDate(today.getDate() - 1);
+        const yesterdayStr = yesterdayDate.toISOString().split('T')[0];
+
+        // Check if user worked out today or yesterday (streak is active)
+        if (sortedDays[0] === todayStr || sortedDays[0] === yesterdayStr) {
+            streak = 1;
+            for (let i = 1; i < sortedDays.length; i++) {
+                const current = new Date(sortedDays[i - 1]);
+                const prev = new Date(sortedDays[i]);
+                const diffDays = Math.round((current - prev) / (1000 * 60 * 60 * 24));
+
+                if (diffDays <= 2) { // Allow 1 rest day between workouts
+                    streak++;
+                } else {
+                    break;
+                }
+            }
+        }
+    }
+
+    return {
+        adherencePercent: adherencePercent,
+        missedDays: missedDays,
+        extraWorkouts: extraWorkouts,
+        streak: streak,
+        isActive: true,
+        completedWorkouts: completedWorkouts,
+        expectedWorkouts: expectedWorkouts,
+        daysSinceStart: daysSinceStart
+    };
+}
+
+// ========== BODY TRACKING HELPERS ==========
+
+// Add or update a weight entry for a given date
+export function addWeightEntry(data, date, value, unit) {
+    if (!data.bodyTracking) {
+        data.bodyTracking = { weight: [], measurements: [], bodyFat: [] };
+    }
+    const existing = data.bodyTracking.weight.findIndex(e => e.date === date);
+    if (existing >= 0) {
+        data.bodyTracking.weight[existing].value = value;
+        data.bodyTracking.weight[existing].unit = unit;
+    } else {
+        data.bodyTracking.weight.push({ date, value, unit });
+    }
+    // Sort descending by date (newest first)
+    data.bodyTracking.weight.sort((a, b) => b.date.localeCompare(a.date));
+    return data;
+}
+
+// Get weight history sorted ascending by date (for charts). Optional limit.
+export function getWeightHistory(data, limit) {
+    if (!data.bodyTracking || !data.bodyTracking.weight) return [];
+    const sorted = [...data.bodyTracking.weight].sort((a, b) => a.date.localeCompare(b.date));
+    if (limit && limit > 0) {
+        return sorted.slice(-limit);
+    }
+    return sorted;
+}
+
+// Get the most recent weight entry or null
+export function getLatestWeight(data) {
+    if (!data.bodyTracking || !data.bodyTracking.weight || data.bodyTracking.weight.length === 0) return null;
+    // Weight is stored descending, so first element is most recent
+    return data.bodyTracking.weight[0];
+}
+
+// Add or update a measurement entry for a given date
+export function addMeasurementEntry(data, date, measurements, unit) {
+    if (!data.bodyTracking) {
+        data.bodyTracking = { weight: [], measurements: [], bodyFat: [] };
+    }
+    const entry = {
+        date,
+        bicep: measurements.bicep != null ? measurements.bicep : null,
+        chest: measurements.chest != null ? measurements.chest : null,
+        waist: measurements.waist != null ? measurements.waist : null,
+        thigh: measurements.thigh != null ? measurements.thigh : null,
+        unit
+    };
+    const existing = data.bodyTracking.measurements.findIndex(e => e.date === date);
+    if (existing >= 0) {
+        data.bodyTracking.measurements[existing] = entry;
+    } else {
+        data.bodyTracking.measurements.push(entry);
+    }
+    data.bodyTracking.measurements.sort((a, b) => b.date.localeCompare(a.date));
+    return data;
+}
+
+// Get measurement history for a specific type (e.g. 'bicep'), filtered to non-null, sorted ascending
+export function getMeasurementHistory(data, type) {
+    if (!data.bodyTracking || !data.bodyTracking.measurements) return [];
+    return data.bodyTracking.measurements
+        .filter(e => e[type] != null)
+        .sort((a, b) => a.date.localeCompare(b.date))
+        .map(e => ({ date: e.date, value: e[type], unit: e.unit }));
+}
+
+// Add or update a body fat entry for a given date
+export function addBodyFatEntry(data, date, value) {
+    if (!data.bodyTracking) {
+        data.bodyTracking = { weight: [], measurements: [], bodyFat: [] };
+    }
+    const existing = data.bodyTracking.bodyFat.findIndex(e => e.date === date);
+    if (existing >= 0) {
+        data.bodyTracking.bodyFat[existing].value = value;
+    } else {
+        data.bodyTracking.bodyFat.push({ date, value });
+    }
+    data.bodyTracking.bodyFat.sort((a, b) => b.date.localeCompare(a.date));
+    return data;
+}
+
+// Get body fat history sorted ascending by date
+export function getBodyFatHistory(data) {
+    if (!data.bodyTracking || !data.bodyTracking.bodyFat) return [];
+    return [...data.bodyTracking.bodyFat].sort((a, b) => a.date.localeCompare(b.date));
+}
+
+// ========== ACHIEVEMENTS & BADGES ==========
+
+// Achievement definitions
+export const ACHIEVEMENT_DEFINITIONS = [
+    {
+        id: 'workout_10',
+        name: 'Getting Started',
+        desc: '10 workouts completed',
+        icon: '💪',
+        check: (data) => data.workouts.length >= 10
+    },
+    {
+        id: 'workout_50',
+        name: 'Committed',
+        desc: '50 workouts completed',
+        icon: '🔥',
+        check: (data) => data.workouts.length >= 50
+    },
+    {
+        id: 'workout_100',
+        name: 'Century',
+        desc: '100 workouts completed',
+        icon: '🏆',
+        check: (data) => data.workouts.length >= 100
+    },
+    {
+        id: 'streak_7',
+        name: 'Week Warrior',
+        desc: '7-day streak',
+        icon: '⚡',
+        check: (data) => {
+            const freq = getFrequencyStats(data);
+            return freq.currentStreak >= 7;
+        }
+    },
+    {
+        id: 'streak_30',
+        name: 'Iron Will',
+        desc: '30-day streak',
+        icon: '🌟',
+        check: (data) => {
+            const freq = getFrequencyStats(data);
+            return freq.currentStreak >= 30;
+        }
+    },
+    {
+        id: 'streak_weeks_4',
+        name: 'Monthly Consistency',
+        desc: '4-week streak hitting target',
+        icon: '📅',
+        check: (data) => {
+            const freq = getFrequencyStats(data);
+            return freq.weeklyStreak >= 4;
+        }
+    },
+    {
+        id: 'pr_first',
+        name: 'New Record',
+        desc: 'First personal record',
+        icon: '🎯',
+        check: (data) => {
+            const prs = getPersonalRecords(data);
+            return Object.keys(prs).length > 0;
+        }
+    },
+    {
+        id: 'pr_10',
+        name: 'Record Breaker',
+        desc: '10 personal records',
+        icon: '🏅',
+        check: (data) => {
+            // Count total PRs across all exercises
+            let totalPRs = 0;
+            for (const workout of data.workouts) {
+                for (const exercise of workout.exercises) {
+                    for (const set of exercise.sets) {
+                        const prTypes = checkForPR(data, exercise.name, set, workout.date);
+                        totalPRs += prTypes.length;
+                    }
+                }
+            }
+            return totalPRs >= 10;
+        }
+    },
+    {
+        id: 'exercises_10',
+        name: 'Explorer',
+        desc: '10 unique exercises used',
+        icon: '🧭',
+        check: (data) => {
+            const exercises = new Set();
+            for (const workout of data.workouts) {
+                for (const exercise of workout.exercises) {
+                    exercises.add(exercise.name);
+                }
+            }
+            return exercises.size >= 10;
+        }
+    },
+    {
+        id: 'volume_10k',
+        name: 'Heavy Lifter',
+        desc: '10,000 kg total volume',
+        icon: '🪨',
+        check: (data) => {
+            const stats = getOverallStats(data);
+            return stats.totalVolume >= 10000;
+        }
+    },
+    {
+        id: 'volume_100k',
+        name: 'Monster',
+        desc: '100,000 kg total volume',
+        icon: '👹',
+        check: (data) => {
+            const stats = getOverallStats(data);
+            return stats.totalVolume >= 100000;
+        }
+    }
+];
+
+// Check for newly earned achievements (not already in earned list)
+export function checkNewAchievements(data) {
+    if (!data.achievements) {
+        data.achievements = { earned: [] };
+    }
+
+    const earnedIds = new Set(data.achievements.earned.map(a => a.id));
+    const newAchievements = [];
+
+    for (const definition of ACHIEVEMENT_DEFINITIONS) {
+        // Skip if already earned
+        if (earnedIds.has(definition.id)) continue;
+
+        // Check if condition is met
+        if (definition.check(data)) {
+            const achievement = {
+                id: definition.id,
+                earnedAt: getTodayStr(),
+                seen: false
+            };
+            data.achievements.earned.push(achievement);
+            newAchievements.push({
+                ...achievement,
+                ...definition
+            });
+        }
+    }
+
+    if (newAchievements.length > 0) {
+        saveData(data);
+    }
+
+    return newAchievements;
+}
+
+// Mark achievement as seen
+export function markAchievementSeen(data, achievementId) {
+    if (!data.achievements) return data;
+
+    const achievement = data.achievements.earned.find(a => a.id === achievementId);
+    if (achievement) {
+        achievement.seen = true;
+        saveData(data);
+    }
+
+    return data;
+}
+
+// Get earned achievements with definition details
+export function getEarnedAchievements(data) {
+    if (!data.achievements) {
+        return [];
+    }
+
+    return data.achievements.earned.map(earned => {
+        const definition = ACHIEVEMENT_DEFINITIONS.find(d => d.id === earned.id);
+        return {
+            ...earned,
+            ...definition
+        };
+    });
+}
+
+// Get all achievements (earned and unearned)
+export function getAllAchievements(data) {
+    const earnedIds = new Set(data.achievements?.earned.map(a => a.id) || []);
+
+    return ACHIEVEMENT_DEFINITIONS.map(definition => {
+        const earned = data.achievements?.earned.find(a => a.id === definition.id);
+        return {
+            ...definition,
+            earned: earnedIds.has(definition.id),
+            earnedAt: earned?.earnedAt || null,
+            seen: earned?.seen || false
+        };
+    });
+}
+
+// Get PR timeline - chronological list of all PR events
+export function getPRTimeline(data) {
+    const prEvents = [];
+
+    // Track running max per exercise to calculate previousBest
+    const exerciseMaxes = {}; // { exerciseName: { weight: max, e1rm: max } }
+
+    // Sort workouts chronologically (oldest first) to process in time order
+    const sortedWorkouts = [...data.workouts].sort((a, b) => a.date.localeCompare(b.date));
+
+    for (const workout of sortedWorkouts) {
+        for (const exercise of workout.exercises) {
+            const exerciseName = exercise.name;
+
+            // Initialize tracking for this exercise if needed
+            if (!exerciseMaxes[exerciseName]) {
+                exerciseMaxes[exerciseName] = { weight: 0, e1rm: 0 };
+            }
+
+            for (const set of exercise.sets) {
+                // Only process sets with PR tags
+                if (!set.pr || set.pr.length === 0) continue;
+
+                // Skip incomplete or invalid sets
+                if (!set.weight || set.weight <= 0 || !set.reps || set.reps <= 0) continue;
+
+                const setWeight = set.weight;
+                const setE1RM = calculateEstimated1RM(set.weight, set.reps);
+
+                // Process each PR type
+                for (const prType of set.pr) {
+                    let value, previousBest;
+
+                    if (prType === 'weight') {
+                        value = setWeight;
+                        previousBest = exerciseMaxes[exerciseName].weight > 0 ? exerciseMaxes[exerciseName].weight : null;
+
+                        // Update running max
+                        if (setWeight > exerciseMaxes[exerciseName].weight) {
+                            exerciseMaxes[exerciseName].weight = setWeight;
+                        }
+                    } else if (prType === 'e1rm') {
+                        value = setE1RM;
+                        previousBest = exerciseMaxes[exerciseName].e1rm > 0 ? exerciseMaxes[exerciseName].e1rm : null;
+
+                        // Update running max
+                        if (setE1RM > exerciseMaxes[exerciseName].e1rm) {
+                            exerciseMaxes[exerciseName].e1rm = setE1RM;
+                        }
+                    } else {
+                        continue; // Unknown PR type
+                    }
+
+                    const improvement = previousBest ? value - previousBest : 0;
+
+                    prEvents.push({
+                        date: workout.date,
+                        exercise: exerciseName,
+                        type: prType,
+                        value: value,
+                        unit: 'kg',
+                        previousBest: previousBest,
+                        improvement: improvement
+                    });
+                }
+            }
+        }
+    }
+
+    // Sort reverse chronological (newest first) for feed display
+    prEvents.sort((a, b) => b.date.localeCompare(a.date));
+
+    return prEvents;
+}
+
+// Get total count of PR events
+export function getPRCount(data) {
+    let count = 0;
+
+    for (const workout of data.workouts) {
+        for (const exercise of workout.exercises) {
+            for (const set of exercise.sets) {
+                if (set.pr && set.pr.length > 0) {
+                    count += set.pr.length;
+                }
+            }
+        }
+    }
+
+    return count;
+}
+
+// ========== USER PROFILE HELPERS ==========
+
+// Get user profile or default
+export function getUserProfile(data) {
+    if (!data.userProfile) {
+        return {
+            goals: [],
+            experience: null,
+            trainingDays: 3,
+            equipment: [],
+            onboardingComplete: false,
+            createdAt: null
+        };
+    }
+    return data.userProfile;
+}
+
+// Save user profile (validates and updates)
+export function saveUserProfile(data, profile) {
+    // Validate goals array
+    const validGoals = ['strength', 'hypertrophy', 'endurance', 'weight_loss', 'general_fitness'];
+    const goals = Array.isArray(profile.goals)
+        ? profile.goals.filter(g => validGoals.includes(g))
+        : [];
+
+    // Validate experience
+    const validExperience = ['beginner', 'intermediate', 'advanced'];
+    const experience = validExperience.includes(profile.experience) ? profile.experience : null;
+
+    // Validate training days (1-7)
+    const trainingDays = Math.max(1, Math.min(7, parseInt(profile.trainingDays) || 3));
+
+    // Validate equipment array
+    const validEquipment = ['barbell', 'dumbbell', 'machine', 'cable', 'bodyweight', 'kettlebell'];
+    const equipment = Array.isArray(profile.equipment)
+        ? profile.equipment.filter(e => validEquipment.includes(e))
+        : [];
+
+    // Create timestamp if first time completing onboarding
+    const createdAt = data.userProfile?.createdAt || new Date().toISOString();
+
+    data.userProfile = {
+        goals,
+        experience,
+        trainingDays,
+        equipment,
+        onboardingComplete: profile.onboardingComplete === true,
+        createdAt
+    };
+
+    saveData(data);
+    return data;
+}
+
+// Check if user completed onboarding
+export function isOnboardingComplete(data) {
+    const profile = getUserProfile(data);
+    return profile.onboardingComplete === true;
+}
+
+// ========== INTELLIGENCE ENGINE ==========
+
+// Get exercise recommendations based on undertrained muscles and user profile (INTL-02)
+export function getExerciseRecommendations(data) {
+    const userProfile = getUserProfile(data);
+    const missedMuscles = getMissedMuscleGroups(data, 7);
+    const recommendations = [];
+
+    // Get user's available equipment
+    const userEquipment = userProfile.equipment || [];
+
+    // Get recently performed exercises (last 14 days)
+    const recentExercises = new Set();
+    const twoWeeksAgo = new Date();
+    twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+    const cutoffStr = twoWeeksAgo.toISOString().split('T')[0];
+
+    for (const workout of data.workouts) {
+        if (workout.date >= cutoffStr) {
+            for (const exercise of workout.exercises) {
+                recentExercises.add(exercise.name);
+            }
+        }
+    }
+
+    // For each undertrained muscle, find suitable exercises
+    for (const missed of missedMuscles.slice(0, 3)) { // Top 3 undertrained muscles
+        const muscleId = missed.muscleGroup;
+
+        // Get exercises that target this muscle
+        const suitableExercises = filterExercisesByPrimaryMuscle(muscleId, DEFAULT_EXERCISES)
+            .filter(name => {
+                const meta = getExerciseMetadata(name);
+                // Filter by user's equipment (or bodyweight which everyone has)
+                return userEquipment.includes(meta.equipment) || meta.equipment === 'bodyweight';
+            })
+            .filter(name => !recentExercises.has(name)); // Prefer variety
+
+        if (suitableExercises.length === 0) continue;
+
+        // Prioritize compound movements if goal is strength
+        const isStrengthFocused = userProfile.goals && userProfile.goals.includes('strength');
+        const compoundExercises = ['Bench Press', 'Squat', 'Deadlift', 'Overhead Press', 'Barbell Row'];
+
+        let selectedExercise = suitableExercises[0];
+        if (isStrengthFocused) {
+            const compound = suitableExercises.find(ex => compoundExercises.includes(ex));
+            if (compound) selectedExercise = compound;
+        }
+
+        const daysSince = missed.daysSinceTrained;
+        const reason = daysSince === null
+            ? `${missed.displayName} not trained yet`
+            : `${missed.displayName} undertrained (${daysSince} days)`;
+
+        const priority = daysSince === null || daysSince >= 14 ? 'high' : 'medium';
+
+        recommendations.push({
+            exercise: selectedExercise,
+            reason: reason,
+            priority: priority,
+            muscleGroup: missed.displayName
+        });
+    }
+
+    // Sort by priority
+    recommendations.sort((a, b) => {
+        if (a.priority === 'high' && b.priority !== 'high') return -1;
+        if (a.priority !== 'high' && b.priority === 'high') return 1;
+        return 0;
+    });
+
+    return recommendations.slice(0, 5); // Return top 5
+}
+
+// Get training split suggestion based on user profile (INTL-03)
+export function getTrainingSplitSuggestion(data) {
+    const activeProgram = getActiveProgram(data);
+
+    // Don't suggest if user has an active program
+    if (activeProgram) {
+        return null;
+    }
+
+    const userProfile = getUserProfile(data);
+    const trainingDays = userProfile.trainingDays || 3;
+    const experience = userProfile.experience || 'intermediate';
+
+    let split = '';
+    let schedule = [];
+    let reason = '';
+
+    if (trainingDays <= 3) {
+        // Full Body or compressed PPL
+        if (experience === 'beginner') {
+            split = 'Full Body 3x';
+            schedule = [
+                { day: 'Mon', focus: 'Full Body A' },
+                { day: 'Wed', focus: 'Full Body B' },
+                { day: 'Fri', focus: 'Full Body C' }
+            ];
+            reason = 'Full body training hits all muscles frequently, ideal for beginners with 3 days/week';
+        } else {
+            split = 'Push/Pull/Legs (compressed)';
+            schedule = [
+                { day: 'Mon', focus: 'Push' },
+                { day: 'Wed', focus: 'Pull' },
+                { day: 'Fri', focus: 'Legs' }
+            ];
+            reason = 'Classic PPL split adapted for 3 days, each muscle group trained once per week';
+        }
+    } else if (trainingDays === 4) {
+        split = 'Upper/Lower Split';
+        schedule = [
+            { day: 'Mon', focus: 'Upper' },
+            { day: 'Tue', focus: 'Lower' },
+            { day: 'Thu', focus: 'Upper' },
+            { day: 'Fri', focus: 'Lower' }
+        ];
+        reason = 'Upper/Lower split trains each muscle group twice per week with adequate recovery';
+    } else if (trainingDays === 5) {
+        split = 'Bro Split (5-day)';
+        schedule = [
+            { day: 'Mon', focus: 'Chest' },
+            { day: 'Tue', focus: 'Back' },
+            { day: 'Wed', focus: 'Shoulders' },
+            { day: 'Thu', focus: 'Arms' },
+            { day: 'Fri', focus: 'Legs' }
+        ];
+        reason = 'Bodybuilding-style split with high volume per muscle group, one muscle per day';
+    } else {
+        split = 'Push/Pull/Legs';
+        schedule = [
+            { day: 'Mon', focus: 'Push' },
+            { day: 'Tue', focus: 'Pull' },
+            { day: 'Wed', focus: 'Legs' },
+            { day: 'Thu', focus: 'Push' },
+            { day: 'Fri', focus: 'Pull' },
+            { day: 'Sat', focus: 'Legs' }
+        ];
+        reason = 'Classic PPL for high frequency, each muscle group trained twice per week';
+    }
+
+    return {
+        split,
+        schedule,
+        reason
+    };
+}
+
+// Get recovery insights for each muscle group (INTL-06)
+export function getRecoveryInsights(data) {
+    const insights = [];
+    const today = new Date();
+
+    // Track when each muscle group was last trained
+    const muscleLastTrained = {};
+
+    // Initialize all muscle groups
+    for (const muscleId of Object.keys(MUSCLE_GROUPS)) {
+        muscleLastTrained[muscleId] = null;
+    }
+
+    // Scan workout history
+    for (const workout of data.workouts) {
+        const workoutDate = workout.date;
+
+        for (const exercise of workout.exercises) {
+            const metadata = getExerciseMetadata(exercise.name);
+
+            // Mark primary muscles as trained
+            for (const muscle of metadata.primaryMuscles) {
+                if (!muscleLastTrained[muscle] || workoutDate > muscleLastTrained[muscle]) {
+                    muscleLastTrained[muscle] = workoutDate;
+                }
+            }
+        }
+    }
+
+    // Generate insights for each muscle group
+    for (const [muscleId, lastDate] of Object.entries(muscleLastTrained)) {
+        const muscle = MUSCLE_GROUPS[muscleId];
+        if (!muscle) continue;
+
+        let hoursAgo = null;
+        let status = 'recovered';
+        let recommendation = 'Ready to train';
+
+        if (lastDate) {
+            const lastTrainedDate = new Date(lastDate);
+            hoursAgo = Math.floor((today - lastTrainedDate) / (1000 * 60 * 60));
+
+            if (hoursAgo < 24) {
+                status = 'fresh';
+                recommendation = 'Train if feeling good';
+            } else if (hoursAgo < 48) {
+                status = 'recovering';
+                recommendation = 'Rest recommended';
+            } else {
+                status = 'recovered';
+                recommendation = 'Ready to train';
+            }
+        } else {
+            status = 'recovered';
+            recommendation = 'Ready to train';
+        }
+
+        insights.push({
+            muscle: muscle.displayName,
+            muscleId: muscleId,
+            lastTrained: lastDate,
+            hoursAgo: hoursAgo,
+            status: status,
+            recommendation: recommendation
+        });
+    }
+
+    return insights;
+}
+
+// Get fatigue score based on weekly training load (INTL-10)
+export function getFatigueScore(data) {
+    const today = new Date();
+    const currentWeekStart = new Date(today);
+    currentWeekStart.setDate(today.getDate() - today.getDay()); // Start of week (Sunday)
+    currentWeekStart.setHours(0, 0, 0, 0);
+
+    // Calculate current week stats
+    let setsThisWeek = 0;
+    let volumeThisWeek = 0;
+
+    for (const workout of data.workouts) {
+        const workoutDate = new Date(workout.date);
+        if (workoutDate >= currentWeekStart) {
+            for (const exercise of workout.exercises) {
+                setsThisWeek += exercise.sets.length;
+                for (const set of exercise.sets) {
+                    volumeThisWeek += set.reps * set.weight;
+                }
+            }
+        }
+    }
+
+    // Calculate average weekly stats over last 4 weeks (excluding current week)
+    const weeklyStats = [];
+    for (let i = 1; i <= 4; i++) {
+        const weekStart = new Date(currentWeekStart);
+        weekStart.setDate(currentWeekStart.getDate() - (i * 7));
+        const weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekStart.getDate() + 6);
+
+        let sets = 0;
+        let volume = 0;
+
+        for (const workout of data.workouts) {
+            const workoutDate = new Date(workout.date);
+            if (workoutDate >= weekStart && workoutDate <= weekEnd) {
+                for (const exercise of workout.exercises) {
+                    sets += exercise.sets.length;
+                    for (const set of exercise.sets) {
+                        volume += set.reps * set.weight;
+                    }
+                }
+            }
+        }
+
+        weeklyStats.push({ sets, volume });
+    }
+
+    // Calculate averages
+    const avgSets = weeklyStats.length > 0
+        ? weeklyStats.reduce((sum, w) => sum + w.sets, 0) / weeklyStats.length
+        : 0;
+    const avgVolume = weeklyStats.length > 0
+        ? weeklyStats.reduce((sum, w) => sum + w.volume, 0) / weeklyStats.length
+        : 0;
+
+    // Calculate ratios
+    const setRatio = avgSets > 0 ? setsThisWeek / avgSets : 0;
+    const volumeRatio = avgVolume > 0 ? volumeThisWeek / avgVolume : 0;
+
+    // Determine fatigue score
+    let score = 'low';
+    let warning = null;
+
+    const maxRatio = Math.max(setRatio, volumeRatio);
+
+    if (maxRatio >= 1.5) {
+        score = 'high';
+        warning = 'overtraining risk';
+    } else if (maxRatio >= 1.3) {
+        score = 'moderate';
+        warning = 'high fatigue';
+    } else if (maxRatio < 0.7 && avgSets > 0) {
+        score = 'very low';
+        warning = 'consider increasing volume';
+    }
+
+    return {
+        score,
+        setsThisWeek,
+        avgSets: Math.round(avgSets),
+        volumeThisWeek: Math.round(volumeThisWeek),
+        avgVolume: Math.round(avgVolume),
+        setRatio: Math.round(setRatio * 100) / 100,
+        volumeRatio: Math.round(volumeRatio * 100) / 100,
+        warning
+    };
+}
+
+// ========== INSIGHTS & ANALYTICS ==========
+
+// Get workout quality score for a single workout (INTL-07)
+export function getWorkoutQualityScore(data, dateStr) {
+    const workout = data.workouts.find(w => w.date === dateStr);
+
+    if (!workout) {
+        return { score: 0, breakdown: {}, label: 'No Data' };
+    }
+
+    const breakdown = {
+        completion: 0,
+        pr: 0,
+        volume: 0,
+        consistency: 0
+    };
+
+    // 1. Completion rate (40 points max)
+    let totalSets = 0;
+    let completedSets = 0;
+
+    for (const exercise of workout.exercises) {
+        totalSets += exercise.sets.length;
+        completedSets += exercise.sets.filter(s => s.completed).length;
+    }
+
+    if (totalSets > 0) {
+        breakdown.completion = Math.round((completedSets / totalSets) * 40);
+    }
+
+    // 2. PR achievement (20 points max)
+    const prTimeline = getPRTimeline(data);
+    const prsOnDate = prTimeline.filter(pr => pr.date === dateStr);
+    breakdown.pr = Math.min(prsOnDate.length * 20, 20);
+
+    // 3. Volume vs average (20 points max)
+    // Calculate this workout's volume
+    let workoutVolume = 0;
+    const workoutMuscles = new Set();
+
+    for (const exercise of workout.exercises) {
+        const metadata = getExerciseMetadata(exercise.name);
+        metadata.primaryMuscles.forEach(m => workoutMuscles.add(m));
+
+        for (const set of exercise.sets) {
+            workoutVolume += set.reps * set.weight;
+        }
+    }
+
+    // Calculate average weekly volume for the same muscle groups
+    const weekStart = new Date(dateStr);
+    weekStart.setDate(weekStart.getDate() - 7);
+
+    let totalWeeklyVolume = 0;
+    let weeklyWorkoutCount = 0;
+
+    for (const w of data.workouts) {
+        if (w.date !== dateStr && w.date >= weekStart.toISOString().split('T')[0]) {
+            let matchingVolume = 0;
+
+            for (const ex of w.exercises) {
+                const meta = getExerciseMetadata(ex.name);
+                const hasMatchingMuscle = meta.primaryMuscles.some(m => workoutMuscles.has(m));
+
+                if (hasMatchingMuscle) {
+                    for (const s of ex.sets) {
+                        matchingVolume += s.reps * s.weight;
+                    }
+                }
+            }
+
+            if (matchingVolume > 0) {
+                totalWeeklyVolume += matchingVolume;
+                weeklyWorkoutCount++;
+            }
+        }
+    }
+
+    const avgVolume = weeklyWorkoutCount > 0 ? totalWeeklyVolume / weeklyWorkoutCount : workoutVolume;
+
+    if (workoutVolume > avgVolume) {
+        breakdown.volume = Math.round(((workoutVolume - avgVolume) / avgVolume) * 20);
+        breakdown.volume = Math.min(breakdown.volume, 20);
+    }
+
+    // 4. Consistency (20 points max)
+    // Check if workout matches active program schedule
+    const activeProgram = getActiveProgram(data);
+
+    if (activeProgram) {
+        const workoutDate = new Date(dateStr);
+        const dayOfWeek = workoutDate.getDay(); // 0 = Sunday
+
+        // Check if this day is in the program schedule
+        const programDay = activeProgram.schedule.find(d => {
+            const scheduledDay = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][dayOfWeek];
+            return d.day.toLowerCase() === scheduledDay;
+        });
+
+        if (programDay) {
+            breakdown.consistency = 20;
+        }
+    } else {
+        // No active program - give points for just training
+        breakdown.consistency = 10;
+    }
+
+    // Calculate total score
+    const score = breakdown.completion + breakdown.pr + breakdown.volume + breakdown.consistency;
+
+    // Determine label
+    let label = 'Needs Work';
+    if (score >= 81) label = 'Exceptional';
+    else if (score >= 61) label = 'Great';
+    else if (score >= 41) label = 'Solid';
+
+    return {
+        score,
+        breakdown,
+        label
+    };
+}
+
+// Get recent workout quality scores for chart display (INTL-07)
+export function getRecentQualityScores(data, count = 10) {
+    const scores = [];
+
+    // Get last N workouts
+    const recentWorkouts = [...data.workouts]
+        .sort((a, b) => b.date.localeCompare(a.date))
+        .slice(0, count);
+
+    for (const workout of recentWorkouts) {
+        const qualityScore = getWorkoutQualityScore(data, workout.date);
+        scores.push({
+            date: workout.date,
+            score: qualityScore.score,
+            label: qualityScore.label
+        });
+    }
+
+    // Return in chronological order (oldest first for chart display)
+    return scores.reverse();
+}
+
+// Get trend analysis comparing last 30 days vs previous 30 days (INTL-08)
+export function getTrendAnalysis(data) {
+    const highlights = [];
+    const today = new Date();
+
+    const current30Start = new Date(today);
+    current30Start.setDate(today.getDate() - 30);
+
+    const previous30Start = new Date(today);
+    previous30Start.setDate(today.getDate() - 60);
+    const previous30End = new Date(current30Start);
+
+    // Check if we have enough data
+    const hasOldData = data.workouts.some(w => new Date(w.date) < current30Start);
+
+    if (!hasOldData) {
+        return { highlights: [], period: '30 days', needsMoreData: true };
+    }
+
+    // 1. Volume change per exercise
+    const exerciseVolumes = {};
+
+    for (const workout of data.workouts) {
+        const workoutDate = new Date(workout.date);
+        const period = workoutDate >= current30Start ? 'current' :
+                      (workoutDate >= previous30Start && workoutDate < previous30End) ? 'previous' : null;
+
+        if (!period) continue;
+
+        for (const exercise of workout.exercises) {
+            if (!exerciseVolumes[exercise.name]) {
+                exerciseVolumes[exercise.name] = { current: 0, previous: 0 };
+            }
+
+            let exVolume = 0;
+            for (const set of exercise.sets) {
+                exVolume += set.reps * set.weight;
+            }
+
+            exerciseVolumes[exercise.name][period] += exVolume;
+        }
+    }
+
+    // Find top volume changes
+    const volumeChanges = [];
+    for (const [exercise, volumes] of Object.entries(exerciseVolumes)) {
+        if (volumes.previous > 0 && volumes.current > 0) {
+            const change = ((volumes.current - volumes.previous) / volumes.previous) * 100;
+            volumeChanges.push({ exercise, change });
+        }
+    }
+
+    volumeChanges.sort((a, b) => Math.abs(b.change) - Math.abs(a.change));
+
+    // Add top 2 volume trends
+    for (let i = 0; i < Math.min(2, volumeChanges.length); i++) {
+        const trend = volumeChanges[i];
+        if (Math.abs(trend.change) >= 10) { // Only show significant changes
+            highlights.push({
+                type: trend.change > 0 ? 'volume_up' : 'volume_down',
+                text: `${trend.exercise} volume ${trend.change > 0 ? 'up' : 'down'} ${Math.abs(Math.round(trend.change))}% this month`,
+                positive: trend.change > 0
+            });
+        }
+    }
+
+    // 2. Frequency change
+    const currentWorkouts = data.workouts.filter(w => new Date(w.date) >= current30Start).length;
+    const previousWorkouts = data.workouts.filter(w => {
+        const d = new Date(w.date);
+        return d >= previous30Start && d < previous30End;
+    }).length;
+
+    const currentFreq = Math.round((currentWorkouts / 30) * 7 * 10) / 10;
+    const previousFreq = Math.round((previousWorkouts / 30) * 7 * 10) / 10;
+
+    if (Math.abs(currentFreq - previousFreq) >= 0.5) {
+        highlights.push({
+            type: currentFreq > previousFreq ? 'frequency_up' : 'frequency_down',
+            text: `Training ${currentFreq}x/week, ${currentFreq > previousFreq ? 'up from' : 'down from'} ${previousFreq}x/week`,
+            positive: currentFreq > previousFreq
+        });
+    }
+
+    // 3. Strength trends per muscle group
+    const muscleStrength = {};
+
+    for (const workout of data.workouts) {
+        const workoutDate = new Date(workout.date);
+        const period = workoutDate >= current30Start ? 'current' :
+                      (workoutDate >= previous30Start && workoutDate < previous30End) ? 'previous' : null;
+
+        if (!period) continue;
+
+        for (const exercise of workout.exercises) {
+            const metadata = getExerciseMetadata(exercise.name);
+            const maxWeight = Math.max(...exercise.sets.map(s => s.weight), 0);
+
+            for (const muscle of metadata.primaryMuscles) {
+                const muscleName = MUSCLE_GROUPS[muscle]?.displayName || muscle;
+
+                if (!muscleStrength[muscleName]) {
+                    muscleStrength[muscleName] = { current: [], previous: [] };
+                }
+
+                muscleStrength[muscleName][period].push(maxWeight);
+            }
+        }
+    }
+
+    // Calculate average max weights
+    for (const [muscle, data] of Object.entries(muscleStrength)) {
+        if (data.current.length > 0 && data.previous.length > 0) {
+            const currentAvg = data.current.reduce((a, b) => a + b, 0) / data.current.length;
+            const previousAvg = data.previous.reduce((a, b) => a + b, 0) / data.previous.length;
+            const change = ((currentAvg - previousAvg) / previousAvg) * 100;
+
+            if (Math.abs(change) >= 5) {
+                highlights.push({
+                    type: change > 0 ? 'strength_up' : 'strength_down',
+                    text: `${muscle} strength ${change > 0 ? 'up' : 'down'} ${Math.abs(Math.round(change))}%`,
+                    positive: change > 0
+                });
+            }
+        }
+    }
+
+    // 4. Body weight trend (if body tracking data exists)
+    if (data.bodyTracking && data.bodyTracking.weight && data.bodyTracking.weight.length > 1) {
+        const recentWeights = data.bodyTracking.weight
+            .filter(w => new Date(w.date) >= current30Start)
+            .sort((a, b) => a.date.localeCompare(b.date));
+
+        if (recentWeights.length >= 2) {
+            const firstWeight = recentWeights[0].value;
+            const lastWeight = recentWeights[recentWeights.length - 1].value;
+            const change = lastWeight - firstWeight;
+
+            if (Math.abs(change) >= 0.5) {
+                highlights.push({
+                    type: 'bodyweight',
+                    text: `Body weight ${change > 0 ? 'up' : 'down'} ${Math.abs(change).toFixed(1)}kg this month`,
+                    positive: null // Neutral - could be intentional
+                });
+            }
+        }
+    }
+
+    // Limit to top 5 most notable trends
+    return {
+        highlights: highlights.slice(0, 5),
+        period: '30 days'
+    };
+}
+
+// Get weekly muscle heatmap data (INTL-09)
+export function getWeeklyMuscleHeatmap(data) {
+    const today = new Date();
+
+    // Get ISO week start (Monday)
+    const currentDay = today.getDay();
+    const mondayOffset = currentDay === 0 ? -6 : 1 - currentDay;
+    const weekStart = new Date(today);
+    weekStart.setDate(today.getDate() + mondayOffset);
+    weekStart.setHours(0, 0, 0, 0);
+
+    const weekStartStr = weekStart.toISOString().split('T')[0];
+
+    // Initialize muscle group counts
+    const muscleSets = {};
+
+    for (const [muscleId, muscleData] of Object.entries(MUSCLE_GROUPS)) {
+        muscleSets[muscleId] = {
+            muscle: muscleId,
+            displayName: muscleData.displayName,
+            sets: 0
+        };
+    }
+
+    // Count sets per muscle group this week
+    for (const workout of data.workouts) {
+        if (workout.date >= weekStartStr) {
+            for (const exercise of workout.exercises) {
+                const metadata = getExerciseMetadata(exercise.name);
+
+                for (const muscle of metadata.primaryMuscles) {
+                    if (muscleSets[muscle]) {
+                        muscleSets[muscle].sets += exercise.sets.length;
+                    }
+                }
+            }
+        }
+    }
+
+    // Calculate intensity normalization
+    const maxSets = Math.max(...Object.values(muscleSets).map(m => m.sets), 1);
+
+    const heatmap = Object.values(muscleSets).map(m => ({
+        muscle: m.muscle,
+        displayName: m.displayName,
+        sets: m.sets,
+        intensity: maxSets > 0 ? m.sets / maxSets : 0
+    }));
+
+    return heatmap;
 }
