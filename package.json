@@ -27,7 +27,7 @@
   "devDependencies": {
     "@capacitor/android": "^8.1.0",
     "@capacitor/cli": "^8.0.2",
-    "@capacitor/core": "^8.0.2",
+    "@capacitor/core": "^8.1.0",
     "serve": "^14.0.0"
   }
 }
