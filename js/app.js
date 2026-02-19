@@ -1104,11 +1104,16 @@ function setupMiniPlayerListeners() {
 }
 
 // Initialize app
+let listenersInitialized = false;
+
 function init() {
-    setupNavigation();
-    setupEventListeners();
-    setupMiniPlayerListeners();
-    setupRestTimerListeners();
+    if (!listenersInitialized) {
+        setupNavigation();
+        setupEventListeners();
+        setupMiniPlayerListeners();
+        setupRestTimerListeners();
+        listenersInitialized = true;
+    }
     renderTodayView();
     updateTodayDate();
     updateFABVisibility();
@@ -4655,14 +4660,16 @@ function handleOnboardingBack() {
 }
 
 function handleOnboardingSkip() {
-    // Save defaults
-    saveUserProfile(appData, {
-        goals: [],
-        experience: null,
-        trainingDays: 3,
-        equipment: ['barbell', 'dumbbell', 'machine', 'cable', 'bodyweight', 'kettlebell'],
-        onboardingComplete: true
-    });
+    // Only save defaults if this is the first time (no existing profile)
+    if (!isOnboardingComplete(appData)) {
+        saveUserProfile(appData, {
+            goals: [],
+            experience: null,
+            trainingDays: 3,
+            equipment: ['barbell', 'dumbbell', 'machine', 'cable', 'bodyweight', 'kettlebell'],
+            onboardingComplete: true
+        });
+    }
 
     hideOnboarding();
     init();
