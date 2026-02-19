@@ -3836,6 +3836,7 @@ body.workout-active .bottom-nav {
 }
 
 .icon-btn {
+    position: relative;
     background: var(--card-background);
     border: 1px solid var(--border-color);
     border-radius: var(--radius);
