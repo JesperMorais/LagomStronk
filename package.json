@@ -22,7 +22,7 @@
   "author": "Jeppe Morris",
   "license": "MIT",
   "dependencies": {
-    "idb-keyval": "^6.2.2"
+    "idb-keyval": "^6.2.4"
   },
   "devDependencies": {
     "@capacitor/android": "^8.1.0",
